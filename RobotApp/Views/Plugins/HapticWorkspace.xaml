@@ -1,0 +1,66 @@
+﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.HapticWorkspace"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:plugins="clr-namespace:RobotApp.Views.Plugins"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:RobotApp.ViewModel"
+             xmlns:view="clr-namespace:RobotApp.Views"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <plugins:PluginBase.PluginContent>
+        <StackPanel>
+            <UniformGrid Columns="2">
+                <TextBlock Text="Arm Side" />
+                <ComboBox SelectedIndex="{Binding ArmSide}">
+                    <ComboBoxItem></ComboBoxItem>
+                    <ComboBoxItem>Right</ComboBoxItem>
+                    <ComboBoxItem>Left</ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock Text="Enable Haptics"/>
+                <CheckBox IsChecked="{Binding HapticsEnabled}"/>
+
+                <TextBlock Text="Barrier Gain"/>
+                <TextBlock Text="{Binding BarrierGain}" />
+            </UniformGrid>
+            <Slider Minimum="0" Maximum="1" Value="{Binding BarrierGain}" />
+            <UniformGrid Columns="2">
+                <TextBlock Text="Motion Gain"/>
+                <TextBlock Text="{Binding FeelGain}" />
+            </UniformGrid>
+            <Slider Minimum="0" Maximum="0.5" Value="{Binding FeelGain}" />
+            <UniformGrid Columns="2">
+                <TextBlock Text="Haptic Threshold"/>
+                <TextBlock Text="{Binding HapticThreshold}" />
+            </UniformGrid>
+            <Slider Minimum="0" Maximum="250" Value="{Binding HapticThreshold}" />
+            <!--<TextBlock Text="Upper Arm Length"/>
+                <TextBox Text="{Binding UpperLength}" />
+
+                <TextBlock Text="Forearm Length"/>
+                <TextBox Text="{Binding ForeLength}" />
+
+                <TextBlock Text="Min Shoulder Angle"/>
+                <TextBox Text="{Binding MinShoulderTheta}" />
+
+                <TextBlock Text="Max Shoulder Angle"/>
+                <TextBox Text="{Binding MaxShoulderTheta}" />
+
+                <TextBlock Text="Min Elbow Angle"/>
+                <TextBox Text="{Binding MinElbowTheta}" />
+
+                <TextBlock Text="Max Elbow Angle"/>
+                <TextBox Text="{Binding MaxElbowTheta}" />-->
+            
+            <UniformGrid Columns="2">
+                <TextBlock Text="Max Force [N]"/>
+                <TextBlock Text="{Binding ForceMax}"/>
+                
+            </UniformGrid>
+            
+            <Slider Minimum="0" Maximum="5" Value="{Binding ForceMax}" />
+            
+        </StackPanel>
+    </plugins:PluginBase.PluginContent>
+</plugins:PluginBase>

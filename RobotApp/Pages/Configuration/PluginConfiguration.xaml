@@ -1,0 +1,64 @@
+﻿<!--This page allows the user to select an Plugin source to control the robot, and configure it with any kinematics that it may need.
+    
+    This page digests an PluginConfigurationViewModel.
+    -->
+<UserControl x:Class="RobotApp.Pages.PluginConfiguration"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:RobotApp.ViewModel"
+             xmlns:vmPlugins="clr-namespace:RobotApp.ViewModel.Plugins"
+             xmlns:viewPlugins="clr-namespace:RobotApp.Views.Plugins"
+             xmlns:view="clr-namespace:RobotApp.Views"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <DockPanel Style="{StaticResource ContentRoot}">
+        <DockPanel.DataContext>
+            <vm:PluginConfigurationViewModel />
+        </DockPanel.DataContext>
+        <TextBlock DockPanel.Dock="Top" Text="PLUGIN CONFIGURATION" Style="{StaticResource Title}" />
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Left" Width="250" Margin="0, 0, 10, 0">
+                <TextBlock DockPanel.Dock="Top" Text="Available Plugins" FontSize="18" />
+                <ListBox DockPanel.Dock="Top" Name="PluginTypes" ItemsSource="{Binding PluginTypes}" DisplayMemberPath="Name" />
+                <DockPanel DockPanel.Dock="Top">
+                    <mui:ModernButton DockPanel.Dock="Right" HorizontalAlignment="Left" Command="{Binding DeletePluginCommand}" CommandParameter="{Binding ElementName=PluginList, Path=SelectedItem}" IconData="{StaticResource TrashIconData}"/>
+                    <mui:ModernButton DockPanel.Dock="Right" HorizontalAlignment="Right" Command="{Binding AddPluginCommand}" CommandParameter="{Binding ElementName=PluginTypes, Path=SelectedItem}" IconData="{StaticResource AddIconData}"/>
+                    <TextBlock DockPanel.Dock="Left" Text="Loaded Plugins" FontSize="18" />
+                </DockPanel>
+
+                <ListView Name="PluginList" DockPanel.Dock="Top" ItemsSource="{Binding MainViewModel.Plugins}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding TypeName}" FontWeight="Light" FontSize="18" />
+                                <TextBlock Text="{Binding InstanceName}" FontSize="12" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <!--<ListView.Resources>
+                        <DataTemplate DataType="{x:Type vm:PluginViewModelBase}">
+                            <view:PluginItemView/>
+                        </DataTemplate>
+                    </ListView.Resources>-->
+                </ListView>
+            </DockPanel>
+            <!--This displays the configuration pane depending on the selected item in the list-->
+            <ScrollViewer  DockPanel.Dock="Right">
+                <ContentControl Content="{Binding ElementName=PluginList, Path=SelectedItem}">
+                    <!--<ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type vmPlugins:GeomagicPluginViewModel}">
+                            <viewPlugins:GeomagicPluginView />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vmPlugins:EnableDisablePluginViewModel}">
+                            <viewPlugins:EnableDisablePluginView />
+                        </DataTemplate>-->
+                        <!--Add additional DataTemplates for any other PluginViewModels -->
+                    <!--</ContentControl.Resources>-->
+                </ContentControl>
+            </ScrollViewer>
+        </DockPanel>
+    </DockPanel>
+</UserControl>

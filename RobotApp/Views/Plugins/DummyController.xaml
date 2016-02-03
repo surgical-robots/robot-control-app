@@ -1,0 +1,51 @@
+﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.DummyController"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:plugins="clr-namespace:RobotApp.Views.Plugins"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:RobotApp.ViewModel"
+             xmlns:view="clr-namespace:RobotApp.Views"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <plugins:PluginBase.PluginContent>
+        <StackPanel>
+            <UniformGrid Columns="6">
+                <TextBlock Text="X1" TextAlignment="Right"/>
+                <xctk:DecimalUpDown Value="{Binding InputOne}"/>
+                <TextBlock Text="Y1" TextAlignment="Right"/>
+                <xctk:DecimalUpDown Value="{Binding InputTwo}"/>
+                <TextBlock Text="Z1" TextAlignment="Right"/>
+                <xctk:DecimalUpDown Value="{Binding InputThree}"/>
+
+                <TextBlock Text="X2" TextAlignment="Right"/>
+                <xctk:DecimalUpDown Value="{Binding InputFour}"/>
+                <TextBlock Text="Y2" TextAlignment="Right"/>
+                <xctk:DecimalUpDown Value="{Binding InputFive}"/>
+                <TextBlock Text="Z2" TextAlignment="Right"/>
+                <xctk:DecimalUpDown Value="{Binding InputSix}"/>
+            </UniformGrid>
+
+            <!--<UniformGrid Columns="2">
+                <TextBlock Text="Input 1" />
+                <TextBox Text="{Binding InputOne}" />
+
+                <TextBlock Text="Input 2" />
+                <TextBox Text="{Binding InputTwo}" />
+
+                <TextBlock Text="Input 3" />
+                <TextBox Text="{Binding InputThree}" />
+
+                <TextBlock Text="Input 4" />
+                <TextBox Text="{Binding InputFour}" />
+
+                <TextBlock Text="Input 5" />
+                <TextBox Text="{Binding InputFive}" />
+
+                <TextBlock Text="Input 6" />
+                <TextBox Text="{Binding InputSix}" />
+            </UniformGrid>-->
+        </StackPanel>
+    </plugins:PluginBase.PluginContent>
+</plugins:PluginBase>

@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4E98BCE1-36B4-4D54-B79C-4E3A98DAEC86}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TelSurge</RootNamespace>
+    <AssemblyName>TelSurge</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DirectShowLib">
+      <HintPath>..\..\packages\DirectShowLib.1.0.0\lib\DirectShowLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.CV.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.GPU">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.CV.GPU.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.ML">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.CV.ML.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.OCR">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.CV.OCR.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.OpenCL">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.CV.OpenCL.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.Stitching">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.CV.Stitching.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.UI">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.CV.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.VideoStab">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.CV.VideoStab.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.Util">
+      <HintPath>..\..\packages\Emgu2.9.0Beta.2.9.1\lib\Emgu.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="LumiSoft.Net">
+      <HintPath>.\LumiSoft.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebKitBrowser">
+      <HintPath>..\..\..\WebKit.NET-0.5-bin-cairo\WebKit.NET-0.5-bin-cairo\bin\WebKitBrowser.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataModels\IPCamera.cs" />
+    <Compile Include="IPCameras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IPCameras.Designer.cs">
+      <DependentUpon>IPCameras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeVideoSource.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangeVideoSource.Designer.cs">
+      <DependentUpon>ChangeVideoSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ConnectButtons.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConnectButtons.Designer.cs">
+      <DependentUpon>ConnectButtons.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataModels\Location.cs" />
+    <Compile Include="DataModels\Logging.cs" />
+    <Compile Include="DataModels\OmniPosition.cs" />
+    <Compile Include="DataModels\Markings.cs" />
+    <Compile Include="DataModels\SocketMessage.cs" />
+    <Compile Include="ChangeMyIP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangeMyIP.Designer.cs">
+      <DependentUpon>ChangeMyIP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TelSurgeMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TelSurgeMain.Designer.cs">
+      <DependentUpon>TelSurgeMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Media\Wave\native\MMSYSERR.cs" />
+    <Compile Include="Media\Wave\native\WavConstants.cs" />
+    <Compile Include="Media\Wave\native\WAVEFORMATEX.cs" />
+    <Compile Include="Media\Wave\native\WAVEHDR.cs" />
+    <Compile Include="Media\Wave\native\WAVEOUTCAPS.cs" />
+    <Compile Include="Media\Wave\native\WavFormat.cs" />
+    <Compile Include="Media\Wave\native\WavMethods.cs" />
+    <Compile Include="Media\Wave\WaveIn.cs" />
+    <Compile Include="Media\Wave\WaveOut.cs" />
+    <Compile Include="Media\Wave\WavInDevice.cs" />
+    <Compile Include="Media\Wave\WavOutDevice.cs" />
+    <Compile Include="NetDelay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NetDelay.Designer.cs">
+      <DependentUpon>NetDelay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="IPCameras.resx">
+      <DependentUpon>IPCameras.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChangeVideoSource.resx">
+      <DependentUpon>ChangeVideoSource.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConnectButtons.resx">
+      <DependentUpon>ConnectButtons.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChangeMyIP.resx">
+      <DependentUpon>ChangeMyIP.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TelSurgeMain.resx">
+      <DependentUpon>TelSurgeMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NetDelay.resx">
+      <DependentUpon>NetDelay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="tessdata\eng.cube.bigrams" />
+    <None Include="tessdata\eng.cube.fold" />
+    <None Include="tessdata\eng.cube.lm" />
+    <None Include="tessdata\eng.cube.nn" />
+    <None Include="tessdata\eng.cube.params" />
+    <None Include="tessdata\eng.cube.size" />
+    <None Include="tessdata\eng.cube.word-freq" />
+    <None Include="tessdata\eng.tesseract_cube.nn" />
+    <None Include="tessdata\eng.traineddata" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\CityDelays.xml" />
+    <Content Include="Content\delay.png" />
+    <Content Include="Content\InternetCameras.xml" />
+    <Content Include="Content\mic.png" />
+    <Content Include="Content\pc.png" />
+    <Content Include="Content\telsurge.ico" />
+    <Content Include="Content\Undo.jpg" />
+    <Content Include="LumiSoft.Net.dll" />
+    <Content Include="x64\cudart64_65.dll" />
+    <Content Include="x64\cufft64_65.dll" />
+    <Content Include="x64\cvextern.dll" />
+    <Content Include="x64\nppc64_65.dll" />
+    <Content Include="x64\npps64_65.dll" />
+    <Content Include="x64\OpenCL.dll" />
+    <Content Include="x64\opencv_calib3d2410.dll" />
+    <Content Include="x64\opencv_contrib2410.dll" />
+    <Content Include="x64\opencv_core2410.dll" />
+    <Content Include="x64\opencv_features2d2410.dll" />
+    <Content Include="x64\opencv_flann2410.dll" />
+    <Content Include="x64\opencv_gpu2410.dll" />
+    <Content Include="x64\opencv_highgui2410.dll" />
+    <Content Include="x64\opencv_imgproc2410.dll" />
+    <Content Include="x64\opencv_legacy2410.dll" />
+    <Content Include="x64\opencv_ml2410.dll" />
+    <Content Include="x64\opencv_nonfree2410.dll" />
+    <Content Include="x64\opencv_objdetect2410.dll" />
+    <Content Include="x64\opencv_photo2410.dll" />
+    <Content Include="x64\opencv_stitching2410.dll" />
+    <Content Include="x64\opencv_superres2410.dll" />
+    <Content Include="x64\opencv_video2410.dll" />
+    <Content Include="x64\opencv_videostab2410.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\packages\Baseclass.Contrib.Nuget.Output.2.1.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\..\packages\Baseclass.Contrib.Nuget.Output.2.1.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

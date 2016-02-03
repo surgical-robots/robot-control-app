@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="RobotApp.Pages.Connection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:RobotApp.ViewModel"
+             xmlns:view="clr-namespace:RobotApp.Views"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+
+    </UserControl.Resources>
+    <DockPanel Style="{StaticResource ContentRoot}">
+        <DockPanel.DataContext>
+                <vm:ConnectionViewModel />
+            </DockPanel.DataContext>
+        <TextBlock DockPanel.Dock="Top" Text="CONNECTION SETUP" Style="{StaticResource Title}" />
+        <TextBlock DockPanel.Dock="Top" Text="Select the communication protocol to use." Margin="0,0,0,10" />
+        <ComboBox DockPanel.Dock="Top" Name="ConnectionType" ItemsSource="{Binding ConnectionTypes}" DisplayMemberPath="Name" />
+        <ContentControl Content="{Binding ElementName=ConnectionType, Path=SelectedItem}">
+            <ContentControl.Resources>
+                <DataTemplate DataType="{x:Type vm:SerialTransportViewModel}">
+                    <view:SerialTransportView/>
+                </DataTemplate>
+            </ContentControl.Resources>
+        </ContentControl>
+    </DockPanel>
+</UserControl>

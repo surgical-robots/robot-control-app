@@ -1,0 +1,21 @@
+﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.TreehopperPluginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:plugins="clr-namespace:RobotApp.Views.Plugins"
+             mc:Ignorable="d" 
+                    xmlns:treehopperView="clr-namespace:Treehopper.WPF.View;assembly=Treehopper.WPF"
+                    xmlns:treehopperVm="clr-namespace:Treehopper.WPF.ViewModel;assembly=Treehopper.WPF"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <plugins:PluginBase.PluginContent>
+        <StackPanel>
+            <treehopperView:TreehopperSelectorView />
+            <UniformGrid Columns="2">
+                <TextBlock Text="Pin" />
+                <ComboBox />
+            </UniformGrid>
+        </StackPanel>
+
+    </plugins:PluginBase.PluginContent>
+</plugins:PluginBase>

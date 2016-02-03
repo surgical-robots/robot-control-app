@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="4666d408-9dfd-4fb5-b3e3-0471d6c5bcb1" revisionNumber="1">
+  <developerWalkthroughDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+       <autoOutline />
+
+      <para>This walkthrough will guide you through creating a new robot, while familiarizing you with the codebase of the robot control software</para>
+      <para>
+        The control software is extremely agnostic when it comes to robot kinematics, motor specs, and joint configurations.
+        The only aspect of a robot that cannot be shared is the kinematics relationship -- i.e., the mapping between real-world (x, y, z) points and the joint angles needed to reach this position.
+      </para>
+      <para>To this end, when we say "create a new robot," we really mean to add a new kinematic model to the system.</para>
+    </introduction>
+    <prerequisites>
+      <content>
+        <para>You'll need the following components to complete this walk-through</para>
+        <list class="bullet">
+          <listItem><para>
+            Visual Studio 2013 installed with <externalLink><linkText>AnkhSVN</linkText><linkUri>https://ankhsvn.open.collab.net/</linkUri></externalLink> and loaded with the robot control solution file. Refer to Getting Started With the Codebase for instructions</para></listItem>
+          <listItem>Kinematic equations that convert (x, y, z) coordinates into joint angles</listItem>
+        </list>
+        <para>Prior knowledge of C# is helpful, but any object-oriented programming experience should be sufficient.</para>
+      </content>
+    </prerequisites>
+
+    <!-- <prerequisites><content>Optional prerequisites info</content></prerequisites> -->
+
+    <!-- One or more procedure or section with procedure -->
+    <section>
+      <title>
+        Creating the class for your robot
+      </title>
+      <content>
+        <para>
+         Each robot's kinematics live in a class that implements <codeEntityReference>T:Kinematics.Kinematic</codeEntityReference>. By creating a class that derives from this,
+         the control software will automatically find your robot's kinematic configuration and load it upon request.
+        </para>
+        <para>
+          Since many robots have the same kinematic design (but with different parameters), it is useful to derive from other robots when possible. 
+          For example, <codeEntityReference>T:Kinematics.Robots.TomBot</codeEntityReference> inherits from <codeEntityReference>T:Kinematics.TwoArmCoupledShoulder</codeEntityReference>,
+          while specifying the lengths of positions of joints that are specific to TomBot.
+        </para>
+        <para>
+          
+        </para>
+        <procedure>
+          <title>Create a Kinematic Class</title>
+          <steps class="ordered">
+            <step>
+              <content>
+                <para>
+                  In the Kinematics project, right-click on Robots and choose <ui>Add > Class...</ui>. 
+                  Type a descriptive name for your class using <phrase>CapitalCase</phrase> (to ensure consistent class naming).
+                </para>
+              </content>
+            </step>
+            <step>
+              <content>
+                <para>
+                  If your design inherits from an existing <codeEntityReference>T:Kinematics.Kinematic</codeEntityReference>, 
+                  such as <codeEntityReference>T:TwoArmCoupledShoulder</codeEntityReference>, derive your class from that class.
+                </para>
+                <alert class="tip">
+                  Always try to derive your robot from a base <codeEntityReference>T:Kinematics.Kinematic</codeEntityReference> class. 
+                  If your design has a unique kinematic linkage,  you should create a class that implements that linkage 
+                  in a generic way, and then derive your robot's class from it.
+                </alert>
+              </content>
+            </step>
+          </steps>
+          <!-- <conclusion>Optional conclusion</conclusion> -->
+        </procedure>
+      </content>
+    </section>
+
+
+    <!-- Optional additional procedure or section with procedure -->
+    <section address="Section1">
+      <title>Optional section title</title>
+      <content>
+        <procedure>
+          <title>Procedure #2</title>
+          <steps class="ordered">
+            <step>
+              <content>
+                <para>First step</para>
+              </content>
+            </step>
+            <step>
+              <content>
+                <para>Second step</para>
+              </content>
+            </step>
+          </steps>
+          <!-- <conclusion>Optional conclusion</conclusion> -->
+        </procedure>
+      </content>
+    </section>
+
+    <!-- Optional next steps info
+    <nextSteps>
+      <content><para>Next steps info goes here</para></content>
+    </nextSteps>
+    -->
+
+    <relatedTopics>
+      <!-- One or more of the following:
+           - A local link
+           - An external link
+           - A code entity reference
+
+      <link xlink:href="Other Topic's ID">Link text</link>
+      <externalLink>
+          <linkText>Link text</linkText>
+          <linkAlternateText>Optional alternate link text</linkAlternateText>
+          <linkUri>URI</linkUri>
+      </externalLink>
+      <codeEntityReference>API member ID</codeEntityReference>
+
+      Examples:
+
+      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+      <externalLink>
+          <linkText>SHFB on CodePlex</linkText>
+          <linkAlternateText>Go to CodePlex</linkAlternateText>
+          <linkUri>http://shfb.codeplex.com</linkUri>
+      </externalLink>
+
+      <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+      <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+      -->
+    </relatedTopics>
+  </developerWalkthroughDocument>
+</topic>

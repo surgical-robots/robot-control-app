@@ -1,0 +1,40 @@
+﻿<mui:ModernWindow x:Class="RobotApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Surgical Robot Tool" IsTitleVisible="True" Height="800" Width="800"
+         xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+                  xmlns:view="clr-namespace:RobotApp.Views"
+        xmlns:vm="clr-namespace:RobotApp.ViewModel"
+                  ContentSource="/Pages/Configuration/Connection.xaml">
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <mui:ModernWindow.MenuLinkGroups>
+        
+        <!--Configuration pages-->
+        <mui:LinkGroup DisplayName="configuration" >
+            <mui:LinkGroup.Links>
+                <mui:Link DisplayName="Connection Settings" Source="/Pages/Configuration/Connection.xaml"  />
+                <mui:Link DisplayName="Controller Configuration" Source="/Pages/Configuration/ControllerConfiguration.xaml" />
+                <mui:Link DisplayName="Plugin Configuration" Source="/Pages/Configuration/PluginConfiguration.xaml" />
+                <mui:Link DisplayName="Motor Mapping" Source="/Pages/Configuration/MotorMapping.xaml" />
+            </mui:LinkGroup.Links>
+        </mui:LinkGroup>
+                     
+        <!--Run pages-->
+        <mui:LinkGroup DisplayName="run">
+            <mui:LinkGroup.Links>
+                <mui:Link DisplayName="Control" Source="/Pages/Run/Control.xaml"  />
+                <mui:Link DisplayName="Graphical View" Source="/Pages/Run/GraphicalView.xaml"  />
+                <mui:Link DisplayName="Data View" Source="/Pages/Run/DataView.xaml"  />
+            </mui:LinkGroup.Links>
+        </mui:LinkGroup>
+        
+    </mui:ModernWindow.MenuLinkGroups>
+
+    <!--Settings bar across the top-->
+    <mui:ModernWindow.TitleLinks>
+        <mui:Link DisplayName="App Settings" Source="/Pages/Settings/Settings.xaml" />
+    </mui:ModernWindow.TitleLinks>
+</mui:ModernWindow>

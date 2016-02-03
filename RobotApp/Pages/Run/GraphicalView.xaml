@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="RobotApp.Pages.GraphicalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             xmlns:h="http://helix-toolkit.org/wpf"
+             xmlns:plugins="clr-namespace:RobotApp.Views.Plugins"
+             xmlns:HelixToolkit="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Style="{StaticResource ContentRoot}">
+       
+        <Grid ShowGridLines="True">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" ShowGridLines="True">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <h:HelixViewport3D Grid.Row="0" Title="Top Down View" TitleBackground="Gray" Orthographic="True" ZoomExtentsWhenLoaded="True" IsRotationEnabled="False" Background="Transparent">
+                    <h:HelixViewport3D.Camera>
+                        <OrthographicCamera NearPlaneDistance="-1.7976931348623157E+8" FarPlaneDistance="1.7976931348623157E+8"/>
+                    </h:HelixViewport3D.Camera>
+                    <h:SunLight/>
+                    <ModelVisual3D x:Name="topModel"/>
+                    <HelixToolkit:GridLinesVisual3D Width="500" Length="500" MinorDistance="10" MajorDistance="10" Thickness="0.4" Center="0 100 -200" />
+                </h:HelixViewport3D>
+
+                <h:HelixViewport3D Grid.Row="1" Title="Side View" TitleBackground="Gray" Orthographic="True" ZoomExtentsWhenLoaded="True" IsRotationEnabled="False" Background="Transparent">
+                    <h:HelixViewport3D.Camera>
+                        <OrthographicCamera NearPlaneDistance="-1.7976931348623157E+8" FarPlaneDistance="1.7976931348623157E+8" LookDirection="-1,0,0" UpDirection="0,0,1"/>
+                    </h:HelixViewport3D.Camera>
+                    <h:SunLight/>
+                    <ModelVisual3D x:Name="sideModel"/>
+                </h:HelixViewport3D>
+
+            </Grid>
+
+            <h:HelixViewport3D Grid.Column="1" Orthographic="True" ZoomExtentsWhenLoaded="True" ShowFrameRate="True" Background="Transparent">
+                <h:HelixViewport3D.Camera>
+                    <OrthographicCamera NearPlaneDistance="-1.7976931348623157E+8" FarPlaneDistance="1.7976931348623157E+8"/>
+                </h:HelixViewport3D.Camera>
+                <h:SunLight/>
+                <ModelVisual3D x:Name="robotModel"/>
+            </h:HelixViewport3D>
+        </Grid>
+
+    </Grid>
+</UserControl>

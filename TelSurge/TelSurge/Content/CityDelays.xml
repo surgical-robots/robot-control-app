@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfLocation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Location>
+    <Name>Absecon, New Jersey</Name>
+    <DistanceFromLincoln>1322</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Albuquerque, New Mexico</Name>
+    <DistanceFromLincoln>833</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Albuquerque, New Mexico</Name>
+    <DistanceFromLincoln>833</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Anaheim, California</Name>
+    <DistanceFromLincoln>1493</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Ashburn, Virginia</Name>
+    <DistanceFromLincoln>1187</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Asheville, North Carolina</Name>
+    <DistanceFromLincoln>1042</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Atlanta, Georgia</Name>
+    <DistanceFromLincoln>996</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Austin, Texas</Name>
+    <DistanceFromLincoln>822</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Baton Rouge, Louisiana</Name>
+    <DistanceFromLincoln>956</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Bethesda, Maryland</Name>
+    <DistanceFromLincoln>1193</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Boardman, Oregon</Name>
+    <DistanceFromLincoln>1441</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Boynton Beach, Florida</Name>
+    <DistanceFromLincoln>1605</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Bridgeville, Pennsylvania</Name>
+    <DistanceFromLincoln>973</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Buffalo, New York</Name>
+    <DistanceFromLincoln>1038</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Cambridge, Massachusetts</Name>
+    <DistanceFromLincoln>1485</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Camden, New Jersey</Name>
+    <DistanceFromLincoln>1268</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Chantilly, Virginia</Name>
+    <DistanceFromLincoln>1201</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Chicago, Illinois</Name>
+    <DistanceFromLincoln>521</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Columbia, Missouri</Name>
+    <DistanceFromLincoln>323</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Daingerfield, Texas</Name>
+    <DistanceFromLincoln>638</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Dallas, Texas</Name>
+    <DistanceFromLincoln>640</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Defiance, Ohio</Name>
+    <DistanceFromLincoln>719</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Denver, Colorado</Name>
+    <DistanceFromLincoln>488</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Detroit, Michigan</Name>
+    <DistanceFromLincoln>786</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Fairport, New York</Name>
+    <DistanceFromLincoln>1118</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Folsom, California</Name>
+    <DistanceFromLincoln>1516</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Fort Lauderdale, Florida</Name>
+    <DistanceFromLincoln>1636</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Fremont, California</Name>
+    <DistanceFromLincoln>1633</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Fulton, Missouri</Name>
+    <DistanceFromLincoln>347</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Germantown, Tennessee</Name>
+    <DistanceFromLincoln>664</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Gorman, Texas</Name>
+    <DistanceFromLincoln>715</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Grand Junction, Colorado</Name>
+    <DistanceFromLincoln>726</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Heber Springs, Arkansas</Name>
+    <DistanceFromLincoln>544</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Herndon, Virginia</Name>
+    <DistanceFromLincoln>1199</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Huntingdon, Pennsylvania</Name>
+    <DistanceFromLincoln>1087</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Ithaca, New York</Name>
+    <DistanceFromLincoln>1167</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Jacksonville, Florida</Name>
+    <DistanceFromLincoln>1342</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Kansas City, Missouri</Name>
+    <DistanceFromLincoln>195</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>La Jolla, California</Name>
+    <DistanceFromLincoln>1562</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Lakewood, New Jersey</Name>
+    <DistanceFromLincoln>1321</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Las Vegas, Nevada</Name>
+    <DistanceFromLincoln>1232</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>League City, Texas</Name>
+    <DistanceFromLincoln>905</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Leesburg, Virginia</Name>
+    <DistanceFromLincoln>1180</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Linden, New Jersey</Name>
+    <DistanceFromLincoln>1295</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Lindenhurst, New York</Name>
+    <DistanceFromLincoln>1338</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Locust Grove, Virginia</Name>
+    <DistanceFromLincoln>1240</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Los Angeles, California</Name>
+    <DistanceFromLincoln>1500</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Matawan, New Jersey</Name>
+    <DistanceFromLincoln>1310</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Mobile, Alabama</Name>
+    <DistanceFromLincoln>1025</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Monroe, North Carolina</Name>
+    <DistanceFromLincoln>1186</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Mountain View, California</Name>
+    <DistanceFromLincoln>1648</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>New York, New York</Name>
+    <DistanceFromLincoln>1295</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Nome, Texas</Name>
+    <DistanceFromLincoln>914</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Norcross, Georgia</Name>
+    <DistanceFromLincoln>1001</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Oconomowoc, Wisconsin</Name>
+    <DistanceFromLincoln>531</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Orange, California</Name>
+    <DistanceFromLincoln>1494</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Orlando, Florida</Name>
+    <DistanceFromLincoln>1434</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Philadelphia, Pennsylvania</Name>
+    <DistanceFromLincoln>1264</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Phoenix, Arizona</Name>
+    <DistanceFromLincoln>1248</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Portage, Michigan</Name>
+    <DistanceFromLincoln>651</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Providence, Utah</Name>
+    <DistanceFromLincoln>878</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Provo, Utah</Name>
+    <DistanceFromLincoln>899</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Redmond, Washington</Name>
+    <DistanceFromLincoln>1679</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Richmond, British Columbia</Name>
+    <DistanceFromLincoln>1807</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Rochester, New York</Name>
+    <DistanceFromLincoln>1107</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Saint Louis, Missouri</Name>
+    <DistanceFromLincoln>445</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Salt Lake City, Utah</Name>
+    <DistanceFromLincoln>882</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>San Antonio, Texas</Name>
+    <DistanceFromLincoln>901</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>San Diego, California</Name>
+    <DistanceFromLincoln>1561</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>San Francisco, California</Name>
+    <DistanceFromLincoln>1616</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>San Jose, California</Name>
+    <DistanceFromLincoln>1648</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Santa Clara, California</Name>
+    <DistanceFromLincoln>1647</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Sapulpa, Oklahoma</Name>
+    <DistanceFromLincoln>400</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Scottsdale, Arizona</Name>
+    <DistanceFromLincoln>1237</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Secaucus, New Jersey</Name>
+    <DistanceFromLincoln>1291</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Sierra Vista, Arizona</Name>
+    <DistanceFromLincoln>1268</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Sparks, Nevada</Name>
+    <DistanceFromLincoln>1394</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Standish, Maine</Name>
+    <DistanceFromLincoln>1595</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Steamboat Springs, Colorado</Name>
+    <DistanceFromLincoln>615</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Sunnyvale, California</Name>
+    <DistanceFromLincoln>1647</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Tempe, Arizona</Name>
+    <DistanceFromLincoln>1239</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Tulare, California</Name>
+    <DistanceFromLincoln>1579</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Vienna, Virginia</Name>
+    <DistanceFromLincoln>1201</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Washington, District Of Columbia</Name>
+    <DistanceFromLincoln>1202</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Wayne, Pennsylvania</Name>
+    <DistanceFromLincoln>1253</DistanceFromLincoln>
+  </Location>
+  <Location>
+    <Name>Westphalia, Missouri</Name>
+    <DistanceFromLincoln>369</DistanceFromLincoln>
+  </Location>
+</ArrayOfLocation>

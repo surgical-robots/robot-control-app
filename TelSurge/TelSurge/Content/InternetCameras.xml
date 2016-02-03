@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfIPCamera xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IPCamera>
+    <Name>OregonState</Name>
+    <Address>http://trackfield.webcam.oregonstate.edu/mjpg/video.mjpg</Address>
+  </IPCamera>
+  <IPCamera>
+    <Name>France</Name>
+    <Address>http://camera1.mairie-brest.fr/mjpg/video.mjpg</Address>
+  </IPCamera>
+  <IPCamera>
+    <Name>Axis 215</Name>
+    <Address>http://root:1234@129.93.8.214/axis-cgi/mjpg/video.cgi?.mjpg</Address>
+  </IPCamera>
+  <IPCamera>
+    <Name>PTZOptics</Name>
+    <Address>http://129.93.8.214</Address>
+  </IPCamera>
+</ArrayOfIPCamera>

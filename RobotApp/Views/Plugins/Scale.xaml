@@ -1,0 +1,34 @@
+﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.Scale"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:plugins="clr-namespace:RobotApp.Views.Plugins"
+             mc:Ignorable="d" 
+             xmlns:vm="clr-namespace:RobotApp.ViewModel"
+             xmlns:view="clr-namespace:RobotApp.Views"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <plugins:PluginBase.PluginContent>
+        <StackPanel>
+            <UniformGrid Columns="2">
+                <TextBlock Text="XYZ Scale" />
+                <ComboBox SelectedIndex="{Binding ScaleLevelIndex}">
+                    <ComboBoxItem></ComboBoxItem>
+                    <ComboBoxItem>.25</ComboBoxItem>
+                    <ComboBoxItem>.5</ComboBoxItem>
+                    <ComboBoxItem>.75</ComboBoxItem>
+                    <ComboBoxItem>1</ComboBoxItem>
+                    <ComboBoxItem>1.25</ComboBoxItem>
+                    <ComboBoxItem>1.5</ComboBoxItem>
+                    <ComboBoxItem>1.75</ComboBoxItem>
+                    <ComboBoxItem>2</ComboBoxItem>
+                    <ComboBoxItem>2.25</ComboBoxItem>
+                    <ComboBoxItem>2.5</ComboBoxItem>
+                </ComboBox>
+
+            </UniformGrid>
+
+        </StackPanel>
+    </plugins:PluginBase.PluginContent>
+</plugins:PluginBase>
+

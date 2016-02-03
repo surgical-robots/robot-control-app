@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Topics>
+  <Topic id="1663412d-398f-4c18-876f-556504b163b4" visible="True" isDefault="true" title="Welcome to the RobotControl API Documentation">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Welcome" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="f8029e1c-3c70-4ff7-b7c1-935a0dfb1e4e" visible="True" isExpanded="true" title="Walkthroughs">
+    <Topic id="4666d408-9dfd-4fb5-b3e3-0471d6c5bcb1" visible="True" isSelected="true" title="Creating a New Robot" />
+  </Topic>
+  <Topic id="643d9bf4-cf46-4c24-ae8f-156db4788ac7" visible="True" />
+  <Topic id="21a04cc8-e034-4bfd-9645-d1ebda93dcdd" visible="True" isExpanded="true" title="Version History">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="version, history" />
+    </HelpKeywords>
+    <Topic id="6076908a-b8b1-4eb4-ab95-f7c470afc32e" visible="True" title="Version 1.0.0.0">
+      <HelpKeywords>
+        <HelpKeyword index="K" term="version, 1.0.0.0" />
+      </HelpKeywords>
+    </Topic>
+  </Topic>
+</Topics>
