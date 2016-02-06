@@ -7,9 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <DockPanel Margin="0, 0, 10, 5">
-        <CheckBox DockPanel.Dock="Left" IsChecked="{Binding GetHalls}" />
-        <CheckBox DockPanel.Dock="Left" IsChecked="{Binding GetPots}" />
-        <CheckBox DockPanel.Dock="Left" IsChecked="{Binding GetCurrent}" />
+        <CheckBox DockPanel.Dock="Left" IsChecked="{Binding GetData}" />
+        <CheckBox DockPanel.Dock="Left" IsChecked="{Binding HomeJoint}" />
         <mui:ModernButton DockPanel.Dock="Right" Command="{Binding DeleteCommand}" IconData="{StaticResource TrashIconData}"/>
         <CheckBox DockPanel.Dock="Right" IsChecked="{Binding LedIsEnabled}" />
         <StackPanel DockPanel.Dock="Left">

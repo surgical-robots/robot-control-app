@@ -10,6 +10,8 @@ using RobotControl;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading;
+
 namespace RobotApp.ViewModel
 {
     public class ControllerConfigurationViewModel : ViewModelBase
@@ -208,8 +210,27 @@ namespace RobotApp.ViewModel
                         {
                             foreach (ControllerViewModel controller in MainViewModel.Controllers)
                             {
-                                controller.Controller.Robot.SendCommand(JointCommands.ResetCounters, controller.Controller, new byte[] { (byte)0, (byte)0x01 });
-                                controller.Controller.Robot.SendCommand(JointCommands.ResetCounters, controller.Controller, new byte[] { (byte)1, (byte)0x01 });
+                                if(controller.HomeJoint)
+                                {
+                                    foreach(MotorViewModel motor in controller.Motors)
+                                    {
+                                        motor.Motor.SpeedMax = 32;
+                                        controller.Controller.Robot.SendCommand(JointCommands.ResetCounters, controller.Controller, new byte[] { (byte)motor.Id, (byte)0x01 });
+                                    }
+                                }
+                            }
+                        }
+
+                        Thread.Sleep(1000);
+
+                        foreach(ControllerViewModel controller in MainViewModel.Controllers)
+                        {
+                            if(controller.HomeJoint)
+                            {
+                                foreach(MotorViewModel motor in controller.Motors)
+                                {
+                                    motor.Motor.SpeedMax = motor.SpeedMax;
+                                }
                             }
                         }
                     }));

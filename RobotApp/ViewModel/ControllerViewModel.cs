@@ -150,7 +150,6 @@ namespace RobotApp.ViewModel
             }
         }
 
-
         public uint Id { get { return Controller.Id; } }
 
         public string IdString { get { return "Address: " + Controller.Id.ToString(); } }
@@ -206,12 +205,19 @@ namespace RobotApp.ViewModel
 
                 getData = value;
                 if (getData)
+                {
                     //MainViewModel.Instance.Robot.Com.AddAddress(this.Id);
                     this.Controller.GetHalls = true;
+                    this.Controller.GetCurrent = true;
+                    this.Controller.GetPots = true;
+                }
                 else
+                {
                     //MainViewModel.Instance.Robot.Com.RemoveAddress(this.Id);
                     this.Controller.GetHalls = false;
-
+                    this.Controller.GetCurrent = false;
+                    this.Controller.GetPots = false;
+                }
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(GetDataPropertyName));
             }
         }
@@ -222,7 +228,6 @@ namespace RobotApp.ViewModel
         public const string GetHallsPropertyName = "GetHalls";
 
         private bool getHalls = false;
-        [DataMember]
         /// <summary>
         /// Sets and gets the GetHalls property.
         /// Changes to that property's value raise the PropertyChanged event. 
@@ -264,7 +269,6 @@ namespace RobotApp.ViewModel
         public const string GetPotsPropertyName = "GetPots";
 
         private bool getPots = false;
-        [DataMember]
         /// <summary>
         /// Sets and gets the GetPots property.
         /// Changes to that property's value raise the PropertyChanged event. 
@@ -306,7 +310,6 @@ namespace RobotApp.ViewModel
         public const string GetCurrentPropertyName = "GetCurrent";
 
         private bool getCurrent = false;
-        [DataMember]
         /// <summary>
         /// Sets and gets the GetCurrent property.
         /// Changes to that property's value raise the PropertyChanged event. 
@@ -339,6 +342,33 @@ namespace RobotApp.ViewModel
                 }
 
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(GetCurrentPropertyName));
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="HomeJoint" /> property's name.
+        /// </summary>
+        public const string HomeJointPropertyName = "HomeJoint";
+
+        private bool homeJoint = false;
+        [DataMember]
+        /// <summary>
+        /// Sets and gets the GetCurrent property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool HomeJoint
+        {
+            get
+            {
+                return homeJoint;
+            }
+
+            set
+            {
+                if (homeJoint == value)
+                    return;
+                homeJoint = value;
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(HomeJointPropertyName));
             }
         }
 

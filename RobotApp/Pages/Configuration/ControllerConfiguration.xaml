@@ -28,7 +28,7 @@
                     <mui:ModernButton IconData="{StaticResource SearchIconData}" 
                                   Content="Search For Controllers" Command="{Binding DetectControllerCommand}" />
                     <Button Content="{Binding UpdateText}" Command="{Binding UpdateCommand}" />
-                    <Button Content="Home All Joints" Command="{Binding HomeAllCommand}" />
+                    <Button Content="Home Selected Joints" Command="{Binding HomeAllCommand}" />
                     
                     <TextBlock Text=" " />
                     <TextBlock Text="Saved Configuration" />
