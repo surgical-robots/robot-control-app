@@ -22,7 +22,7 @@
         <DockPanel>
             <DockPanel DockPanel.Dock="Left" Width="250" Margin="0, 0, 10, 0">
                 <TextBlock DockPanel.Dock="Top" Text="Available Plugins" FontSize="18" />
-                <ListBox DockPanel.Dock="Top" Name="PluginTypes" ItemsSource="{Binding PluginTypes}" DisplayMemberPath="Name" />
+                <ListBox DockPanel.Dock="Top" Name="PluginTypes" Height="300" ItemsSource="{Binding PluginTypes}" DisplayMemberPath="Name" />
                 <DockPanel DockPanel.Dock="Top">
                     <mui:ModernButton DockPanel.Dock="Right" HorizontalAlignment="Left" Command="{Binding DeletePluginCommand}" CommandParameter="{Binding ElementName=PluginList, Path=SelectedItem}" IconData="{StaticResource TrashIconData}"/>
                     <mui:ModernButton DockPanel.Dock="Right" HorizontalAlignment="Right" Command="{Binding AddPluginCommand}" CommandParameter="{Binding ElementName=PluginTypes, Path=SelectedItem}" IconData="{StaticResource AddIconData}"/>

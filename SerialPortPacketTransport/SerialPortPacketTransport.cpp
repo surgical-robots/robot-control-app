@@ -43,6 +43,7 @@ SerialPortPacketTransport::SerialPortPacketTransport(String^ comPort, Robot^ rob
 	Port->WriteTimeout = 25;
 	Port->Open();
 	serialOpsThread = gcnew Thread(gcnew ThreadStart(this, &SerialPortPacketTransport::SerialOps));
+	serialOpsThread->IsBackground = true;
 	serialOpsThread->Start();
 }
 
@@ -220,47 +221,6 @@ void SerialPortPacketTransport::SerialOps()
 			SendData = true;
 			UpdateSetpoints();
 		}
-		// routine for gathering data
-		//if (requestData)
-		//{
-		//	for (int i = 0; i < controllerCount; i++)
-		//	{
-		//		if (!sending)
-		//		{
-		//			// Set up request data message
-		//			sendMsg[4] = 6;
-		//			address = BitConverter::GetBytes(Addresses[i]);
-		//			for (int j = 0; j < 4; j++)
-		//			{
-		//				sendMsg[j + 5] = address[j];
-		//			}
-		//			sendMsg[9] = (Byte)JointCommands::GetStatus;
-		//			// Aquire com lock
-		//			lock2.acquire();
-		//			try { Port->Write(sendMsg, 0, (sendMsg[4] + 4)); }
-		//			catch (TimeoutException ^) {}
-		//			waitingForResponse = true;
-		//			timeout = 50000;
-		//			// wait for data
-		//			while ((Port->BytesToRead < 28) && (--timeout > 0));
-		//			while (Port->BytesToRead >= 28)
-		//			{
-		//				Port->Read(RxBuffer, 0, 1);
-		//				if (RxBuffer[0] == 200)
-		//				{
-		//					bytesToRead = Port->BytesToRead > (RxBuffer->Length - 1) ? (RxBuffer->Length - 1) : Port->BytesToRead;
-		//					Port->Read(RxBuffer, 1, bytesToRead);
-		//					DataReceived(RxBuffer);
-		//					waitingForResponse = false;
-		//					break;
-		//				}
-		//			}
-		//			// release com lock
-		//			lock2.release();
-		//			// go to next controller
-		//		}
-		//	}
-		//}
 		if (Port->BytesToRead > 10)
 		{
 			while (Port->BytesToRead > 0)

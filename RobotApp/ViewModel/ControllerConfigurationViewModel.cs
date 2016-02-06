@@ -191,6 +191,31 @@ namespace RobotApp.ViewModel
             }
         }
 
+        private RelayCommand<string> homeAllCommand;
+
+        /// <summary>
+        /// Gets the UpdateCommand.
+        /// </summary>
+        public RelayCommand<string> HomeAllCommand
+        {
+            get
+            {
+                return homeAllCommand
+                    ?? (homeAllCommand = new RelayCommand<string>(
+                    p =>
+                    {
+                        if(MainViewModel.Controllers != null)
+                        {
+                            foreach (ControllerViewModel controller in MainViewModel.Controllers)
+                            {
+                                controller.Controller.Robot.SendCommand(JointCommands.ResetCounters, controller.Controller, new byte[] { (byte)0, (byte)0x01 });
+                                controller.Controller.Robot.SendCommand(JointCommands.ResetCounters, controller.Controller, new byte[] { (byte)1, (byte)0x01 });
+                            }
+                        }
+                    }));
+            }
+        }
+
         void Robot_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             DetectControllerCommand.RaiseCanExecuteChanged();

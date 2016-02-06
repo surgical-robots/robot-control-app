@@ -28,7 +28,8 @@
                     <mui:ModernButton IconData="{StaticResource SearchIconData}" 
                                   Content="Search For Controllers" Command="{Binding DetectControllerCommand}" />
                     <Button Content="{Binding UpdateText}" Command="{Binding UpdateCommand}" />
-
+                    <Button Content="Home All Joints" Command="{Binding HomeAllCommand}" />
+                    
                     <TextBlock Text=" " />
                     <TextBlock Text="Saved Configuration" />
                     <ComboBox Name="ConfigFileBox" ItemsSource="{Binding ConfigList}" SelectedItem="{Binding ConfigPath}" />

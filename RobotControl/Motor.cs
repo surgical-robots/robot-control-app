@@ -144,7 +144,7 @@ namespace RobotControl
             {
                 // convert variables for fixed-point math
                 Int32 sendKp = (Int32)(kp * 10000);
-                UInt16 clicksPerRev = (UInt16)Math.Round(encoderClicksPerRevolution);
+                Int16 clicksPerRev = (Int16)Math.Round(encoderClicksPerRevolution);
                 // setup configuration message
                 byte[] configMsg = new byte[16];
                 configMsg[0] = (byte)index;
