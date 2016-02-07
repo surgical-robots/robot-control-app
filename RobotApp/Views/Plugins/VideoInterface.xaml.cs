@@ -33,6 +33,7 @@ namespace RobotApp.Views.Plugins
         public VideoCaptureDevice CaptureDevice;
         private FilterInfoCollection _deviceList;
         private VideoCapabilities[] _deviceCapabilites;
+        private bool _wasRunning = false;
 
 
         /// <summary>
@@ -86,14 +87,21 @@ namespace RobotApp.Views.Plugins
 
                 selectedDevice = value;
                 RaisePropertyChanged(SelectedDeviceNamePropertyName);
+                if (CaptureDevice != null && CaptureDevice.IsRunning)
+                    CaptureDevice.SignalToStop();
+                if (_wasRunning)
+                    CaptureDevice.NewFrame -= CaptureDevice_NewFrame;
+                
                 for(int i = 0; i < _deviceList.Count; i++)
                 {
                     if(_deviceList[i].Name == selectedDevice)
                     {
                         CaptureDevice = new VideoCaptureDevice(_deviceList[i].MonikerString);
                         _deviceCapabilites = CaptureDevice.VideoCapabilities;
+                        SelectedSetting = 0;
                         CreateCapabilityList();
                         CaptureDevice.NewFrame += CaptureDevice_NewFrame;
+                        _wasRunning = true;
                     }
                 }
             }
@@ -148,7 +156,8 @@ namespace RobotApp.Views.Plugins
 
                 selectedSetting = value;
                 RaisePropertyChanged(SelectedSettingPropertyName);
-                CaptureDevice.VideoResolution = _deviceCapabilites[selectedSetting];
+                if(selectedSetting != -1)
+                    CaptureDevice.VideoResolution = _deviceCapabilites[selectedSetting];
             }
         }
 
