@@ -210,6 +210,9 @@ namespace TelSurge
         private Point camZoomPosFactor = new Point(-35, 15);
         private Image<Bgr, Byte> frame;
         private System.Diagnostics.Stopwatch turnAroundTimer = new System.Diagnostics.Stopwatch();
+        private bool logDataTurnAroundTime = false;
+        public string EmergencySwitchBoundBtn;
+        public int EmergencySwitchBoundValue;
 
         //Core Methods
         private List<Point[]> getMarksList()
@@ -319,11 +322,20 @@ namespace TelSurge
             lbGimbal21.Text = "Gimbal 2 : " + currentPosition.Gimbal2Left.ToString();
             lbGimbal31.Text = "Gimbal 3 : " + currentPosition.Gimbal3Left.ToString();
 
-            int something = 0;
-            if (externalButtons != null)
-                something = Convert.ToInt16(externalButtons[0]);
-            lbButtons1.Text = "Buttons : " + currentPosition.ButtonsLeft + something;
+            lbButtons1.Text = "Buttons : " + currentPosition.ButtonsLeft;
             lbInk1.Text = "InkWell : " + currentPosition.InkwellLeft.ToString();
+            //Update External Buttons Label
+            if (externalButtons != null)
+            {
+                int j = 1;
+                foreach (bool b in externalButtons)
+                {
+                    if (b)
+                        lbl_ExBtns.Text = "Ex. Buttons : " + j;
+                    j++;
+                }
+            }
+            
 
             lbX2Value.Text = "X : " + currentPosition.RightX.ToString();
             lbY2Value.Text = "Y : " + currentPosition.RightY.ToString();
@@ -345,6 +357,25 @@ namespace TelSurge
                 {
                     buttonPressed = true;
                     feedbackEnabled = !feedbackEnabled;
+                }
+            }
+            //Check for emergency switch press
+            if (isMaster && !isInControl)
+            {
+                if (EmergencySwitchBoundBtn.Contains("Left"))
+                {
+                    if (currentPosition.ButtonsLeft == EmergencySwitchBoundValue)
+                        emergencySwitchControl();
+                }
+                else if (EmergencySwitchBoundBtn.Contains("Right"))
+                {
+                    if (currentPosition.ButtonsRight == EmergencySwitchBoundValue)
+                        emergencySwitchControl();
+                }
+                else if (EmergencySwitchBoundBtn.Contains("Ex"))
+                {
+                    if (currentPosition.ExtraButtons[EmergencySwitchBoundValue])
+                        emergencySwitchControl();
                 }
             }
 
@@ -390,11 +421,9 @@ namespace TelSurge
                     OutputPosition = inControlPosition;
                 }
             }
-            if (OutputPosition != null)
-            {
-                tb_SendingLeft.Text = "X = " + OutputPosition.LeftX + Environment.NewLine + "Y = " + OutputPosition.LeftY + Environment.NewLine + "Z = " + OutputPosition.LeftZ;
-                tb_SendingRight.Text = "X = " + OutputPosition.RightX + Environment.NewLine + "Y = " + OutputPosition.RightY + Environment.NewLine + "Z = " + OutputPosition.RightZ;
-            }
+
+            tb_SendingLeft.Text = "X = " + OutputPosition.LeftX + Environment.NewLine + "Y = " + OutputPosition.LeftY + Environment.NewLine + "Z = " + OutputPosition.LeftZ;
+            tb_SendingRight.Text = "X = " + OutputPosition.RightX + Environment.NewLine + "Y = " + OutputPosition.RightY + Environment.NewLine + "Z = " + OutputPosition.RightZ;
         }
         private void freezeOmniPosition(OmniPosition pos)
         {
@@ -688,7 +717,7 @@ namespace TelSurge
             Logging log = new Logging(msg, detail, logFile, msgType);
             log.Record();
         }
-        private void ShowError(string msg, string detail)
+        public void ShowError(string msg, string detail)
         {
             //save error to log
             logMessage(msg, detail, Logging.StatusTypes.Error);
@@ -775,7 +804,7 @@ namespace TelSurge
                 {
                     frozenPosition = inControlPosition;
                     isFrozen = true;
-                    tb_InControl.Text = "Press R2 button on omni when ready...";
+                    tb_InControl.Text = "Press unfreeze button when ready...";
                 }
 
                 tb_InControl.BackColor = Color.Red;
@@ -800,7 +829,7 @@ namespace TelSurge
         }
         public void emergencySwitchControl()
         {
-            if (isMaster && !isInControl)
+            if (!isInControl)
             {
                 sendGRAddr = inControlIP;
                 Thread t = new Thread(new ParameterizedThreadStart(sendGrantReq));
@@ -991,7 +1020,7 @@ namespace TelSurge
                 }
                 if (_captureInProgress)
                 {  //cannot change device during capture
-                    _capture.Pause();
+                    _capture.Stop();
                 }
                 _capture = new Capture(deviceAddress); //new Emgu.CV.CvInvoke.cvCreateFileCapture(deviceAddress);
                 _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FPS, 30);
@@ -1003,9 +1032,9 @@ namespace TelSurge
                     _capture.Start();
                     _captureInProgress = true;
 
-                    lbl_Zoom.Visible = true;
-                    lbl_ZoomIn.Visible = true;
-                    lbl_ZoomOut.Visible = true;
+                    //lbl_Zoom.Visible = true;
+                    //lbl_ZoomIn.Visible = true;
+                    //lbl_ZoomOut.Visible = true;
 
                 }
 
@@ -1040,13 +1069,13 @@ namespace TelSurge
                 lbl_ZoomOut.Visible = false;
             }
         }
-        private async void sendCmdToCamera(string cmd)
+        public static async void sendCmdToCamera(string cmd)
         {
             WebRequestHandler handler = new WebRequestHandler();
-            handler.Credentials = new NetworkCredential("root", "1234");
+            handler.Credentials = new NetworkCredential("admin", "admin");
             HttpClient _client = new HttpClient(handler);
             HttpResponseMessage result;
-            result = await _client.GetAsync("http://129.93.8.214/axis-cgi/com/ptz.cgi?camera=1&"+cmd);
+            result = await _client.GetAsync("http://129.93.8.214/cgi-bin/ptzctrl.cgi?ptzcmd&" + cmd);
             result.EnsureSuccessStatusCode();
         }
         private void drawZoomingRect()
@@ -1790,6 +1819,20 @@ namespace TelSurge
                 sendCmdToCamera("rzoom=" + zoom);
 
         }
+        private void iPCameraControlsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CameraControl cameraControlForm = new CameraControl();
+            cameraControlForm.Show();
+        }
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (logDataTurnAroundTime)
+                turnAroundTimer.Stop();
+
+            logDataTurnAroundTime = !logDataTurnAroundTime;
+            toolStripMenuItem1.Checked = logDataTurnAroundTime;
+
+        }
 
         //Thread Methods
         private void listenForNewConnections()
@@ -2017,12 +2060,15 @@ namespace TelSurge
                 IPEndPoint ep = new IPEndPoint(IPAddress.Any, dataPort);
                 byte[] arry = dataListener.EndReceive(ar, ref ep);
                 //Turnaround Time
-                //if (turnAroundTimer.IsRunning)
-                //{
-                //    turnAroundTimer.Stop();
-                //    Logging.WriteToFile(turnAroundTimer.ElapsedMilliseconds.ToString(), "TurnAroundTimes.txt");
-                //}
-                //turnAroundTimer.Restart();
+                if (logDataTurnAroundTime)
+                {
+                    if (turnAroundTimer.IsRunning)
+                    {
+                        turnAroundTimer.Stop();
+                        Logging.WriteToFile(turnAroundTimer.ElapsedMilliseconds.ToString(), "TurnAroundTimes.txt");
+                    }
+                    turnAroundTimer.Restart();
+                }
 
                 string json = Encoding.ASCII.GetString(arry);
                 SocketMessage dataMsg = JsonConvert.DeserializeObject<SocketMessage>(json);
@@ -2197,6 +2243,12 @@ namespace TelSurge
             {
                 ShowError(ex.Message, ex.ToString());
             }
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            AssignButtons form = new AssignButtons(this);
+            form.ShowDialog();
         }
     }
 }

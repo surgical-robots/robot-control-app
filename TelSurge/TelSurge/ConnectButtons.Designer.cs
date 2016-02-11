@@ -31,12 +31,10 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_PortRefresh = new System.Windows.Forms.Button();
-            this.nud_UpdateRate = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.btn_Connect = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_UpdateRate)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -115,14 +113,12 @@
             this.Controls.Add(this.btn_Connect);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.nud_UpdateRate);
             this.Controls.Add(this.btn_PortRefresh);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox1);
             this.Name = "ConnectButtons";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Connect Buttons";
-            ((System.ComponentModel.ISupportInitialize)(this.nud_UpdateRate)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -133,7 +129,6 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_PortRefresh;
-        private System.Windows.Forms.NumericUpDown nud_UpdateRate;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btn_Connect;

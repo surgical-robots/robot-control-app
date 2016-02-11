@@ -74,7 +74,6 @@
             this.spRightOmni = new System.Windows.Forms.ComboBox();
             this.spLeftOmni = new System.Windows.Forms.ComboBox();
             this.gb_Telestration = new System.Windows.Forms.GroupBox();
-            this.captureImageBox = new Emgu.CV.UI.ImageBox();
             this.lbl_ZoomOut = new System.Windows.Forms.Label();
             this.lbl_Zoom = new System.Windows.Forms.Label();
             this.lbl_ZoomIn = new System.Windows.Forms.Label();
@@ -86,9 +85,7 @@
             this.btn_WhitePen = new System.Windows.Forms.Button();
             this.btn_YellowPen = new System.Windows.Forms.Button();
             this.btn_GreenPen = new System.Windows.Forms.Button();
-            this.btn_UndoMark = new System.Windows.Forms.Button();
             this.btn_ClearMarks = new System.Windows.Forms.Button();
-            this.btn_StartAudio = new System.Windows.Forms.Button();
             this.ddl_AudioDevices = new System.Windows.Forms.ComboBox();
             this.UnderlyingTimer = new System.Windows.Forms.Timer(this.components);
             this.ss_Connections = new System.Windows.Forms.StatusStrip();
@@ -97,6 +94,7 @@
             this.errorTimer = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.networkDelayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -105,8 +103,14 @@
             this.videoSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeVideoSourceToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.addIPCameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.iPCameraControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lbl_ExBtns = new System.Windows.Forms.Label();
+            this.captureImageBox = new Emgu.CV.UI.ImageBox();
+            this.btn_UndoMark = new System.Windows.Forms.Button();
+            this.btn_StartAudio = new System.Windows.Forms.Button();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.gb_OmniControls.SuspendLayout();
             this.gb_SendingRight.SuspendLayout();
             this.gb_SendingLeft.SuspendLayout();
@@ -115,10 +119,10 @@
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.gb_Telestration.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.captureImageBox)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.ss_Connections.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.captureImageBox)).BeginInit();
             this.SuspendLayout();
             // 
             // gb_OmniControls
@@ -447,6 +451,7 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.lbl_ExBtns);
             this.groupBox4.Controls.Add(this.lbInk1);
             this.groupBox4.Controls.Add(this.lbButtons1);
             this.groupBox4.Controls.Add(this.lbGimbal31);
@@ -596,21 +601,6 @@
             this.gb_Telestration.TabStop = false;
             this.gb_Telestration.Text = "Telestration";
             // 
-            // captureImageBox
-            // 
-            this.captureImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.captureImageBox.BackColor = System.Drawing.SystemColors.Control;
-            this.captureImageBox.Location = new System.Drawing.Point(3, 74);
-            this.captureImageBox.Name = "captureImageBox";
-            this.captureImageBox.Size = new System.Drawing.Size(820, 548);
-            this.captureImageBox.TabIndex = 5;
-            this.captureImageBox.TabStop = false;
-            this.captureImageBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseDown);
-            this.captureImageBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseMove);
-            this.captureImageBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseUp);
-            // 
             // lbl_ZoomOut
             // 
             this.lbl_ZoomOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -745,19 +735,6 @@
             this.btn_GreenPen.UseVisualStyleBackColor = false;
             this.btn_GreenPen.Click += new System.EventHandler(this.btn_PenColor_Click);
             // 
-            // btn_UndoMark
-            // 
-            this.btn_UndoMark.BackColor = System.Drawing.Color.White;
-            this.btn_UndoMark.BackgroundImage = global::TelSurge.Properties.Resources.Undo;
-            this.btn_UndoMark.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btn_UndoMark.Location = new System.Drawing.Point(468, 3);
-            this.btn_UndoMark.Name = "btn_UndoMark";
-            this.btn_UndoMark.Size = new System.Drawing.Size(58, 50);
-            this.btn_UndoMark.TabIndex = 8;
-            this.btn_UndoMark.UseVisualStyleBackColor = false;
-            this.btn_UndoMark.Visible = false;
-            this.btn_UndoMark.Click += new System.EventHandler(this.btn_UndoMark_Click);
-            // 
             // btn_ClearMarks
             // 
             this.btn_ClearMarks.Location = new System.Drawing.Point(532, 3);
@@ -767,18 +744,6 @@
             this.btn_ClearMarks.Text = "Clear";
             this.btn_ClearMarks.UseVisualStyleBackColor = true;
             this.btn_ClearMarks.Click += new System.EventHandler(this.btn_ClearMarks_Click);
-            // 
-            // btn_StartAudio
-            // 
-            this.btn_StartAudio.BackColor = System.Drawing.Color.Green;
-            this.btn_StartAudio.Image = global::TelSurge.Properties.Resources.mic;
-            this.btn_StartAudio.Location = new System.Drawing.Point(596, 3);
-            this.btn_StartAudio.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
-            this.btn_StartAudio.Name = "btn_StartAudio";
-            this.btn_StartAudio.Size = new System.Drawing.Size(30, 31);
-            this.btn_StartAudio.TabIndex = 0;
-            this.btn_StartAudio.UseVisualStyleBackColor = false;
-            this.btn_StartAudio.Click += new System.EventHandler(this.btn_StartAudio_Click);
             // 
             // ddl_AudioDevices
             // 
@@ -841,15 +806,24 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.toolStripMenuItem1.Text = "Log Data Times";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // toolsToolStripMenuItem
@@ -858,7 +832,8 @@
             this.networkDelayToolStripMenuItem,
             this.connectButtonsToolStripMenuItem,
             this.changeMyIPToolStripMenuItem,
-            this.videoSourceToolStripMenuItem});
+            this.videoSourceToolStripMenuItem,
+            this.iPCameraControlsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -866,21 +841,21 @@
             // networkDelayToolStripMenuItem
             // 
             this.networkDelayToolStripMenuItem.Name = "networkDelayToolStripMenuItem";
-            this.networkDelayToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.networkDelayToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.networkDelayToolStripMenuItem.Text = "Network Delay";
             this.networkDelayToolStripMenuItem.Click += new System.EventHandler(this.networkDelayToolStripMenuItem_Click);
             // 
             // connectButtonsToolStripMenuItem
             // 
             this.connectButtonsToolStripMenuItem.Name = "connectButtonsToolStripMenuItem";
-            this.connectButtonsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.connectButtonsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.connectButtonsToolStripMenuItem.Text = "Connect Buttons";
             this.connectButtonsToolStripMenuItem.Click += new System.EventHandler(this.connectButtonsToolStripMenuItem_Click);
             // 
             // changeMyIPToolStripMenuItem
             // 
             this.changeMyIPToolStripMenuItem.Name = "changeMyIPToolStripMenuItem";
-            this.changeMyIPToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.changeMyIPToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.changeMyIPToolStripMenuItem.Text = "Change My IP";
             this.changeMyIPToolStripMenuItem.Click += new System.EventHandler(this.changeMyIPToolStripMenuItem_Click);
             // 
@@ -890,7 +865,7 @@
             this.changeVideoSourceToolStripMenuItem1,
             this.addIPCameraToolStripMenuItem});
             this.videoSourceToolStripMenuItem.Name = "videoSourceToolStripMenuItem";
-            this.videoSourceToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.videoSourceToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.videoSourceToolStripMenuItem.Text = "Video Source";
             // 
             // changeVideoSourceToolStripMenuItem1
@@ -907,6 +882,13 @@
             this.addIPCameraToolStripMenuItem.Text = "Add IP Camera";
             this.addIPCameraToolStripMenuItem.Click += new System.EventHandler(this.addIPCameraToolStripMenuItem_Click);
             // 
+            // iPCameraControlsToolStripMenuItem
+            // 
+            this.iPCameraControlsToolStripMenuItem.Name = "iPCameraControlsToolStripMenuItem";
+            this.iPCameraControlsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.iPCameraControlsToolStripMenuItem.Text = "IP Camera Controls";
+            this.iPCameraControlsToolStripMenuItem.Click += new System.EventHandler(this.iPCameraControlsToolStripMenuItem_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -920,6 +902,62 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // lbl_ExBtns
+            // 
+            this.lbl_ExBtns.AutoSize = true;
+            this.lbl_ExBtns.Location = new System.Drawing.Point(6, 121);
+            this.lbl_ExBtns.Name = "lbl_ExBtns";
+            this.lbl_ExBtns.Size = new System.Drawing.Size(67, 13);
+            this.lbl_ExBtns.TabIndex = 10;
+            this.lbl_ExBtns.Text = "Ex. Buttons :";
+            // 
+            // captureImageBox
+            // 
+            this.captureImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.captureImageBox.BackColor = System.Drawing.SystemColors.Control;
+            this.captureImageBox.Location = new System.Drawing.Point(3, 74);
+            this.captureImageBox.Name = "captureImageBox";
+            this.captureImageBox.Size = new System.Drawing.Size(820, 548);
+            this.captureImageBox.TabIndex = 5;
+            this.captureImageBox.TabStop = false;
+            this.captureImageBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseDown);
+            this.captureImageBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseMove);
+            this.captureImageBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseUp);
+            // 
+            // btn_UndoMark
+            // 
+            this.btn_UndoMark.BackColor = System.Drawing.Color.White;
+            this.btn_UndoMark.BackgroundImage = global::TelSurge.Properties.Resources.Undo;
+            this.btn_UndoMark.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btn_UndoMark.Location = new System.Drawing.Point(468, 3);
+            this.btn_UndoMark.Name = "btn_UndoMark";
+            this.btn_UndoMark.Size = new System.Drawing.Size(58, 50);
+            this.btn_UndoMark.TabIndex = 8;
+            this.btn_UndoMark.UseVisualStyleBackColor = false;
+            this.btn_UndoMark.Visible = false;
+            this.btn_UndoMark.Click += new System.EventHandler(this.btn_UndoMark_Click);
+            // 
+            // btn_StartAudio
+            // 
+            this.btn_StartAudio.BackColor = System.Drawing.Color.Green;
+            this.btn_StartAudio.Image = global::TelSurge.Properties.Resources.mic;
+            this.btn_StartAudio.Location = new System.Drawing.Point(596, 3);
+            this.btn_StartAudio.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
+            this.btn_StartAudio.Name = "btn_StartAudio";
+            this.btn_StartAudio.Size = new System.Drawing.Size(30, 31);
+            this.btn_StartAudio.TabIndex = 0;
+            this.btn_StartAudio.UseVisualStyleBackColor = false;
+            this.btn_StartAudio.Click += new System.EventHandler(this.btn_StartAudio_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(156, 22);
+            this.toolStripMenuItem2.Text = "Assign Buttons";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // TelSurgeMain
             // 
@@ -950,12 +988,12 @@
             this.groupBox4.PerformLayout();
             this.gb_Telestration.ResumeLayout(false);
             this.gb_Telestration.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.captureImageBox)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.ss_Connections.ResumeLayout(false);
             this.ss_Connections.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.captureImageBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1040,6 +1078,10 @@
         private System.Windows.Forms.Label lbl_Zoom;
         private System.Windows.Forms.Label lbl_ZoomIn;
         private System.Windows.Forms.TextBox tb_InControl;
+        private System.Windows.Forms.ToolStripMenuItem iPCameraControlsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.Label lbl_ExBtns;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
 
 
 
