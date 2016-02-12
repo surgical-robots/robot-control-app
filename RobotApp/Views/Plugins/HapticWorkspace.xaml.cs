@@ -758,5 +758,47 @@ namespace RobotApp.Views.Plugins
                 RaisePropertyChanged(ForceMaxPropertyName);
             }
         }
+
+        /// <summary>
+        /// The <see cref="RobotSelector" /> property's name.
+        /// </summary>
+        public const string RobotSelectorPropertyName = "RobotSelector";
+
+        private int robotSelector = 0;
+
+        /// <summary>
+        /// Sets and gets the RobotSelector property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int RobotSelector
+        {
+            get
+            {
+                return robotSelector;
+            }
+
+            set
+            {
+                if (robotSelector == value)
+                {
+                    return;
+                }
+
+                robotSelector = value;
+                RaisePropertyChanged(RobotSelectorPropertyName);
+
+                if(robotSelector == 1)
+                {
+                    UpperLength = 68.58;
+                    ForeLength = 96.393;
+                }
+                else if(robotSelector == 2)
+                {
+                    UpperLength = 54;
+                    ForeLength = 63;
+                }
+            }
+        }
+
     }
 }

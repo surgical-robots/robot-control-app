@@ -46,10 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Kinematic.cs" />
+    <Compile Include="KinematicModels\TwoArmCoupledShoulderAndElbow.cs" />
     <Compile Include="Point3D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KinematicModels\TwoArmCoupledShoulder.cs" />
     <Compile Include="Robots\TomBot.cs" />
+    <Compile Include="Robots\TomShortArm.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

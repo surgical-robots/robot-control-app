@@ -17,6 +17,13 @@
                     <ComboBoxItem>Right</ComboBoxItem>
                     <ComboBoxItem>Left</ComboBoxItem>
                 </ComboBox>
+                
+                <TextBlock Text="Robot" />
+                <ComboBox SelectedIndex="{Binding RobotSelector}">
+                    <ComboBoxItem></ComboBoxItem>
+                    <ComboBoxItem>Long Arms</ComboBoxItem>
+                    <ComboBoxItem>Short Arms</ComboBoxItem>
+                </ComboBox>
 
                 <TextBlock Text="Enable Haptics"/>
                 <CheckBox IsChecked="{Binding HapticsEnabled}"/>
