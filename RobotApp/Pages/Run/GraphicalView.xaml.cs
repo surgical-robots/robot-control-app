@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Threading;
@@ -15,8 +17,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Command;
 using HelixToolkit.Wpf;
 using RobotApp.ViewModel;
+using AForge.Video.DirectShow;
 
 namespace RobotApp.Pages
 {
@@ -68,40 +72,6 @@ namespace RobotApp.Pages
         public ModelVisual3D leftSpaceVisual = new ModelVisual3D();
         public ModelVisual3D staticVisual = new ModelVisual3D();
 
-        public ModelVisual3D wholeModel2 = new ModelVisual3D();
-        public ModelVisual3D rightVisual2 = new ModelVisual3D();
-        public ModelVisual3D rightUpperVisual2 = new ModelVisual3D();
-        public ModelVisual3D rightForeVisual2 = new ModelVisual3D();
-        public ModelVisual3D rightForeBodyVisual2 = new ModelVisual3D();
-        public ModelVisual3D rightTipVisual2 = new ModelVisual3D();
-        public ModelVisual3D leftVisual2 = new ModelVisual3D();
-        public ModelVisual3D leftUpperVisual2 = new ModelVisual3D();
-        public ModelVisual3D leftForeVisual2 = new ModelVisual3D();
-        public ModelVisual3D leftForeBodyVisual2 = new ModelVisual3D();
-        public ModelVisual3D grasperVisual2 = new ModelVisual3D();
-        public ModelVisual3D jawOneVisual2 = new ModelVisual3D();
-        public ModelVisual3D jawTwoVisual2 = new ModelVisual3D();
-        public ModelVisual3D yolkVisual2 = new ModelVisual3D();
-        public ModelVisual3D rightSpaceVisual2 = new ModelVisual3D();
-        public ModelVisual3D leftSpaceVisual2 = new ModelVisual3D();
-
-        public ModelVisual3D wholeModel3 = new ModelVisual3D();
-        public ModelVisual3D rightVisual3 = new ModelVisual3D();
-        public ModelVisual3D rightUpperVisual3 = new ModelVisual3D();
-        public ModelVisual3D rightForeVisual3 = new ModelVisual3D();
-        public ModelVisual3D rightForeBodyVisual3 = new ModelVisual3D();
-        public ModelVisual3D rightTipVisual3 = new ModelVisual3D();
-        public ModelVisual3D leftVisual3 = new ModelVisual3D();
-        public ModelVisual3D leftUpperVisual3 = new ModelVisual3D();
-        public ModelVisual3D leftForeVisual3 = new ModelVisual3D();
-        public ModelVisual3D leftForeBodyVisual3 = new ModelVisual3D();
-        public ModelVisual3D grasperVisual3 = new ModelVisual3D();
-        public ModelVisual3D jawOneVisual3 = new ModelVisual3D();
-        public ModelVisual3D jawTwoVisual3 = new ModelVisual3D();
-        public ModelVisual3D yolkVisual3 = new ModelVisual3D();
-        public ModelVisual3D rightSpaceVisual3 = new ModelVisual3D();
-        public ModelVisual3D leftSpaceVisual3 = new ModelVisual3D();
-
         // local variables for input angles
         public double rub = 0;
         public double rlb = 0;
@@ -112,6 +82,14 @@ namespace RobotApp.Pages
         public double jOpen = 0;
         public double jTwist = 0;
         public double cTwist = 0;
+
+        // video stream objects
+        public ObservableCollection<string> DeviceNames { get; set; }
+        public ObservableCollection<string> SettingNames { get; set; }
+        public VideoCaptureDevice CaptureDevice;
+        private FilterInfoCollection _deviceList;
+        private VideoCapabilities[] _deviceCapabilites;
+        private bool _wasRunning = false;
 
         public void SetupMessenger()
         {
@@ -188,6 +166,17 @@ namespace RobotApp.Pages
 
             SetupMessenger();
 
+            DeviceNames = new ObservableCollection<string>();
+            SettingNames = new ObservableCollection<string>();
+            _deviceList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+
+            // Get a list of all video capture source names
+            for (int i = 0; i < _deviceList.Count; i++)
+            {
+                DeviceNames.Add(_deviceList[i].Name);
+            }
+
+            // paths to *.stl files
             string startupPath = System.IO.Directory.GetCurrentDirectory();
             startupPath = startupPath + "\\3D Models\\";
             this.dispatcher = Dispatcher.CurrentDispatcher;
@@ -325,97 +314,35 @@ namespace RobotApp.Pages
 
             // Define cautery tip
             rightTipVisual.Content = TRmodel;
-
-            rightTipVisual2.Content = TRmodel;
-
-            rightTipVisual3.Content = TRmodel;
             // Define right forearm group
             rightForeBodyVisual.Content = FRmodel;
             rightForeVisual.Children.Clear();
             rightForeVisual.Children.Add(rightForeBodyVisual);
             rightForeVisual.Children.Add(rightTipVisual);
-
-            rightForeBodyVisual2.Content = FRmodel;
-            rightForeVisual2.Children.Clear();
-            rightForeVisual2.Children.Add(rightForeBodyVisual2);
-            rightForeVisual2.Children.Add(rightTipVisual2);
-
-            rightForeBodyVisual3.Content = FRmodel;
-            rightForeVisual3.Children.Clear();
-            rightForeVisual3.Children.Add(rightForeBodyVisual3);
-            rightForeVisual3.Children.Add(rightTipVisual3);
             // Define right arm group
             rightUpperVisual.Content = URmodel;
             rightVisual.Children.Clear();
             rightVisual.Children.Add(rightUpperVisual);
             rightVisual.Children.Add(rightForeVisual);
-
-            rightUpperVisual2.Content = URmodel;
-            rightVisual2.Children.Clear();
-            rightVisual2.Children.Add(rightUpperVisual2);
-            rightVisual2.Children.Add(rightForeVisual2);
-
-            rightUpperVisual3.Content = URmodel;
-            rightVisual3.Children.Clear();
-            rightVisual3.Children.Add(rightUpperVisual3);
-            rightVisual3.Children.Add(rightForeVisual3);
             // Left grasper open/close
             jawOneVisual.Content = GJ1model;
             jawTwoVisual.Content = GJ2model;
-
-            jawOneVisual2.Content = GJ1model;
-            jawTwoVisual2.Content = GJ2model;
-
-            jawOneVisual3.Content = GJ1model;
-            jawTwoVisual3.Content = GJ2model;
             // Define grasper group
             yolkVisual.Content = GYmodel;
             grasperVisual.Children.Clear();
             grasperVisual.Children.Add(yolkVisual);
             grasperVisual.Children.Add(jawOneVisual);
             grasperVisual.Children.Add(jawTwoVisual);
-
-            yolkVisual2.Content = GYmodel;
-            grasperVisual2.Children.Clear();
-            grasperVisual2.Children.Add(yolkVisual2);
-            grasperVisual2.Children.Add(jawOneVisual2);
-            grasperVisual2.Children.Add(jawTwoVisual2);
-
-            yolkVisual3.Content = GYmodel;
-            grasperVisual3.Children.Clear();
-            grasperVisual3.Children.Add(yolkVisual3);
-            grasperVisual3.Children.Add(jawOneVisual3);
-            grasperVisual3.Children.Add(jawTwoVisual3);
             // Define left forearm group
             leftForeBodyVisual.Content = FLmodel;
             leftForeVisual.Children.Clear();
             leftForeVisual.Children.Add(leftForeBodyVisual);
             leftForeVisual.Children.Add(grasperVisual);
-
-            leftForeBodyVisual2.Content = FLmodel;
-            leftForeVisual2.Children.Clear();
-            leftForeVisual2.Children.Add(leftForeBodyVisual2);
-            leftForeVisual2.Children.Add(grasperVisual2);
-
-            leftForeBodyVisual3.Content = FLmodel;
-            leftForeVisual3.Children.Clear();
-            leftForeVisual3.Children.Add(leftForeBodyVisual3);
-            leftForeVisual3.Children.Add(grasperVisual3);
             // Define left arm group
             leftUpperVisual.Content = ULmodel;
             leftVisual.Children.Clear();
             leftVisual.Children.Add(leftUpperVisual);
             leftVisual.Children.Add(leftForeVisual);
-
-            leftUpperVisual2.Content = ULmodel;
-            leftVisual2.Children.Clear();
-            leftVisual2.Children.Add(leftUpperVisual2);
-            leftVisual2.Children.Add(leftForeVisual2);
-
-            leftUpperVisual3.Content = ULmodel;
-            leftVisual3.Children.Clear();
-            leftVisual3.Children.Add(leftUpperVisual3);
-            leftVisual3.Children.Add(leftForeVisual3);
             // workspace
             rightSpaceVisual.Content = RWSmodel;
             leftSpaceVisual.Content = LWSmodel;
@@ -429,17 +356,6 @@ namespace RobotApp.Pages
             wholeModel.Children.Add(rightVisual);
             wholeModel.Children.Add(leftVisual);
             //            wholeModel.Children.Add(staticVisual);
-
-            wholeModel2.Content = SHmodel;
-            wholeModel2.Children.Clear();
-            wholeModel2.Children.Add(rightVisual2);
-            wholeModel2.Children.Add(leftVisual2);
-
-            wholeModel3.Content = SHmodel;
-            wholeModel3.Children.Clear();
-            wholeModel3.Children.Add(rightVisual3);
-            wholeModel3.Children.Add(leftVisual3);
-
             DisplayModel();
         }
 
@@ -490,58 +406,36 @@ namespace RobotApp.Pages
 
                 // Cautery Tip Roatations
                 rightTipVisual.Transform = rTipTransform;
-                rightTipVisual2.Transform = rTipTransform;
-                rightTipVisual3.Transform = rTipTransform;
                 // Right elbow rotation
                 rightForeVisual.Transform = relTransform;
-                rightForeVisual2.Transform = relTransform;
-                rightForeVisual3.Transform = relTransform;
                 // Right shoulder rotations
                 Transform3DGroup rightArmTransform = new Transform3DGroup();
                 rightArmTransform.Children.Add(rsxTransform);
                 rightArmTransform.Children.Add(rsyTransform);
                 rightVisual.Transform = rightArmTransform;
-                rightVisual2.Transform = rightArmTransform;
-                rightVisual3.Transform = rightArmTransform;
                 // Left grasper open/close
                 jawOneVisual.Transform = jaw1Transform;
                 jawTwoVisual.Transform = jaw2Transform;
-                jawOneVisual2.Transform = jaw1Transform;
-                jawTwoVisual2.Transform = jaw2Transform;
-                jawOneVisual3.Transform = jaw1Transform;
-                jawTwoVisual3.Transform = jaw2Transform;
                 // Left grasper rotations
                 grasperVisual.Transform = graspTransform;
-                grasperVisual2.Transform = graspTransform;
-                grasperVisual3.Transform = graspTransform;
                 // Left elbow rotaions
                 leftForeVisual.Transform = lelTransform;
-                leftForeVisual2.Transform = lelTransform;
-                leftForeVisual3.Transform = lelTransform;
                 // Left shoulder rotations
                 Transform3DGroup leftArmTransform = new Transform3DGroup();
                 leftArmTransform.Children.Add(lsxTransform);
                 leftArmTransform.Children.Add(lsyTransform);
                 leftVisual.Transform = leftArmTransform;
-                leftVisual2.Transform = leftArmTransform;
-                leftVisual3.Transform = leftArmTransform;
                 // Whole model transform
                 Transform3DGroup modelTransform = new Transform3DGroup();
                 modelTransform.Children.Add(modelXTransform);
                 modelTransform.Children.Add(modelYTransform);
                 wholeModel.Transform = modelTransform;
-                wholeModel2.Transform = modelTransform;
-                wholeModel3.Transform = modelTransform;
-
                 // Add content to HelixViewport3D in VirtualRobotWindow.xaml
                 //newWindow.FullModel = wholeModel;
                 //newWindow.DModel = wholeModel2;
                 //newWindow.SModel = wholeModel3;
 
                 FullModel = wholeModel;
-                DModel = wholeModel2;
-                SModel = wholeModel3;
-
             }));
 
         }
@@ -567,47 +461,216 @@ namespace RobotApp.Pages
             }
         }
 
-        //public ModelVisual3D robotModel { get; set; }
-
-        private ModelVisual3D dModel = null;
         /// <summary>
-        /// Sets and gets the ModelGroup property.
+        /// The <see cref="SelectedDeviceName" /> property's name.
+        /// </summary>
+        public const string SelectedDeviceNamePropertyName = "SelectedDeviceName";
+
+        private string selectedDevice = "";
+
+        /// <summary>
+        /// Sets and gets the SelectedDeviceName property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public ModelVisual3D DModel
+        public string SelectedDeviceName
         {
             get
             {
-                return dModel;
+                return selectedDevice;
             }
+
             set
             {
-                if (dModel == value)
+                if (selectedDevice == value)
+                {
                     return;
-                dModel = value;
-                topModel.Children.Clear();
-                topModel.Children.Add(dModel);
+                }
+
+                selectedDevice = value;
+                //RaisePropertyChanged(SelectedDeviceNamePropertyName);
+                if (CaptureDevice != null && CaptureDevice.IsRunning)
+                    CaptureDevice.SignalToStop();
+                if (_wasRunning)
+                    CaptureDevice.NewFrame -= CaptureDevice_NewFrame;
+
+                for (int i = 0; i < _deviceList.Count; i++)
+                {
+                    if (_deviceList[i].Name == selectedDevice)
+                    {
+                        CaptureDevice = new VideoCaptureDevice(_deviceList[i].MonikerString);
+                        _deviceCapabilites = CaptureDevice.VideoCapabilities;
+                        SelectedSetting = 0;
+                        CreateCapabilityList();
+                        CaptureDevice.NewFrame += CaptureDevice_NewFrame;
+                        _wasRunning = true;
+                    }
+                }
             }
         }
 
-        private ModelVisual3D sModel = null;
+        void CaptureDevice_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
+        {
+            Bitmap frame = eventArgs.Frame;
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                VideoImage.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(frame.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            }));
+        }
+
+        void CreateCapabilityList()
+        {
+            string dummyString = "";
+            SettingNames.Clear();
+            foreach (VideoCapabilities settings in _deviceCapabilites)
+            {
+                dummyString = "";
+                dummyString = settings.FrameSize.Width + "x" + settings.FrameSize.Height + " " + settings.AverageFrameRate + "FPS";
+                SettingNames.Add(dummyString);
+            }
+        }
+
         /// <summary>
-        /// Sets and gets the ModelGroup property.
+        /// The <see cref="SelectedSetting" /> property's name.
+        /// </summary>
+        public const string SelectedSettingPropertyName = "SelectedSetting";
+
+        private int selectedSetting = 0;
+
+        /// <summary>
+        /// Sets and gets the SelectedSetting property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public ModelVisual3D SModel
+        public int SelectedSetting
         {
             get
             {
-                return sModel;
+                return selectedSetting;
             }
+
             set
             {
-                if (sModel == value)
+                if (selectedSetting == value)
+                {
                     return;
-                sModel = value;
-                sideModel.Children.Clear();
-                sideModel.Children.Add(sModel);
+                }
+
+                selectedSetting = value;
+                //RaisePropertyChanged(SelectedSettingPropertyName);
+                if (selectedSetting != -1)
+                    CaptureDevice.VideoResolution = _deviceCapabilites[selectedSetting];
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="ConnectButtonText" /> property's name.
+        /// </summary>
+        public const string ConnectButtonTextPropertyName = "ConnectButtonText";
+
+        private string connectButtonText = "Connect";
+
+        /// <summary>
+        /// Sets and gets the ConnectButtonText property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string ConnectButtonText
+        {
+            get
+            {
+                return connectButtonText;
+            }
+
+            set
+            {
+                if (connectButtonText == value)
+                {
+                    return;
+                }
+
+                connectButtonText = value;
+                //RaisePropertyChanged(ConnectButtonTextPropertyName);
+            }
+        }
+
+        private RelayCommand<string> startCommand;
+
+        /// <summary>
+        /// Gets the DetectCOMsCommand.
+        /// </summary>
+        public RelayCommand<string> StartCommand
+        {
+            get
+            {
+                return startCommand
+                    ?? (startCommand = new RelayCommand<string>(
+                    p =>
+                    {
+                        if (CaptureDevice.IsRunning)
+                        {
+                            CaptureDevice.SignalToStop();
+                            ConnectButtonText = "Connect";
+                        }
+                        else
+                        {
+                            CaptureDevice.Start();
+                            ConnectButtonText = "Disconnect";
+                        }
+                    }));
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GrasperForceL" /> property's name.
+        /// </summary>
+
+        private double grasperForceL = 0;
+
+        /// <summary>
+        /// Sets and gets the GrasperForceL property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public double GrasperForceL
+        {
+            get
+            {
+                return grasperForceL;
+            }
+
+            set
+            {
+                if (grasperForceL == value)
+                {
+                    return;
+                }
+
+                grasperForceL = value;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GrasperForceR" /> property's name.
+        /// </summary>
+
+        private double grasperForceR = 200;
+
+        /// <summary>
+        /// Sets and gets the GrasperForceR property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public double GrasperForceR
+        {
+            get
+            {
+                return grasperForceR;
+            }
+
+            set
+            {
+                if (grasperForceR == value)
+                {
+                    return;
+                }
+
+                grasperForceR = value;
             }
         }
     }

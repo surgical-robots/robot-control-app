@@ -544,10 +544,6 @@ namespace RobotApp.Views.Plugins
                 //newWindow.DModel = wholeModel2;
                 //newWindow.SModel = wholeModel3;
                 
-                graphicView.FullModel = wholeModel;
-                graphicView.DModel = wholeModel2;
-                graphicView.SModel = wholeModel3;
-            
             }));
             
         }
