@@ -1,18 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace RobotApp.Views.Plugins
@@ -27,7 +13,7 @@ namespace RobotApp.Views.Plugins
 
         double GrasperSetpoint = 0;
         private double grasperTwist = 0;
-        private double grasperMax = 100;
+        private double grasperMax = 1500;
 
         public override void PostLoadSetup()
         {
@@ -50,7 +36,7 @@ namespace RobotApp.Views.Plugins
             Messenger.Default.Register<Messages.Signal>(this, Inputs["GrasperTwist"].UniqueID, (message) =>
             {
                 grasperTwist = message.Value;
-                Outputs["GrasperSetpoint"].Value = GrasperSetpoint + grasperTwist;
+                Outputs["GrasperSetpoint"].Value = GrasperSetpoint - grasperTwist;
             });
 
             base.PostLoadSetup();
@@ -81,7 +67,7 @@ namespace RobotApp.Views.Plugins
             if(GrasperSetpoint < grasperMax)
             {
                 GrasperSetpoint += (grasperMax / 50);
-                Outputs["GrasperSetpoint"].Value = GrasperSetpoint + grasperTwist;
+                Outputs["GrasperSetpoint"].Value = GrasperSetpoint - grasperTwist;
             }
         }
 
@@ -90,7 +76,7 @@ namespace RobotApp.Views.Plugins
             if (GrasperSetpoint > 0)
             {
                 GrasperSetpoint -= (grasperMax / 50);
-                Outputs["GrasperSetpoint"].Value = GrasperSetpoint + grasperTwist;
+                Outputs["GrasperSetpoint"].Value = GrasperSetpoint - grasperTwist;
             }
         }
 
