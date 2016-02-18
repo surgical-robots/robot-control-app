@@ -107,7 +107,7 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lbl_ExBtns = new System.Windows.Forms.Label();
-            this.captureImageBox = new Emgu.CV.UI.ImageBox();
+            this.CaptureImageBox = new Emgu.CV.UI.ImageBox();
             this.btn_UndoMark = new System.Windows.Forms.Button();
             this.btn_StartAudio = new System.Windows.Forms.Button();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -122,7 +122,7 @@
             this.flowLayoutPanel1.SuspendLayout();
             this.ss_Connections.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.captureImageBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CaptureImageBox)).BeginInit();
             this.SuspendLayout();
             // 
             // gb_OmniControls
@@ -589,7 +589,7 @@
             this.gb_Telestration.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gb_Telestration.Controls.Add(this.captureImageBox);
+            this.gb_Telestration.Controls.Add(this.CaptureImageBox);
             this.gb_Telestration.Controls.Add(this.lbl_ZoomOut);
             this.gb_Telestration.Controls.Add(this.lbl_Zoom);
             this.gb_Telestration.Controls.Add(this.lbl_ZoomIn);
@@ -818,7 +818,7 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(156, 22);
             this.toolStripMenuItem1.Text = "Log Data Times";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.logDataTurnAroundTime_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -914,18 +914,18 @@
             // 
             // captureImageBox
             // 
-            this.captureImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.CaptureImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.captureImageBox.BackColor = System.Drawing.SystemColors.Control;
-            this.captureImageBox.Location = new System.Drawing.Point(3, 74);
-            this.captureImageBox.Name = "captureImageBox";
-            this.captureImageBox.Size = new System.Drawing.Size(820, 548);
-            this.captureImageBox.TabIndex = 5;
-            this.captureImageBox.TabStop = false;
-            this.captureImageBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseDown);
-            this.captureImageBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseMove);
-            this.captureImageBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseUp);
+            this.CaptureImageBox.BackColor = System.Drawing.SystemColors.Control;
+            this.CaptureImageBox.Location = new System.Drawing.Point(3, 74);
+            this.CaptureImageBox.Name = "captureImageBox";
+            this.CaptureImageBox.Size = new System.Drawing.Size(820, 548);
+            this.CaptureImageBox.TabIndex = 5;
+            this.CaptureImageBox.TabStop = false;
+            this.CaptureImageBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseDown);
+            this.CaptureImageBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseMove);
+            this.CaptureImageBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.captureImageBox_MouseUp);
             // 
             // btn_UndoMark
             // 
@@ -993,7 +993,7 @@
             this.ss_Connections.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.captureImageBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CaptureImageBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1047,7 +1047,7 @@
         private System.Windows.Forms.Button btn_YellowPen;
         private System.Windows.Forms.Button btn_GreenPen;
         private System.Windows.Forms.Button btn_ClearMarks;
-        private Emgu.CV.UI.ImageBox captureImageBox;
+        public Emgu.CV.UI.ImageBox CaptureImageBox;
         private System.Windows.Forms.Button btn_Capture;
         private System.Windows.Forms.Button btn_UndoMark;
         private System.Windows.Forms.Timer UnderlyingTimer;

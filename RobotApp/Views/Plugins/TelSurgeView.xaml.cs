@@ -54,14 +54,6 @@ namespace RobotApp.Views.Plugins
                      telSurge.emergencySwitchControl();
              });
 
-             Messenger.Default.Register<Messages.Signal>(this, Inputs["Freeze"].UniqueID, (message) =>
-             {
-                 if (message.Value.Equals(0))
-                 {
-                    telSurge.freezeCommandReceived();
-                 }
-             });
-
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceLX"].UniqueID, (message) =>
              {
                  forceLX = message.Value;
@@ -145,6 +137,7 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("RButton1", new OutputSignalViewModel("Right Button 1"));
             Outputs.Add("RButton2", new OutputSignalViewModel("Right Button 2"));
 
+            Outputs.Add("Freeze", new OutputSignalViewModel("Freeze"));
             Outputs.Add("ExButton1", new OutputSignalViewModel("ExButton1"));
             Outputs.Add("ExButton2", new OutputSignalViewModel("ExButton2"));
             Outputs.Add("ExButton3", new OutputSignalViewModel("ExButton3"));
@@ -161,7 +154,6 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("ForceRY", new ViewModel.InputSignalViewModel("ForceRY", this.InstanceName));
             Inputs.Add("ForceRZ", new ViewModel.InputSignalViewModel("ForceRZ", this.InstanceName));
             Inputs.Add("HapticEnable", new ViewModel.InputSignalViewModel("HapticEnable", this.InstanceName));
-            Inputs.Add("Freeze", new ViewModel.InputSignalViewModel("Freeze", this.InstanceName));
             Inputs.Add("EmergencySwitch", new ViewModel.InputSignalViewModel("EmergencySwitch", this.InstanceName));
 
 
@@ -198,6 +190,8 @@ namespace RobotApp.Views.Plugins
                 Outputs["RInkwell"].Value = telSurge.OutputPosition.InkwellRight;
                 Outputs["RButton1"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsRight.Equals(1));
                 Outputs["RButton2"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsRight.Equals(2));
+
+                Outputs["Freeze"].Value = Convert.ToDouble(telSurge.RelayFreeze);
 
                 //Update output for any external buttons
                 for (int i = 1; i <= telSurge.OutputPosition.ExtraButtons.Length; i++)

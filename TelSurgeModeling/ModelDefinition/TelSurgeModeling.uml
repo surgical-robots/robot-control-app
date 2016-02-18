@@ -1,0 +1,722 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<modelStoreModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/LogicalClassDesigner"
+  dslVersion="1.0.0.0"
+  Id="3b361700-1762-48bd-86ba-1dfcfe79a533"
+  name="TelSurgeModeling" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
+  <profileInstances>
+    <packageHasProfileInstances
+      Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b">
+      <profileInstance
+        Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791"
+        name="StandardProfileL2" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances
+      Id="29349502-908c-4fda-9054-c48619c59ed0">
+      <profileInstance
+        Id="532ea607-fb19-44b8-8502-3351b05452be"
+        name="StandardProfileL3" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <packageHasNamedElement>
+      <class
+        Id="46120ec6-658d-41f1-87bb-ea4e9c3d4882"
+        name="Main"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <suppliersInternal>
+          <interfaceRealization
+            Id="0c128920-e7db-4e75-8ea9-539385cbf8f3">
+            <interfaceMoniker
+              Id="c1c3dcc3-abb8-47c0-8ed5-1dd88129604f"
+              LastKnownName="TelSurge View (Robot App)"
+              LastKnownLocation="TelSurgeModeling.uml" />
+          </interfaceRealization>
+          <interfaceRealization
+            Id="1eabfd43-b951-4f74-a278-681517ff390d">
+            <interfaceMoniker
+              Id="03f28ca1-aa4a-42fb-a944-43e010a32f87"
+              LastKnownName="Other TelSurge(s)"
+              LastKnownLocation="TelSurgeModeling.uml" />
+          </interfaceRealization>
+          <interfaceRealization
+            Id="1cbca104-10f3-4409-a1ec-2d01727f225a">
+            <interfaceMoniker
+              Id="4637beff-b4c0-40b4-a7db-d54b2651536d"
+              LastKnownName="Physical Devices"
+              LastKnownLocation="TelSurgeModeling.uml" />
+          </interfaceRealization>
+        </suppliersInternal>
+        <ownedOperationsInternal>
+          <operation
+            Id="9aa34b5d-838b-4899-aa9a-e3d0ae231fbc"
+            name="Manage Users"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="19dae864-5085-4092-a0aa-8f9ad9761ad7"
+            name="Manage Robot Control Data"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="c10c243f-3864-40b5-bfa9-6e7d68cd5806"
+            name="Get and Display Omni Data"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="9a9f0e19-1cc4-465b-8dac-008faf6fce00"
+            name="Freeze/UnFreeze"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="938bb9e9-a55a-4dcf-9481-7ba4a32fa6bc"
+            name="Haptic Forces"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="806abfbd-f0b2-4f79-9979-144917208825"
+            name="Runtime Logging"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+        </ownedOperationsInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="ddfee7ed-3479-4325-b1d6-cc61e9acf432"
+        name="Markup"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="d4361b2c-c2f7-41aa-ae47-28c9421a2154"
+            isDerived="false"
+            sourceEndRoleName="Markup"
+            targetEndRoleName="Surgery"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="8df7906b-4aec-4887-8573-018c7e3b7fca"
+              LastKnownName="Surgery"
+              LastKnownLocation="TelSurgeModeling.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="a4bdd997-8085-4872-9ebe-a6ef8f7e4bfb"
+                  name="Markup"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="f96dc792-76c5-4e5c-be9d-3f5f813a6d41"
+                  name="Surgery"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+          <association
+            Id="710f65c6-8969-49d1-a014-bb331a76edb6"
+            isDerived="false"
+            sourceEndRoleName="Markup"
+            targetEndRoleName="Video Capture"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="aae67b69-5b16-44e6-bd6d-7accf675dee6"
+              LastKnownName="Video Capture"
+              LastKnownLocation="TelSurgeModeling.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="b3b73997-fd51-484b-a1f4-52a2d9a7e645"
+                  name="Markup"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="6f279a5b-938f-42d2-aa2e-9cbf949e7b3d"
+                  name="Video Capture"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation
+            Id="d913b0d1-873d-4b33-8daa-41bb531f5453"
+            name="Add Markings"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="efe3c5ef-b14a-43c7-999a-42e48aeb44a4"
+            name="Delete Last Marking"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="028999fa-7e0f-48b0-a486-7f0091ed4aad"
+            name="Clear Markings"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="12be3061-d36b-4f13-a3d3-e60a349f269f"
+            name="Send Markings"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="b834e2c3-d1ae-4f1e-8559-b1eba903d211"
+            name="Receive Markings"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+        </ownedOperationsInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="aae67b69-5b16-44e6-bd6d-7accf675dee6"
+        name="Video Capture"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="d18103ca-7cac-489a-a564-6b663fe29fa8"
+            isDerived="false"
+            sourceEndRoleName="Video Capture"
+            targetEndRoleName="User"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="698af327-4473-4c0c-9e51-9266af3ee87e"
+              LastKnownName="User"
+              LastKnownLocation="TelSurgeModeling.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="14382b00-d142-44fb-a3de-a12b1ae6cb40"
+                  name="Video Capture"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="28e75dc0-f2dd-49df-81d6-b2000f92a414"
+                  name="User"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation
+            Id="3b0272c7-ef16-480c-a0b8-d83dc395a399"
+            name="Capture Video"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="96c879fb-3e3e-4641-9a1b-758e392ba438"
+            name="Send Video Stream"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="26829517-a5ca-474f-b529-2ba202813fe3"
+            name="Add Markup"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="91975f0f-9af7-4496-b85a-f365a183071f"
+            name="Receive Video Stream"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="cd4a777c-df6c-419d-b2cf-455f91203dd2"
+            name="Switch Video Feed"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+        </ownedOperationsInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="6c0609ff-8fb8-49b9-ae39-9c05b2b82591"
+        name="Audio Conference"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="f0a46dc1-9951-4cc7-b361-185a09a28160"
+            isDerived="false"
+            sourceEndRoleName="Audio Conference"
+            targetEndRoleName="Surgery"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="8df7906b-4aec-4887-8573-018c7e3b7fca"
+              LastKnownName="Surgery"
+              LastKnownLocation="TelSurgeModeling.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="ada64a36-cabd-4418-830d-6c92be761f43"
+                  name="Audio Conference"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="7bef40e3-a911-4399-94a6-6ed15a2f85db"
+                  name="Surgery"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation
+            Id="78ee937f-e127-4f0b-bcf3-52d9dd2aa1d3"
+            name="Send Audio"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="f1e9c90d-f104-471a-b3c2-1a7eca8927c3"
+            name="Receive Audio"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="242321f2-0fc5-4a57-8055-9b24cb1e9355"
+            name="Join Conference"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="d3b36379-8dde-4c04-8e70-7c9c04ac4569"
+            name="Leave Conference"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+        </ownedOperationsInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="765f44e5-d6db-47f3-8698-edd49d55f1fc"
+        name="Socket Data"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="d8d3efd7-a3e8-4bb1-8be9-f9b506be7537"
+            isDerived="false"
+            sourceEndRoleName="Socket Data"
+            targetEndRoleName="User"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="698af327-4473-4c0c-9e51-9266af3ee87e"
+              LastKnownName="User"
+              LastKnownLocation="TelSurgeModeling.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="9457c01a-c81b-4727-8eca-a8ab19c1ef4e"
+                  name="Socket Data"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="851b841e-aaa0-4d82-9e8c-834e4da0becc"
+                  name="User"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation
+            Id="95d51992-5257-43be-8f20-f5054ef22e27"
+            name="Send Omni Data"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="a70e7719-d881-4ec3-b3d5-6306cd33947b"
+            name="Receive Omni Data"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+        </ownedOperationsInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="698af327-4473-4c0c-9e51-9266af3ee87e"
+        name="User"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="077f88e0-72a8-4a27-be80-e64766fe047b"
+            isDerived="false"
+            sourceEndRoleName="User"
+            targetEndRoleName="Surgery"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="8df7906b-4aec-4887-8573-018c7e3b7fca"
+              LastKnownName="Surgery"
+              LastKnownLocation="TelSurgeModeling.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="20e4dba6-01da-435a-b6a4-a3281e41479a"
+                  name="User"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString
+                      Id="894014d7-bdc2-4ba0-a91d-4ac806fe6424"
+                      name="Lower"
+                      value="N" />
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString
+                      Id="ece6f4aa-0967-4f20-8be1-4dabb56840d0"
+                      name="Upper"
+                      value="N" />
+                  </upperValueInternal>
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="d4d028ef-3e93-4499-a126-dd66e94c2b01"
+                  name="Surgery"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+          <association
+            Id="9f51634a-2753-4544-a87d-3c72b86f5887"
+            isDerived="false"
+            sourceEndRoleName="User"
+            targetEndRoleName="Main"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="46120ec6-658d-41f1-87bb-ea4e9c3d4882"
+              LastKnownName="Main"
+              LastKnownLocation="TelSurgeModeling.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="eedfd487-c1f1-43e9-bca2-d52d299b1100"
+                  name="User"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="ff6567a0-685e-4a48-984d-79d6f0fa3fab"
+                  name="Main"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation
+            Id="17a5e839-fc03-427e-abe1-5743b29a1220"
+            name="Join Surgery"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="f16d7f15-d9e1-4550-98ed-bada85348ceb"
+            name="Leave Surgery"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="280edae2-0f71-46da-b83a-28dba8907990"
+            name="Connect Omnis"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="6d741720-c639-40f2-9c6f-923019dbe767"
+            name="Follow"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="0278a0ea-94f2-4bb5-b090-879b62c5a8c8"
+            name="Request Control"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+          <operation
+            Id="532a898b-6405-4440-8bfc-e6d71d7e8a5b"
+            name="Grant Control"
+            isLeaf="false"
+            isStatic="false"
+            isAbstract="false"
+            concurrency="Sequential"
+            isQuery="false" />
+        </ownedOperationsInternal>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <class
+        Id="8df7906b-4aec-4887-8573-018c7e3b7fca"
+        name="Surgery"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false">
+        <targetEnds>
+          <association
+            Id="503ef402-cbcc-4400-9478-bc453a73d5e7"
+            isDerived="false"
+            sourceEndRoleName="Surgery"
+            targetEndRoleName="Main"
+            isLeaf="false"
+            isAbstract="false">
+            <classMoniker
+              Id="46120ec6-658d-41f1-87bb-ea4e9c3d4882"
+              LastKnownName="Main"
+              LastKnownLocation="TelSurgeModeling.uml" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="6e3c4773-1436-44c7-b4c6-8da288258e99"
+                  name="Surgery"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false"
+                  isNavigableOwned="false" />
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd
+                  Id="35791f98-e81c-4ae5-8220-27a742a8e759"
+                  name="Main"
+                  isLeaf="false"
+                  isStatic="false"
+                  isReadOnly="false"
+                  isDerived="false"
+                  isDerivedUnion="false"
+                  aggregation="None"
+                  isComposite="false" />
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+          </association>
+        </targetEnds>
+      </class>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <Interface
+        Id="c1c3dcc3-abb8-47c0-8ed5-1dd88129604f"
+        name="TelSurge View (Robot App)"
+        isAbstract="false"
+        isLeaf="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <Interface
+        Id="03f28ca1-aa4a-42fb-a944-43e010a32f87"
+        name="Other TelSurge(s)"
+        isAbstract="false"
+        isLeaf="false" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <Interface
+        Id="4637beff-b4c0-40b4-a7db-d54b2651536d"
+        name="Physical Devices"
+        isAbstract="false"
+        isLeaf="false" />
+    </packageHasNamedElement>
+  </packagedElements>
+  <primitiveType
+    Id="220a3521-e091-4221-bae9-3ef9018e845c"
+    name="Integer"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="8943dc84-709e-4f62-b15a-a3273aa6f165"
+    name="Boolean"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
+    name="String"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="3ab42e7d-4969-445a-b209-471f5cb8209c"
+    name="UnlimitedNatural"
+    isAbstract="false"
+    isLeaf="false" />
+</modelStoreModel>

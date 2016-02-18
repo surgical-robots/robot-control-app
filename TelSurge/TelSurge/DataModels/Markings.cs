@@ -9,23 +9,23 @@ namespace TelSurge.DataModels
 {
     public class Markings
     {
-        public List<Point[]> RedMarkings { get; set; }
-        public List<Point[]> BlackMarkings { get; set; }
-        public List<Point[]> BlueMarkings { get; set; }
-        public List<Point[]> WhiteMarkings { get; set; }
-        public List<Point[]> YellowMarkings { get; set; }
-        public List<Point[]> GreenMarkings { get; set; }
+        public List<Figure> RedMarkings { get; set; }
+        public List<Figure> BlackMarkings { get; set; }
+        public List<Figure> BlueMarkings { get; set; }
+        public List<Figure> WhiteMarkings { get; set; }
+        public List<Figure> YellowMarkings { get; set; }
+        public List<Figure> GreenMarkings { get; set; }
         public double OffsetX { get; set; }
         public double OffsetY { get; set; }
 
         public Markings()
         {
-            RedMarkings = new List<Point[]>();
-            BlackMarkings = new List<Point[]>();
-            BlueMarkings = new List<Point[]>();
-            WhiteMarkings = new List<Point[]>();
-            YellowMarkings = new List<Point[]>();
-            GreenMarkings = new List<Point[]>();
+            RedMarkings = new List<Figure>();
+            BlackMarkings = new List<Figure>();
+            BlueMarkings = new List<Figure>();
+            WhiteMarkings = new List<Figure>();
+            YellowMarkings = new List<Figure>();
+            GreenMarkings = new List<Figure>();
             OffsetX = 0;
             OffsetY = 0;
         }
@@ -42,30 +42,53 @@ namespace TelSurge.DataModels
             return this;
         }
 
-        public void Clear()
+        public Point[][] GetAllPaths(List<Figure> Markings)
         {
-            RedMarkings = new List<Point[]>();
-            BlackMarkings = new List<Point[]>();
-            BlueMarkings = new List<Point[]>();
-            WhiteMarkings = new List<Point[]>();
-            YellowMarkings = new List<Point[]>();
-            GreenMarkings = new List<Point[]>();
+            List<Point[]> figures = new List<Point[]>();
+            Markings.ForEach(x => figures.Add(x.Path));
+            return figures.ToArray();
         }
 
-        public void RemoveFigure(Point[] figure)
+        public void Clear()
         {
-            if (RedMarkings.Contains(figure))
-                RedMarkings.Remove(RedMarkings.Find(x => x.Equals(figure)));
-            if (BlackMarkings.Contains(figure))
-                BlackMarkings.Remove(BlackMarkings.Find(x => x.Equals(figure)));
-            if (BlueMarkings.Contains(figure))
-                BlueMarkings.Remove(BlueMarkings.Find(x => x.Equals(figure)));
-            if (WhiteMarkings.Contains(figure))
-                WhiteMarkings.Remove(WhiteMarkings.Find(x => x.Equals(figure)));
-            if (YellowMarkings.Contains(figure))
-                YellowMarkings.Remove(YellowMarkings.Find(x => x.Equals(figure)));
-            if (GreenMarkings.Contains(figure))
-                GreenMarkings.Remove(GreenMarkings.Find(x => x.Equals(figure)));
+            RedMarkings = new List<Figure>();
+            BlackMarkings = new List<Figure>();
+            BlueMarkings = new List<Figure>();
+            WhiteMarkings = new List<Figure>();
+            YellowMarkings = new List<Figure>();
+            GreenMarkings = new List<Figure>();
+        }
+
+        public void AddFigure(Figure figure)
+        {
+            List<Figure> markings = getMarkingsOfFigure(figure);
+            figure.MarkingsIndex = markings.Count;
+            markings.Add(figure);
+        }
+
+        private List<Figure> getMarkingsOfFigure(Figure figure)
+        {
+            switch (figure.Color.ToString()) {
+                case "Red":
+                    return RedMarkings;
+                case "Black":
+                    return BlackMarkings;
+                case "Blue":
+                    return BlueMarkings;
+                case "White":
+                    return WhiteMarkings;
+                case "Yellow":
+                    return YellowMarkings;
+                case "Green":
+                    return GreenMarkings;
+                default:
+                    throw new Exception("Could not find the specified color (if any) in the list of markings.");
+            }
+        }
+
+        public void RemoveFigure(Figure figure)
+        {
+            getMarkingsOfFigure(figure).RemoveAt(figure.MarkingsIndex);
         }
     }
 }
