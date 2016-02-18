@@ -25,13 +25,13 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <h:HelixViewport3D Grid.Row="0" Title="Top Down View" TitleBackground="Gray" Orthographic="True" ZoomExtentsWhenLoaded="True" IsRotationEnabled="True" Background="Transparent">
+                <h:HelixViewport3D Grid.Row="0" Orthographic="True" ZoomExtentsWhenLoaded="True" IsRotationEnabled="True" Background="Transparent">
                     <h:HelixViewport3D.Camera>
                         <OrthographicCamera NearPlaneDistance="-1.7976931348623157E+8" FarPlaneDistance="1.7976931348623157E+8"/>
                     </h:HelixViewport3D.Camera>
                     <h:SunLight/>
                     <ModelVisual3D x:Name="robotModel"/>
-                    <HelixToolkit:GridLinesVisual3D Width="500" Length="500" MinorDistance="10" MajorDistance="10" Thickness="0.1" Center="0 100 -200" />
+                    <!--<HelixToolkit:GridLinesVisual3D Width="500" Length="500" MinorDistance="10" MajorDistance="10" Thickness="0.1" Center="0 100 -200" />-->
                 </h:HelixViewport3D>
 
                 <Grid Grid.Row="1">

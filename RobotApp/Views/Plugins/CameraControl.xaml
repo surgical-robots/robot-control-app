@@ -15,7 +15,7 @@
                 <ComboBox SelectedIndex="{Binding Toggle}">
                     <ComboBoxItem></ComboBoxItem>
                     <ComboBoxItem>Automatic</ComboBoxItem>
-                    <ComboBoxItem>Manual</ComboBoxItem>
+                    <ComboBoxItem>Hold</ComboBoxItem>
                 </ComboBox>
                 
                 <TextBlock Text="Move Threshold" />

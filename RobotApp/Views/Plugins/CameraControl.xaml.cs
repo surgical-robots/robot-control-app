@@ -27,7 +27,7 @@ namespace RobotApp.Views.Plugins
 
         public override void PostLoadSetup()
         {
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["X1"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["XR"].UniqueID, (message) =>
             {
                 XR = message.Value;
                 if (Toggle == 1)
@@ -36,7 +36,7 @@ namespace RobotApp.Views.Plugins
                     UpdateOutput();
                 }
             });
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Y1"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["YR"].UniqueID, (message) =>
             {
                 YR = message.Value;
                 if (Toggle == 1)
@@ -45,7 +45,7 @@ namespace RobotApp.Views.Plugins
                     UpdateOutput();
                 }
             });
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Z1"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["ZR"].UniqueID, (message) =>
             {
                 ZR = message.Value;
                 if (Toggle == 1)
@@ -54,7 +54,7 @@ namespace RobotApp.Views.Plugins
                     UpdateOutput();
                 }
             });
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["X2"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["XL"].UniqueID, (message) =>
             {
                 XL = message.Value;
                 if (Toggle == 1)
@@ -63,7 +63,7 @@ namespace RobotApp.Views.Plugins
                     UpdateOutput();
                 }
             });
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Y2"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["YL"].UniqueID, (message) =>
             {
                 YL = message.Value;
                 if (Toggle == 1)
@@ -72,7 +72,7 @@ namespace RobotApp.Views.Plugins
                     UpdateOutput();
                 }
             });
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Z2"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["ZL"].UniqueID, (message) =>
             {
                 ZL = message.Value;
                 if (Toggle == 1)
@@ -84,20 +84,20 @@ namespace RobotApp.Views.Plugins
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Pitch"].UniqueID, (message) =>
             {
                 PI1 = message.Value;
-                if (Toggle == 2)
-                {
-                    ManualMode();
-                    UpdateOutput();
-                }
+                //if (Toggle == 2)
+                //{
+                //    ManualMode();
+                //    UpdateOutput();
+                //}
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Yaw"].UniqueID, (message) =>
             {
                 YA1 = message.Value;
-                if (Toggle == 2)
-                {
-                    ManualMode();
-                    UpdateOutput();
-                }
+                //if (Toggle == 2)
+                //{
+                //    ManualMode();
+                //    UpdateOutput();
+                //}
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["ModeButton"].UniqueID, (message) =>
             {
@@ -120,12 +120,12 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("Pitch", new ViewModel.OutputSignalViewModel("Pitch"));
             Outputs.Add("Yaw", new ViewModel.OutputSignalViewModel("Yaw"));
 
-            Inputs.Add("X1", new ViewModel.InputSignalViewModel("X1", this.InstanceName));
-            Inputs.Add("Y1", new ViewModel.InputSignalViewModel("Y1", this.InstanceName));
-            Inputs.Add("Z1", new ViewModel.InputSignalViewModel("Z1", this.InstanceName));
-            Inputs.Add("X2", new ViewModel.InputSignalViewModel("X2", this.InstanceName));
-            Inputs.Add("Y2", new ViewModel.InputSignalViewModel("Y2", this.InstanceName));
-            Inputs.Add("Z2", new ViewModel.InputSignalViewModel("Z2", this.InstanceName));
+            Inputs.Add("XR", new ViewModel.InputSignalViewModel("XR", this.InstanceName));
+            Inputs.Add("YR", new ViewModel.InputSignalViewModel("YR", this.InstanceName));
+            Inputs.Add("ZR", new ViewModel.InputSignalViewModel("ZR", this.InstanceName));
+            Inputs.Add("XL", new ViewModel.InputSignalViewModel("XL", this.InstanceName));
+            Inputs.Add("YL", new ViewModel.InputSignalViewModel("YL", this.InstanceName));
+            Inputs.Add("ZL", new ViewModel.InputSignalViewModel("ZL", this.InstanceName));
             Inputs.Add("Pitch", new ViewModel.InputSignalViewModel("Pitch", this.InstanceName));
             Inputs.Add("Yaw", new ViewModel.InputSignalViewModel("Yaw", this.InstanceName));
             Inputs.Add("ModeButton", new ViewModel.InputSignalViewModel("Mode Button", this.InstanceName));
@@ -281,7 +281,7 @@ namespace RobotApp.Views.Plugins
         /// </summary>
         public const string TogglePropertyName = "toggle";
 
-        private int toggle = 1;
+        private int toggle = 2;
 
         /// <summary>
         /// Sets and gets the ArmSide property.

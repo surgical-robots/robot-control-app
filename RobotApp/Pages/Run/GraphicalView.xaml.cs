@@ -141,16 +141,21 @@ namespace RobotApp.Pages
                 DisplayModel();
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Sinks["GrasperTwist"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Sinks["CauteryTwist"].UniqueID, (message) =>
             {
                 cTwist = message.Value;
                 DisplayModel();
             });
 
+            Messenger.Default.Register<Messages.Signal>(this, Sinks["LeftGrasperForce"].UniqueID, (message) =>
+            {
+                GrasperForceL = message.Value;
+            });
         }
 
         public GraphicalView()
         {
+            this.DataContext = this;
             InitializeComponent();
             Sinks = new ObservableDictionary<string, InputSignalViewModel>();
 
@@ -163,6 +168,7 @@ namespace RobotApp.Pages
             Sinks.Add("GrasperOpen", new InputSignalViewModel("GrasperOpen", "GraphicalView"));
             Sinks.Add("GrasperTwist", new InputSignalViewModel("GrasperTwist", "GraphicalView"));
             Sinks.Add("CauteryTwist", new InputSignalViewModel("CauteryTwist", "GraphicalView"));
+            Sinks.Add("LeftGrasperForce", new InputSignalViewModel("LeftGrasperForce", "GraphicalView"));
 
             SetupMessenger();
 
@@ -431,9 +437,6 @@ namespace RobotApp.Pages
                 modelTransform.Children.Add(modelYTransform);
                 wholeModel.Transform = modelTransform;
                 // Add content to HelixViewport3D in VirtualRobotWindow.xaml
-                //newWindow.FullModel = wholeModel;
-                //newWindow.DModel = wholeModel2;
-                //newWindow.SModel = wholeModel3;
 
                 FullModel = wholeModel;
             }));
