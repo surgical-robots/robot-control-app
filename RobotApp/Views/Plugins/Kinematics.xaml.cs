@@ -30,6 +30,7 @@ namespace RobotApp.Views.Plugins
         public bool InvertX { get; set; }
         public bool InvertY { get; set; }
         public bool InvertZ { get; set; }
+        public int ArmSide { get; set; }
 
         private double x, y, z;
 
@@ -98,7 +99,12 @@ namespace RobotApp.Views.Plugins
             double[] angles = model.GetJointAngles(point);
             for(int i = 0; i< angles.Length; i++)
             {
-                Outputs[model.OutputNames[i]].Value = angles[i];
+                if(ArmSide == 1 && i == 3)
+                {
+                    Outputs[model.OutputNames[i]].Value = -angles[i];
+                }
+                else
+                    Outputs[model.OutputNames[i]].Value = angles[i];
             }
         }
 

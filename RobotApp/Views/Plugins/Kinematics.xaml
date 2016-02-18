@@ -14,6 +14,13 @@
                 <TextBlock Text="Available Models" />
                 <ComboBox ItemsSource="{Binding KinematicTypes}" SelectedItem="{Binding SelectedKinematic}" DisplayMemberPath="Name" />
 
+                <TextBlock Text="Arm Side" />
+                <ComboBox SelectedIndex="{Binding ArmSide}">
+                    <ComboBoxItem></ComboBoxItem>
+                    <ComboBoxItem>Right</ComboBoxItem>
+                    <ComboBoxItem>Left</ComboBoxItem>
+                </ComboBox>
+
                 <TextBlock Text="Invert X Input" />
                 <CheckBox IsChecked="{Binding InvertX}" />
 
