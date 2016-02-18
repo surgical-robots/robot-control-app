@@ -7,11 +7,16 @@ using TelSurge.DataModels;
 
 namespace TelSurge
 {
-    class Surgery
+    public class Surgery
     {
         public OmniPosition InControlPosition { get; set; }
         public User Master { get; set; }
         public List<User> ConnectedClients { get; set; }
         public User UserInControl { get; set; }
+
+        public Surgery()
+        {
+            this.ConnectedClients = new List<User>();
+        }
     }
 }

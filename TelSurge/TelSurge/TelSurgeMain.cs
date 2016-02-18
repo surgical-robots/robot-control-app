@@ -16,87 +16,42 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Diagnostics;
+using Emgu.CV;
+using Emgu.CV.Structure;
 
 namespace TelSurge
 {
     public partial class TelSurgeMain : Form
     {
-        //New Vars
-        private User User;
-        private AudioConference AudioConference;
-        private VideoCapture VideoCapture;
-        private Surgery Surgery;
-        private Markup Markup;
-        private SocketData SocketData;
+        public User User { get; set; }
+        public AudioConference AudioConference { get; set; }
+        public VideoCapture VideoCapture { get; set; }
+        public Surgery Surgery { get; set; }
+        public Markup Markup { get; set; }
+        public SocketData SocketData { get; set; }
         public bool RelayFreeze { get; set; }
         private bool noRobot = true;
-        
-
-        //OUTPUTS
-        public OmniPosition OutputPosition { get; set; }
-        
-        //Construct Form1
-        public TelSurgeMain()
-        {
-            InitializeComponent();
-            try
-            {
-                OutputPosition = new OmniPosition();
-                TelSurgeMain.CheckForIllegalCrossThreadCalls = false;
-                fillOmniDDL();
-                fillAudioDeviceDDL();
-                HapticForces = new OmniPosition();
-
-                //Set Force Trackbar
-                //want force divider between 20 and 220
-                //divider = 220 - trackbarValue 
-                trb_forceStrength.Minimum = 0;
-                trb_forceStrength.Maximum = 200;
-                // The TickFrequency property establishes how many positions are between each tick-mark.
-                trb_forceStrength.TickFrequency = 20;
-                // The LargeChange property sets how many positions to move if the bar is clicked on either side of the slider.
-                trb_forceStrength.LargeChange = 2;
-                // The SmallChange property sets how many positions to move if the keyboard arrows are used to move the slider.
-                trb_forceStrength.SmallChange = 1;
-                //set initial value of trackbar
-                trb_forceStrength.Value = 170;
-
-                CaptureImageBox.FunctionalMode = Emgu.CV.UI.ImageBox.FunctionalModeOption.Minimum;
-                //try to set up capture from default camera
-                _capture = new Capture();
-                _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FPS, 30);
-                _capture.ImageGrabbed += ProcessFrame;
-            }
-            catch (NullReferenceException nrex)
-            {
-                if (nrex.HResult == -2147467261)
-                    ShowError("Cannot connect to default camera!", "No camera could be found on this machine, (" + Environment.MachineName + ").");
-                else
-                    ShowError(nrex.Message, nrex.ToString());
-            }
-            catch (Exception ex)
-            {
-                ShowError(ex.Message, ex.ToString());
-            }
-        }
-
-        //Globals
-        string logFile = "log.csv";
+        private string logFile = "log.csv";
         private string sendGRAddr = "";
         public int networkDelay = 0; //in ms
-        int controlPort = 11005;
-        int connectionPort = 11004;
-        int audioPort = 11003;
-        int markingsPort = 11002;
-        int dataPort = 11001;
-        int videoPort = 11000;
-        private bool isDrawing;
+        private int controlPort = 11005;
+        private int connectionPort = 11004;
+        private int audioPort = 11003;
+        private int markingsPort = 11002;
+        private int dataPort = 11001;
+        private int videoPort = 11000;
+        private bool isDrawing = false;
         private List<Point> tmpPoints = new List<Point>();
-        private Color penColor;
+        private Color penColor = Color.Red;
         private bool isFirstPointOfFigure = true;
         public OmniPosition HapticForces { get; set; }
         private bool logDataTurnAroundTime = false;
         private System.Windows.Forms.Timer turnAroundTimer = new System.Windows.Forms.Timer();
+        private TcpListener grantReqListener = null;
+
+        //OUTPUTS
+        public OmniPosition OutputPosition { get; set; }
+
         /*
         double forceOffset_LX = 0;
         double forceOffset_LY = 0;
@@ -114,7 +69,7 @@ namespace TelSurge
         private bool feedbackEnabled = false;
         //private volatile bool isListeningForData = false;
         private volatile string inControlIP;
-        TcpListener grantReqListener = null;
+        
         
         private volatile bool applicationRunning = true;
         string exeFile = (new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath;
@@ -125,8 +80,46 @@ namespace TelSurge
         public string EmergencySwitchBoundBtn;
         public int EmergencySwitchBoundValue;
         */
-        
-        //new Methods
+
+        public TelSurgeMain()
+        {
+            InitializeComponent();
+            try
+            {
+                this.User = new User(this, connectionPort);
+                this.AudioConference = new TelSurge.AudioConference(this, audioPort);
+                this.VideoCapture = new VideoCapture(this, videoPort);
+                this.Surgery = new Surgery();
+                this.Markup = new Markup(this, markingsPort);
+                this.SocketData = new SocketData(this, dataPort);
+                OutputPosition = new OmniPosition();
+                TelSurgeMain.CheckForIllegalCrossThreadCalls = false;
+                fillOmniDDL();
+                fillAudioDeviceDDL();
+                HapticForces = new OmniPosition();
+                RelayFreeze = false;
+
+                //Set Force Trackbar
+                //want force divider between 20 and 220
+                //divider = 220 - trackbarValue 
+                trb_forceStrength.Minimum = 0;
+                trb_forceStrength.Maximum = 200;
+                // The TickFrequency property establishes how many positions are between each tick-mark.
+                trb_forceStrength.TickFrequency = 20;
+                // The LargeChange property sets how many positions to move if the bar is clicked on either side of the slider.
+                trb_forceStrength.LargeChange = 2;
+                // The SmallChange property sets how many positions to move if the keyboard arrows are used to move the slider.
+                trb_forceStrength.SmallChange = 1;
+                //set initial value of trackbar
+                trb_forceStrength.Value = 170;
+
+                CaptureImageBox.FunctionalMode = Emgu.CV.UI.ImageBox.FunctionalModeOption.Minimum;
+            }
+            catch (Exception ex)
+            {
+                ShowError(ex.Message, ex.ToString());
+            }
+        }
         public void ClearMarkup() 
         {
 
@@ -159,6 +152,11 @@ namespace TelSurge
 
             lbButtons2.Text = "Buttons : " + currentPosition.ButtonsRight.ToString();
             lbInk2.Text = "InkWell : " + currentPosition.InkwellRight.ToString();
+        }
+        private void showOutputPosition()
+        {
+            tb_SendingLeft.Text = "X = " + OutputPosition.LeftX + Environment.NewLine + "Y = " + OutputPosition.LeftY + Environment.NewLine + "Z = " + OutputPosition.LeftZ;
+            tb_SendingRight.Text = "X = " + OutputPosition.RightX + Environment.NewLine + "Y = " + OutputPosition.RightY + Environment.NewLine + "Z = " + OutputPosition.RightZ;
         }
         private void sendOmniFreeze()
         {
@@ -266,12 +264,12 @@ namespace TelSurge
                             if (User.IsInControl)
                             {
                                 //Give control
-                                switchControl(false, sendGRAddr);
+                                switchControl(false);
                             }
                             else
                             {
                                 //take control
-                                switchControl(true, User.MyIPAddress);
+                                switchControl(true);
                                 //stop listening for data
                                 //isListeningForData = false;
                             }
@@ -341,6 +339,10 @@ namespace TelSurge
             HttpResponseMessage result;
             result = await _client.GetAsync("http://129.93.8.214/cgi-bin/ptzctrl.cgi?ptzcmd&" + cmd);
             result.EnsureSuccessStatusCode();
+        }
+        public void ShowVideoFrame(Image<Bgr, Byte> Frame)
+        {
+            CaptureImageBox.Image = Frame;
         }
 
         //Old Methods        
@@ -531,16 +533,6 @@ namespace TelSurge
             Markup.MyMarkings.Clear();
             tmpPoints = new List<Point>();
             Markup.ClearMarkingsReq = true;
-            //send update for markings
-            try
-            {
-                if (!User.IsMaster)
-                    SocketData.SendDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress));
-            }
-            catch (Exception ex)
-            {
-                ShowError(ex.Message, ex.ToString());
-            }
         }
         private void btn_Capture_Click(object sender, EventArgs e)
         {
@@ -583,7 +575,7 @@ namespace TelSurge
                     int success = 0;
                     success = User.InitializeOmnis(spLeftOmni.SelectedItem.ToString(), spRightOmni.SelectedItem.ToString());
 
-                    if (success == 1 || User.HasOmnis)
+                    if (success == 1 || !User.HasOmnis)
                     {
                         //Only allow one successful connection to Omnis
                         cb_noOmnisAttached.Enabled = false;
@@ -638,19 +630,28 @@ namespace TelSurge
         }
         private void UnderlyingTimerTick(object sender, EventArgs e)
         {
-            showOmniPositions();
             try
             {
+                showOmniPositions();
                 if (!User.IsMaster)
                 {
                     if (User.IsInControl)
-                        SocketData.SendDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress));
+                        SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
                 }
                 else
                 {
                     if (Surgery.ConnectedClients.Count > 0)
                         SocketData.MasterSendData();
                 }
+                if (User.IsInControl)
+                {
+                    Surgery.UserInControl = User;
+                    Surgery.InControlPosition = User.GetOmniPositions();
+                }
+                if (Surgery.InControlPosition != null)
+                    OutputPosition = Surgery.InControlPosition;
+                if (OutputPosition != null)
+                showOutputPosition();
             }
             catch (Exception ex)
             {
@@ -661,13 +662,12 @@ namespace TelSurge
         private void ConnectToMasterButtonClick(object sender, EventArgs e)
         {
             Surgery.Master.MyIPAddress = tb_ipAddress.Text;
-            User.ConnectToMaster();
-            if (User.ConnectedToMaster)
+            if (User.ConnectToMaster())
             {
                 try
                 {
                     SocketMessage sm = new SocketMessage(Surgery, User);
-                    SocketData.SendDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.SerializeObject<SocketMessage>(sm));
+                    SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.SerializeObject<SocketMessage>(sm));
 
                     //start listening for master's position
                     SocketData.IsListeningForData = true;
@@ -865,6 +865,10 @@ namespace TelSurge
         }
 
         //Thread Methods
+        private void MasterSendVideo()
+        {
+            VideoCapture.IsStreaming = true;
+        }
         private void listenForNewConnections()
         {
             try
@@ -892,18 +896,18 @@ namespace TelSurge
                     {
                         string dir = Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"..\..\Content\pc.png");
                         Image clientImg = Image.FromFile(dir);
-                        ToolStripItem newItem = new ToolStripButton(sm.Name, clientImg, sendClientGrantReq, "btn_" + sm.Name);
-                        newItem.ToolTipText = sm.IPAddress;
+                        ToolStripItem newItem = new ToolStripButton(sm.User.MyName, clientImg, sendClientGrantReq, "btn_" + sm.User.MyName);
+                        newItem.ToolTipText = sm.User.MyIPAddress;
                         ss_Connections.Items.Add(newItem);
                     }
 
-                    if (connectedClients.Count == 0)
+                    if (Surgery.ConnectedClients.Count == 0)
                     {
-                        Thread sendVideoThread = new Thread(new ThreadStart(sendVideo));
+                        Thread sendVideoThread = new Thread(new ThreadStart(MasterSendVideo));
                         sendVideoThread.IsBackground = true;
                         sendVideoThread.Start();
 
-                        Thread listenForNewMarkings = new Thread(new ThreadStart(listenForMarkings));
+                        Thread listenForNewMarkings = new Thread(new ThreadStart(Markup.ListenForMarkup));
                         listenForNewMarkings.IsBackground = true;
                         listenForNewMarkings.Start();
 
@@ -911,14 +915,14 @@ namespace TelSurge
                         listenForControlReq.IsBackground = true;
                         listenForControlReq.Start();
 
-                        Thread readFromDataBuffer = new Thread(new ThreadStart(readDataBuffer));
-                        readFromDataBuffer.IsBackground = true;
-                        readFromDataBuffer.Start();
+                        //Thread readFromDataBuffer = new Thread(new ThreadStart(readDataBuffer));
+                        //readFromDataBuffer.IsBackground = true;
+                        //readFromDataBuffer.Start();
                     }
-                    connectedClients.Add(sm.IPAddress);
+                    Surgery.ConnectedClients.Add(sm.User);
 
                     //Log Connection
-                    logMessage("Connection successfully made to "+sm.Name+".", "A client successfully connected to this machine with the name "+sm.Name+" and address "+sm.IPAddress+" .", Logging.StatusTypes.Running);
+                    LogMessage("Connection successfully made to " + sm.User.MyName + ".", "A client successfully connected to this machine with the name " + sm.User.MyName + " and address " + sm.User.MyIPAddress + " .", Logging.StatusTypes.Running);
                 }
             }
             catch (Exception ex)
@@ -926,26 +930,21 @@ namespace TelSurge
                 ShowError(ex.Message, ex.ToString());
             }
         }
-        
-        
         private void listenForGrantReq()
         {
             try
             {
                 if (grantReqListener == null)
                 {
-                    grantReqListener = new TcpListener(IPAddress.Parse(myIPAddress), controlPort);
+                    grantReqListener = new TcpListener(IPAddress.Parse(User.MyIPAddress), controlPort);
                     grantReqListener.Start();
                 }
                 TcpClient client = grantReqListener.AcceptTcpClient();
                 IPEndPoint remoteEP = (IPEndPoint)client.Client.RemoteEndPoint;
 
-                if (applicationRunning)
-                {
-                    Thread t = new Thread(new ThreadStart(listenForGrantReq));
-                    t.IsBackground = true;
-                    t.Start();
-                }
+                Thread t = new Thread(new ThreadStart(listenForGrantReq));
+                t.IsBackground = true;
+                t.Start();
 
                 //check if emergency switch
                 int emergBit = 0;
@@ -957,7 +956,7 @@ namespace TelSurge
                 if (emergBit.Equals(0))
                 {
                     //normal switch procedure
-                    if (isInControl)
+                    if (User.IsInControl)
                     {
                         DialogResult res = MessageBox.Show("Grant control?", remoteEP.Address.ToString() + " has requested control.", MessageBoxButtons.YesNo);
                         if (res == System.Windows.Forms.DialogResult.Yes)
@@ -966,7 +965,7 @@ namespace TelSurge
                             arry = new byte[1] { 1 };
                             s.Write(arry, 0, arry.Length);
 
-                            switchControl(false, remoteEP.Address.ToString());
+                            switchControl(false);
                         }
                         else
                         {
@@ -985,7 +984,7 @@ namespace TelSurge
                             s.Write(arry, 0, arry.Length);
 
                             //take control
-                            switchControl(true, myIPAddress);
+                            switchControl(true);
                             //stop listening for position
                             //isListeningForData = false;
                         }
@@ -1004,7 +1003,7 @@ namespace TelSurge
                     arry = new byte[1] { 1 };
                     s.Write(arry, 0, arry.Length);
 
-                    switchControl(false, remoteEP.Address.ToString());
+                    switchControl(false);
                 }
                 s.Close();
                 btn_ReqControl.Enabled = true;
@@ -1014,7 +1013,6 @@ namespace TelSurge
                 ShowError(ex.Message, ex.ToString());
             }
         }
-
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
             AssignButtons form = new AssignButtons(this);

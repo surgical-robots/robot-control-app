@@ -8,15 +8,13 @@ using System.Net.Sockets;
 using TelSurge.DataModels;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace TelSurge
 {
-    class SocketData
+    public class SocketData
     {
         private TelSurgeMain Main;
-        private User User;
-        private Surgery Surgery;
-        private Markup Markup;
 
         private UdpClient dataListener = null;
         private int dataPort;
@@ -32,12 +30,9 @@ namespace TelSurge
         /*
         private bool isListeningForData = false;
         */
-        public SocketData(TelSurgeMain MainForm, User User, Surgery Surgery, Markup Markup, int DataPort)
+        public SocketData(TelSurgeMain MainForm, int DataPort)
         {
             this.Main = MainForm;
-            this.User = User;
-            this.Surgery = Surgery;
-            this.Markup = Markup;
             this.dataPort = DataPort;
             this.IsListeningForData = false;
         }
@@ -46,10 +41,10 @@ namespace TelSurge
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             try
             {
-                foreach (string a in Main.ConnectedClients)
+                foreach (User user in Main.Surgery.ConnectedClients)
                 {
-                    if (!a.Equals(User.MyIPAddress))
-                        s.SendTo(createMessageToSend("Master"), new IPEndPoint(IPAddress.Parse(a), dataPort));
+                    if (!user.MyIPAddress.Equals(Main.User.MyIPAddress))
+                        s.SendTo(CreateMessageToSend(), new IPEndPoint(IPAddress.Parse(user.MyIPAddress), dataPort));
                 }
             }
             catch (Exception ex)
@@ -57,7 +52,7 @@ namespace TelSurge
                 Main.ShowError(ex.Message, ex.ToString());
             }
         }
-        public void SendDataTo(IPAddress Address, byte[] Message)
+        public void SendUDPDataTo(IPAddress Address, byte[] Message)
         {
             try
             {
@@ -69,22 +64,33 @@ namespace TelSurge
                 Main.ShowError(ex.Message, ex.ToString());
             }
         }
-        private byte[] createMessageToSend(string FromName) 
+        public void SendTCPDataTo(TcpClient Client, byte[] Message)
         {
-            SocketMessage sm = new SocketMessage(Surgery, FromName, User.MyIPAddress);
+            try
+            {
+                Stream s = Client.GetStream();
+                s.Write(Message, 0, Message.Length);
+            }
+            catch (Exception ex)
+            {
+                Main.ShowError(ex.Message, ex.ToString());
+            }
+        }
+        public byte[] CreateMessageToSend() 
+        {
+            SocketMessage sm = new SocketMessage(Main.Surgery, Main.User);
             byte[] arry = { };
             try
             {
-                if (User.IsFrozen)
-                    sm.OmniPosition = User.FrozenPosition;
+                if (Main.User.IsFrozen)
+                    sm.OmniPosition = Main.User.FrozenPosition;
                 else
-                    sm.OmniPosition = Surgery.InControlPosition;
-                sm.isFrozen = User.IsFrozen;
-                sm.ClearMarkingsReq = Markup.ClearMarkingsReq;
-                Markup.ClearMarkingsReq = false;
+                    sm.OmniPosition = Main.Surgery.InControlPosition;
+                sm.ClearMarkingsReq = Main.Markup.ClearMarkingsReq;
+                Main.Markup.ClearMarkingsReq = false;
                 //sm.sendFreezeCmd = sendFreezeCmd;
                 //sendFreezeComd = false;
-                if (User.IsMaster)
+                if (Main.User.IsMaster)
                 {
                     sm.Forces = Main.HapticForces;
                 }
@@ -139,7 +145,7 @@ namespace TelSurge
                 SocketMessage dataMsg = DeserializeObject<SocketMessage>(arry);
                 dataBuffer.Enqueue(dataMsg);
                 dataAvailable = true;
-                if (networkDataDelayChanged && User.NetworkDelay > 0 && !dataWatch.IsRunning)
+                if (networkDataDelayChanged && Main.User.NetworkDelay > 0 && !dataWatch.IsRunning)
                 {
                     networkDataDelayChanged = false;
                     dataWatch.Start();

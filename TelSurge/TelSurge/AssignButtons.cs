@@ -26,9 +26,9 @@ namespace TelSurge
             lb_AvailableBtns.Items.Add("OmniLeft_Back");
             lb_AvailableBtns.Items.Add("OmniRight_Front");
             lb_AvailableBtns.Items.Add("OmniRight_Back");
-            if (_main.externalButtons != null)
+            if (_main.User.externalButtons != null)
             {
-                for (int i = 0; i < _main.externalButtons.Count(); i++)
+                for (int i = 0; i < _main.User.externalButtons.Count(); i++)
                     lb_AvailableBtns.Items.Add("Ext_" + i);
             }
         }
@@ -38,18 +38,18 @@ namespace TelSurge
             //Save on exit
             try {
                 string selectedBtn = (string)lb_AvailableBtns.SelectedItem;
-                _main.EmergencySwitchBoundBtn = selectedBtn;
+                _main.User.EmergencySwitchBoundBtn = selectedBtn;
                 if (selectedBtn.Contains("Left"))
                 {
-                    _main.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex + 1;
+                    _main.User.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex + 1;
                 }
                 else if (selectedBtn.Contains("Right"))
                 {
-                    _main.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex - 1;
+                    _main.User.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex - 1;
                 }
                 else
                 {
-                    _main.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex - 4;
+                    _main.User.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex - 4;
                 }
             }
             catch (Exception ex)

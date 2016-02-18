@@ -27,7 +27,7 @@ namespace TelSurge
 
         private void btn_Done_Click(object sender, EventArgs e)
         {
-            _main.SetMyIP(ddl_Addresses.Items[ddl_Addresses.SelectedIndex].ToString());
+            _main.User.MyIPAddress = ddl_Addresses.Items[ddl_Addresses.SelectedIndex].ToString();
             this.Close();
         }
         private void fillAddresses()

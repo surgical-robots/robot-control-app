@@ -309,7 +309,6 @@
             this.btn_zeroForces.TabIndex = 7;
             this.btn_zeroForces.Text = "Zero";
             this.btn_zeroForces.UseVisualStyleBackColor = true;
-            this.btn_zeroForces.Click += new System.EventHandler(this.btn_zeroForces_Click);
             // 
             // groupBox3
             // 

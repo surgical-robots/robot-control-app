@@ -16,12 +16,9 @@ using System.Threading;
 
 namespace TelSurge
 {
-    class VideoCapture
+    public class VideoCapture
     {
         private TelSurgeMain Main;
-        private Markup Markup;
-        private Surgery Surgery;
-        private User User;
         private Capture _capture = null;
         public bool IsCapturing = false;
         private int videoPort;
@@ -29,6 +26,7 @@ namespace TelSurge
         public bool IsListeningForVideo { get; set; }
         public enum CaptureType { Local, IP, MasterFeed }
         private CaptureType CapturingType;
+        public bool IsStreaming { get; set; }
         /*
         private bool _captureInProgress = false;
         
@@ -51,20 +49,15 @@ namespace TelSurge
         private Image<Bgr, Byte> frame;
         */
 
-        public VideoCapture(TelSurgeMain MainForm, Markup Markup, Surgery Surgery, User User, int VideoPort)
+        public VideoCapture(TelSurgeMain Main, int VideoPort)
         {
-            this.Main = MainForm;
-            this.Markup = Markup;
-            this.Surgery = Surgery;
-            this.User = User;
+            this.Main = Main;
             this.videoPort = VideoPort;
             this.IsListeningForVideo = false;
-            if (User.IsMaster)
-                this.CapturingType = CaptureType.Local;
-            else
-                this.CapturingType = CaptureType.MasterFeed;
+            this.IsStreaming = false;
+            _capture = new Capture();
         }
-        private void addMarkup(Image<Bgr, byte> Frame) 
+        private void addMarkup(Markup Markup, Image<Bgr, byte> Frame) 
         {
             if (Markup.MyMarkings.RedMarkings.Count > 0)
                 Frame.DrawPolyline(Markup.MyMarkings.GetAllPaths(Markup.MyMarkings.RedMarkings), false, new Bgr(Color.Red), Markup.PenThickness);
@@ -83,37 +76,18 @@ namespace TelSurge
         {
             try
             {
-                Image<Bgr, byte> frame = _capture.RetrieveBgrFrame();
+                Image<Bgr, byte> frame =  new Image<Bgr,byte>(100, 100);
+                if (_capture != null)
+                    frame = _capture.RetrieveBgrFrame();
                 frame = frame.Resize(((double)Main.CaptureImageBox.Width / (double)frame.Width), Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR);
-                addMarkup(frame);
-                Main.CaptureImageBox.Image = frame;
+                addMarkup(Main.Markup, frame);
+                Main.ShowVideoFrame(frame);
+                //Main.CaptureImageBox.Image = frame;
                 sendVideoStream(frame);
             }
-            catch (Exception ex)
+            catch (AccessViolationException ave)
             {
-                Main.ShowError(ex.Message, ex.ToString());
-            }
-        }
-        public void ChangeCaptureMode(double Height, double Width)
-        {
-            try
-            {
-                if (_capture != null)
-                {
-                    if (IsCapturing)
-                    {  //stop the capture
-                        _capture.Stop();
-                    }
-                    else
-                    {
-                        //start the capture
-                        _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, Height);
-                        _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_WIDTH, Width);
-                        _capture.Start();
-                    }
-
-                    IsCapturing = !IsCapturing;
-                }
+                Main.ShowError(ave.Message, ave.ToString());
             }
             catch (Exception ex)
             {
@@ -124,95 +98,79 @@ namespace TelSurge
         {
             if (videoListener == null)
                 videoListener = new UdpClient(videoPort);
-            try
-            {
-                videoListener.BeginReceive(new AsyncCallback(videoImgReceived), null);
-            }
-            catch (Exception ex)
-            {
-                Main.ShowError(ex.Message, ex.ToString());
-            }
+
+            videoListener.BeginReceive(new AsyncCallback(videoImgReceived), null);
         }
         private void videoImgReceived(IAsyncResult Ar)
         {
-            try
-            {
-                IPEndPoint masterEP = new IPEndPoint(IPAddress.Parse(Surgery.Master.MyIPAddress), videoPort);
-                byte[] arry = videoListener.EndReceive(Ar, ref masterEP);
-                Image<Bgr, Byte> receivedImg = Image<Bgr, Byte>.FromRawImageData(arry);
-                //Image<Bgr, Byte> resizedImg = receivedImg.Resize(((double)captureImageBox.Width / (double)receivedImg.Width), Emgu.CV.CvEnum.INTER.CV_INTER_AREA);
-                addMarkup(receivedImg);
-                //myMarkings.OffsetX = receivedImg.Width - resizedImg.Width;
-                //myMarkings.OffsetY = receivedImg.Height - resizedImg.Height;
-            }
-            catch (Exception ex)
-            {
-                Main.ShowError(ex.Message, ex.ToString());
-            }
+            IPEndPoint masterEP = new IPEndPoint(IPAddress.Parse(Main.Surgery.Master.MyIPAddress), videoPort);
+            byte[] arry = videoListener.EndReceive(Ar, ref masterEP);
+            Image<Bgr, Byte> receivedImg = Image<Bgr, Byte>.FromRawImageData(arry);
+            //Image<Bgr, Byte> resizedImg = receivedImg.Resize(((double)captureImageBox.Width / (double)receivedImg.Width), Emgu.CV.CvEnum.INTER.CV_INTER_AREA);
+            addMarkup(Main.Markup, receivedImg);
+            //myMarkings.OffsetX = receivedImg.Width - resizedImg.Width;
+            //myMarkings.OffsetY = receivedImg.Height - resizedImg.Height;
+
             if (IsListeningForVideo)
                 ListenForVideo();
         }
         private void sendVideoStream(IImage Frame) 
         {
-            ImageCodecInfo jpgEncoder = getEncoder(ImageFormat.Jpeg);
-            System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
-            EncoderParameters myEncoderParameters = new EncoderParameters(1);
-            EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 20L);
-            myEncoderParameters.Param[0] = myEncoderParameter;
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-            try
+            if (IsStreaming)
             {
+                ImageCodecInfo jpgEncoder = getEncoder(ImageFormat.Jpeg);
+                System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
+                EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 20L);
+                myEncoderParameters.Param[0] = myEncoderParameter;
+                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
                 Bitmap imgToSend = Frame.Bitmap;
                 MemoryStream ms = new MemoryStream();
                 imgToSend.Save(ms, jpgEncoder, myEncoderParameters);
                 byte[] arry = ms.ToArray();
 
-                foreach (User usr in Surgery.ConnectedClients)
+                foreach (User usr in Main.Surgery.ConnectedClients)
                 {
                     s.SendTo(arry, new IPEndPoint(IPAddress.Parse(usr.MyIPAddress), videoPort));
                 }
             }
+        }
+        public void SwitchVideoFeed(CaptureType type, string deviceInfo) 
+        {
+            try
+            {
+                bool switchWhileCapturing = IsCapturing;
+                if (IsCapturing)
+                    StopCapturing();
+                if (type.Equals(CaptureType.MasterFeed))
+                {
+                    if (!Main.User.ConnectedToMaster)
+                        Main.ShowError("Master is not connected! No video feed.", "Tried to receive Master video feed without a connection to Master. (ChangeVideoSource)");
+                    else
+                    {
+                        IsListeningForVideo = true;
+                        Thread t = new Thread(new ThreadStart(ListenForVideo));
+                        t.IsBackground = true;
+                        t.Start();
+                    }
+                }
+                else
+                {
+                    if (!Main.User.IsMaster)
+                        IsListeningForVideo = false;
+                    if (type.Equals(CaptureType.Local))
+                        _capture = new Capture(Convert.ToInt32(deviceInfo));
+                    else if (type.Equals(CaptureType.IP))
+                        _capture = new Capture(deviceInfo);
+                    if (switchWhileCapturing)
+                        StartCapturing();
+                }
+                CapturingType = type;
+            }
             catch (Exception ex)
             {
                 Main.ShowError(ex.Message, ex.ToString());
-            }
-        }
-        private void switchVideoFeed(CaptureType type, string deviceInfo) 
-        {
-            if (IsCapturing)
-            {
-                _capture.Stop();
-                releaseData();
-            }
-            if (type.Equals(CaptureType.MasterFeed))
-            {
-                if (!User.ConnectedToMaster)
-                    Main.ShowError("Master is not connected! No video feed.", "Tried to receive Master video feed without a connection to Master. (ChangeVideoSource)");
-                else
-                {
-                    IsListeningForVideo = true;
-                    Thread t = new Thread(new ThreadStart(ListenForVideo));
-                    t.IsBackground = true;
-                    t.Start();
-                }
-            }
-            else
-            {
-                if (!User.IsMaster)
-                    IsListeningForVideo = false;
-                if (type.Equals(CaptureType.Local))
-                    _capture = new Capture(Convert.ToInt32(deviceInfo));
-                else if (type.Equals(CaptureType.IP))
-                    _capture = new Capture(deviceInfo);
-                _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FPS, 30);
-                _capture.ImageGrabbed += ProcessFrame;
-                if (IsCapturing)
-                {
-                    _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, Main.CaptureImageBox.Height);
-                    _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_WIDTH, Main.CaptureImageBox.Width);
-                    _capture.Start();
-                }
             }
         }
         private void releaseData()
@@ -221,28 +179,27 @@ namespace TelSurge
         }
         private ImageCodecInfo getEncoder(ImageFormat format)
         {
-            try
-            {
-                ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
 
-                foreach (ImageCodecInfo codec in codecs)
-                {
-                    if (codec.FormatID == format.Guid)
-                    {
-                        return codec;
-                    }
-                }
-            }
-            catch (Exception ex)
+            foreach (ImageCodecInfo codec in codecs)
             {
-                Main.ShowError(ex.Message, ex.ToString());
+                if (codec.FormatID == format.Guid)
+                {
+                    return codec;
+                }
             }
             return null;
         }
         public void StartCapturing()
         {
+            if (_capture == null)
+                _capture = new Capture();
+            _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FPS, 30);
+            _capture.ImageGrabbed += ProcessFrame;
+            _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, Main.CaptureImageBox.Height);
+            _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_WIDTH, Main.CaptureImageBox.Width);
+            _capture.Start();
             IsCapturing = true;
-            switchVideoFeed(VideoCapture.CaptureType.Local, "0");
         }
         public void StopCapturing()
         {
@@ -250,6 +207,7 @@ namespace TelSurge
             {
                 _capture.Stop();
                 releaseData();
+                IsCapturing = false;
             }
         }
 

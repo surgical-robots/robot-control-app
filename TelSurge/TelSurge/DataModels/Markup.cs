@@ -11,11 +11,9 @@ using Newtonsoft.Json;
 
 namespace TelSurge
 {
-    class Markup
+    public class Markup
     {
         private TelSurgeMain Main;
-        private User User;
-        private Surgery Surgery;
         public Markings MyMarkings = new Markings();
         UdpClient markingsListener = null;
         private int markingsPort;
@@ -43,11 +41,9 @@ namespace TelSurge
         private bool clearMarkingsReq = false;
         */
 
-        public Markup(TelSurgeMain MainForm, User User, Surgery Surgery, int MarkingsPort)
+        public Markup(TelSurgeMain MainForm, int MarkingsPort)
         {
             this.Main = MainForm;
-            this.User = User;
-            this.Surgery = Surgery;
             this.markingsPort = MarkingsPort;
             this.IsListeningForMarkup = false;
             this.ClearMarkingsReq = false;
@@ -55,15 +51,8 @@ namespace TelSurge
         }
         private void sendMarkup(IPAddress Address, int Port) 
         {
-            try
-            {
-                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                s.SendTo(SocketData.SerializeObject(MyMarkings), new IPEndPoint(Address, Port));
-            }
-            catch (Exception ex)
-            {
-                Main.ShowError(ex.Message, ex.ToString());
-            }
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            s.SendTo(SocketData.SerializeObject(MyMarkings), new IPEndPoint(Address, Port));
         }
         public void ListenForMarkup()
         {
@@ -81,14 +70,15 @@ namespace TelSurge
         }
         private async void markingsReceived(IAsyncResult AsyncResult)
         {
-            await Task.Delay(User.NetworkDelay);
-            IPEndPoint clientEP = new IPEndPoint(IPAddress.Parse(Surgery.Master.MyIPAddress), markingsPort);
+            await Task.Delay(Main.User.NetworkDelay);
+            IPEndPoint clientEP = new IPEndPoint(IPAddress.Parse(Main.Surgery.Master.MyIPAddress), markingsPort);
             byte[] arry = markingsListener.EndReceive(AsyncResult, ref clientEP);
             Markings clientMarkings = SocketData.DeserializeObject<Markings>(arry);
             MyMarkings.Merge(clientMarkings);
+            
 
             if (IsListeningForMarkup)
-                listenForMarkings();
+                ListenForMarkup();
         }
         public List<Point[]> GetMarksList(Color Color)
         {

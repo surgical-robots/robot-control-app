@@ -108,7 +108,7 @@ namespace TelSurge
                     if (connectedPort.IsOpen)
                         connectedPort.Close();
                     btn_Connect.Text = "Connect";
-                    _main.externalButtons = null;
+                    _main.User.externalButtons = null;
                     listen = false;
                     ListenThread.Abort();
                 }
@@ -117,8 +117,7 @@ namespace TelSurge
                     if (!connectedPort.IsOpen)
                         connectedPort.Open();
                     btn_Connect.Text = "Disconnect";
-                    if (_main.currentPosition != null)
-                        _main.externalButtons = new bool[numOfButtons[connectedPort.PortName]];
+                    _main.User.externalButtons = new bool[numOfButtons[connectedPort.PortName]];
                     listen = true;
                     ListenThread = new Thread(new ThreadStart(Listen));
                     ListenThread.Start();
@@ -153,14 +152,11 @@ namespace TelSurge
                     }
                     if (returnMessage != "")
                     {
-                        if (_main.currentPosition != null)
+                        if (_main.User.externalButtons == null)
+                            _main.User.externalButtons = new bool[numOfButtons[connectedPort.PortName]];
+                        for (int i = 0; i < numOfButtons[connectedPort.PortName]; i++)
                         {
-                            if (_main.externalButtons == null)
-                                _main.externalButtons = new bool[numOfButtons[connectedPort.PortName]];
-                            for (int i = 0; i < numOfButtons[connectedPort.PortName]; i++)
-                            {
-                                _main.externalButtons[i] = Convert.ToBoolean(Char.GetNumericValue(returnMessage[i]));
-                            }
+                            _main.User.externalButtons[i] = Convert.ToBoolean(Char.GetNumericValue(returnMessage[i]));
                         }
                     }
                 }

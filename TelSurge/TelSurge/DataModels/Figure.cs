@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace TelSurge.DataModels
 {
-    class Figure
+    public class Figure
     {
         public Color Color { get; set; }
         public Point[] Path { get; set; }

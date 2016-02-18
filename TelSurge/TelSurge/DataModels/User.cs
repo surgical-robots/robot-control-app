@@ -7,14 +7,13 @@ using TelSurge.DataModels;
 using System.Runtime.InteropServices;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 namespace TelSurge
 {
-    class User
+    public class User
     {
         private TelSurgeMain Main;
-        private Surgery Surgery;
-        private SocketData SocketData;
         public string MyName { get; set; }
         public string MyIPAddress { get; set; }
         public bool IsFrozen { get; set; }
@@ -28,6 +27,8 @@ namespace TelSurge
         private double followingForceConstant = 0.1;
         private double forceMax = 3;
         private int connectionPort;
+        public string EmergencySwitchBoundBtn { get; set; }
+        public int EmergencySwitchBoundValue { get; set; }
         /*
         private string myName = "";
         private volatile bool isInControl = false;
@@ -75,31 +76,38 @@ namespace TelSurge
         public static extern int ReleaseMemory(IntPtr ptr);
 
 
+        public User(TelSurgeMain MainForm, int ConnectionPort)
+        {
+            this.Main = MainForm;
+            this.MyName = "";
+            SetMyDefaultIP();
+            this.IsFrozen = false;
+            this.IsMaster = false;
+            this.NetworkDelay = 0;
+            this.ConnectedToMaster = false;
+            this.IsInControl = false;
+            this.HasOmnis = true;
+            this.connectionPort = ConnectionPort;
+        }
         public OmniPosition GetOmniPositions()
         {
             OmniPosition currentPosition = new OmniPosition();
             double[] pos1 = { 0, 0, 0, 0, 0, 0, 0, 0 };
             double[] pos2 = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
-            try
-            {
-                IntPtr ptr = getpos1();
-                Marshal.Copy(ptr, pos1, 0, 8);
-                ReleaseMemory(ptr);
+            IntPtr ptr = getpos1();
+            Marshal.Copy(ptr, pos1, 0, 8);
+            ReleaseMemory(ptr);
 
-                IntPtr ptr2 = getpos2();
-                Marshal.Copy(ptr2, pos2, 0, 8);
-                ReleaseMemory(ptr2);
+            IntPtr ptr2 = getpos2();
+            Marshal.Copy(ptr2, pos2, 0, 8);
+            ReleaseMemory(ptr2);
 
-                currentPosition = new OmniPosition(pos1, pos2);
-                //add any external buttons
-                if (externalButtons != null)
-                    currentPosition.ExtraButtons = externalButtons;
-            }
-            catch (Exception ex)
-            {
-                Main.ShowError(ex.Message, ex.ToString());
-            }
+            currentPosition = new OmniPosition(pos1, pos2);
+            //add any external buttons
+            if (externalButtons != null)
+                currentPosition.ExtraButtons = externalButtons;
+
             return currentPosition;
 
             /*
@@ -198,45 +206,31 @@ namespace TelSurge
         }
         public void SetOmniForce(OmniPosition Force) 
         {
-            try
+            if (HasOmnis)
             {
-                if (HasOmnis)
-                {
-                    setForce1(Force.LeftX, Force.LeftY, Force.LeftZ);
-                    setForce2(Force.RightX, Force.RightY, Force.RightZ);
-                }
-            }
-            catch (Exception ex)
-            {
-                Main.ShowError(ex.Message, ex.ToString());
+                setForce1(Force.LeftX, Force.LeftY, Force.LeftZ);
+                setForce2(Force.RightX, Force.RightY, Force.RightZ);
             }
         }
         public void OmniFollow(OmniPosition InControlPosition)
         {
-            try
+            if (HasOmnis)
             {
-                if (HasOmnis)
-                {
-                    OmniPosition currentPosition = GetOmniPositions();
-                    double forceLX = followingForceConstant * (currentPosition.LeftX - InControlPosition.LeftX);
-                    if (forceLX > forceMax) forceLX = forceMax;
-                    double forceLY = followingForceConstant * (currentPosition.LeftY - InControlPosition.LeftY);
-                    if (forceLY > forceMax) forceLY = forceMax;
-                    double forceLZ = followingForceConstant * (currentPosition.LeftZ - InControlPosition.LeftZ);
-                    if (forceLZ > forceMax) forceLZ = forceMax;
-                    double forceRX = followingForceConstant * (currentPosition.RightX - InControlPosition.RightX);
-                    if (forceRX > forceMax) forceRX = forceMax;
-                    double forceRY = followingForceConstant * (currentPosition.RightY - InControlPosition.RightY);
-                    if (forceRY > forceMax) forceRY = forceMax;
-                    double forceRZ = followingForceConstant * (currentPosition.RightZ - InControlPosition.RightZ);
-                    if (forceRZ > forceMax) forceRZ = forceMax;
+                OmniPosition currentPosition = GetOmniPositions();
+                double forceLX = followingForceConstant * (currentPosition.LeftX - InControlPosition.LeftX);
+                if (forceLX > forceMax) forceLX = forceMax;
+                double forceLY = followingForceConstant * (currentPosition.LeftY - InControlPosition.LeftY);
+                if (forceLY > forceMax) forceLY = forceMax;
+                double forceLZ = followingForceConstant * (currentPosition.LeftZ - InControlPosition.LeftZ);
+                if (forceLZ > forceMax) forceLZ = forceMax;
+                double forceRX = followingForceConstant * (currentPosition.RightX - InControlPosition.RightX);
+                if (forceRX > forceMax) forceRX = forceMax;
+                double forceRY = followingForceConstant * (currentPosition.RightY - InControlPosition.RightY);
+                if (forceRY > forceMax) forceRY = forceMax;
+                double forceRZ = followingForceConstant * (currentPosition.RightZ - InControlPosition.RightZ);
+                if (forceRZ > forceMax) forceRZ = forceMax;
 
-                    SetOmniForce(new OmniPosition(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ));
-                }
-            }
-            catch (Exception ex)
-            {
-                Main.ShowError(ex.Message, ex.ToString());
+                SetOmniForce(new OmniPosition(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ));
             }
         }
         private void SetMyDefaultIP()
@@ -257,85 +251,22 @@ namespace TelSurge
 
             if (HasOmnis)
             {
-                try
+                success = initAndSchedule(LeftOmniName, RightOmniName);
+                if (success == 1)
                 {
-                    success = initAndSchedule(LeftOmniName, RightOmniName);
-                    if (success == 1)
-                    {
-                        lock1();
-                        lock2();
-                    }
-                    else
-                    {
-                        Main.ShowError("Omni initialization error. Please check connections and try again.", "");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Main.ShowError(ex.Message, ex.ToString());
+                    lock1();
+                    lock2();
                 }
             }
 
             return success;
-
-
-
-            if (success == 1 || !HasOmnis)
-            {
-                if (!IsMaster && MyIPAddress == null)
-                    SetMyIP();
-                //Only allow one successful connection to Omnis
-                cb_noOmnisAttached.Enabled = false;
-                UnderlyingTimer.Enabled = true;
-                //do not allow switching between master and slave state once omnis are initialized
-                cb_isMaster.Enabled = false;
-                tb_InstanceName.Enabled = false;
-
-                if (isMaster)
-                {
-                    //For now, display in control here
-                    switchControl(true, myIPAddress);
-
-                    //start listening for clients wanting to connect
-                    Thread t = new Thread(new ThreadStart(listenForNewConnections));
-                    t.IsBackground = true;
-                    t.Start();
-
-                    //start listening for data
-                    isListeningForData = true;
-                    Thread t2 = new Thread(new ThreadStart(listenForData));
-                    t2.IsBackground = true;
-                    t2.Start();
-                }
-                else
-                {
-                    ConnectToMasterButton.Visible = true;
-                    myName = tb_InstanceName.Text;
-                }
-
-                if (cb_noOmnisAttached.Checked)
-                {
-                    //Don't show force controls if no omnis attched
-                    btn_zeroForces.Visible = false;
-                    groupBox3.Visible = false;
-                    tb_forces.Visible = false;
-                    lbl_forceStrength.Visible = false;
-                    trb_forceStrength.Visible = false;
-                }
-
-                gb_SendingLeft.Visible = true;
-                tb_SendingLeft.Visible = true;
-                gb_SendingRight.Visible = true;
-                tb_SendingRight.Visible = true;
-                btn_Initialize.Enabled = false;
             }
-        }
-        public void ConnectToMaster()
+        public bool ConnectToMaster()
         {
             TcpClient c = new TcpClient();
             try
             {
-                c.Connect(IPAddress.Parse(Surgery.Master.MyIPAddress), connectionPort);
+                c.Connect(IPAddress.Parse(Main.Surgery.Master.MyIPAddress), connectionPort);
             }
             catch (SocketException ex)
             {
@@ -347,76 +278,10 @@ namespace TelSurge
             ConnectedToMaster = c.Connected;
             if (ConnectedToMaster)
             {
-                try
-                {
-                    SocketData.
-                    string json = JsonConvert.SerializeObject(sm);
-                    byte[] arry = Encoding.ASCII.GetBytes(json);
-                    Stream s = c.GetStream();
-                    s.Write(arry, 0, arry.Length);
-
-                    //start listening for master's position
-                    isListeningForData = true;
-                    Thread t1 = new Thread(new ThreadStart(listenForData));
-                    t1.IsBackground = true;
-                    t1.Start();
-
-                    Thread t2 = new Thread(new ThreadStart(listenForVideo));
-                    t2.IsBackground = true;
-                    t2.Start();
-
-                    Thread t3 = new Thread(new ThreadStart(sendMarkings));
-                    t3.IsBackground = true;
-                    t3.Start();
-
-                    Thread t4 = new Thread(new ThreadStart(listenForGrantReq));
-                    t4.IsBackground = true;
-                    t4.Start();
-
-                    Thread t5 = new Thread(new ThreadStart(readVideoBuffer));
-                    t5.IsBackground = true;
-                    t5.Start();
-
-                    Thread t6 = new Thread(new ThreadStart(readDataBuffer));
-                    t6.IsBackground = true;
-                    t6.Start();
-
-                    if (!cb_noOmnisAttached.Checked) //if Omni's are attached
-                    {
-                        lbl_Connections.Text = "Connected to: ";
-                        string dir = Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"..\..\Content\pc.png");
-                        Image pcImg = Image.FromFile(dir);
-                        ToolStripItem newItem = new ToolStripButton("Master", pcImg, sendClientGrantReq, "btn_Master");
-                        newItem.ToolTipText = tb_ipAddress.Text;
-                        ss_Connections.Items.Add(newItem);
-
-                        btn_ReqControl.Enabled = true;
-                    }
-                    else
-                    {
-                        lbl_Connections.Text = "Connected to: Master";
-                    }
-
-                    lbl_Connections.Visible = true;
-                    gb_SendingLeft.Visible = true;
-                    tb_SendingLeft.Visible = true;
-                    gb_SendingRight.Visible = true;
-                    tb_SendingRight.Visible = true;
-                }
-                catch (Exception ex)
-                {
-                    ShowError(ex.Message, ex.ToString());
-                }
+                SocketMessage sm = new SocketMessage(Main.Surgery, this);
+                Main.SocketData.SendTCPDataTo(c, SocketData.SerializeObject<SocketMessage>(sm));
             }
-
-            ConnectToMasterButton.Enabled = !connected;
-            tb_ipAddress.Enabled = !connected;
-            btn_zeroForces.Enabled = connected;
-            groupBox3.Enabled = connected;
-            tb_forces.Enabled = connected;
-            lbl_forceStrength.Enabled = connected;
-            trb_forceStrength.Enabled = connected;
+            return ConnectedToMaster;
         }
-
     }
 }
