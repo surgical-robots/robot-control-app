@@ -164,7 +164,7 @@ namespace TelSurge
                         _capture = new Capture(Convert.ToInt32(deviceInfo));
                     else if (type.Equals(CaptureType.IP))
                         _capture = new Capture(deviceInfo);
-                    if (switchWhileCapturing)
+                    if (switchWhileCapturing || !Main.User.IsMaster)
                         StartCapturing();
                 }
                 CapturingType = type;

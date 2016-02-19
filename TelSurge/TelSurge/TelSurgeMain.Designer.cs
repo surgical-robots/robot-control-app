@@ -1005,7 +1005,7 @@
         private System.Windows.Forms.CheckBox cb_noOmnisAttached;
         private System.Windows.Forms.Label lbl_forceStrength;
         private System.Windows.Forms.TrackBar trb_forceStrength;
-        private System.Windows.Forms.TextBox tb_ipAddress;
+        public System.Windows.Forms.TextBox tb_ipAddress;
         private System.Windows.Forms.Label lbl_myIP;
         private System.Windows.Forms.CheckBox cb_isMaster;
         private System.Windows.Forms.Button btn_zeroForces;

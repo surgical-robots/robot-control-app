@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotControl", "RobotControl\RobotControl.csproj", "{D6319095-4A9F-409C-8D46-2E77A6C49D29}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4E98BCE1-36B4-4D54-B79C-4E3A98DAEC86} = {4E98BCE1-36B4-4D54-B79C-4E3A98DAEC86}
+	EndProjectSection
 EndProject
 Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Documentation", "Documentation\Documentation.shfbproj", "{2B20F519-90D1-4E38-B6ED-5F7FF816690E}"
 	ProjectSection(ProjectDependencies) = postProject

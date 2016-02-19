@@ -29,7 +29,6 @@ namespace TelSurge
         public Surgery Surgery { get; set; }
         public Markup Markup { get; set; }
         public SocketData SocketData { get; set; }
-        public bool RelayFreeze { get; set; }
         private bool noRobot = true;
         private string logFile = "log.csv";
         private string sendGRAddr = "";
@@ -97,7 +96,6 @@ namespace TelSurge
                 fillOmniDDL();
                 fillAudioDeviceDDL();
                 HapticForces = new OmniPosition();
-                RelayFreeze = false;
 
                 //Set Force Trackbar
                 //want force divider between 20 and 220
@@ -160,19 +158,7 @@ namespace TelSurge
         }
         private void sendOmniFreeze()
         {
-            User.IsFrozen = !User.IsFrozen;
-            if (noRobot)
-            {
-                //manually freeze omnis
-            }
-            else
-            {
-                RelayFreeze = !RelayFreeze;
-            }
-            if (User.IsFrozen)
-                tb_InControl.Text = "You are frozen.";
-            else
-                tb_InControl.Text = "You are in control!";
+            
             /*
             //make sure this method is executed once
             buttonPressed = true;
@@ -300,7 +286,7 @@ namespace TelSurge
                 else
                 {
                     User.FrozenPosition = Surgery.InControlPosition;
-                    sendOmniFreeze();
+                    Freeze();
                 }
 
                 tb_InControl.BackColor = Color.Red;
@@ -343,6 +329,18 @@ namespace TelSurge
         public void ShowVideoFrame(Image<Bgr, Byte> Frame)
         {
             CaptureImageBox.Image = Frame;
+        }
+        public void Freeze()
+        {
+            User.IsFrozen = !User.IsFrozen;
+            if (noRobot)
+            {
+                //manually freeze omnis
+            }
+            if (User.IsFrozen)
+                tb_InControl.Text = "You are frozen.";
+            else
+                tb_InControl.Text = "You are in control!";
         }
 
         //Old Methods        
@@ -445,11 +443,9 @@ namespace TelSurge
                     {
                         ShowError(ex.Message, ex.ToString());
                     }
-<<<<<<< HEAD
-=======
+
                     if (!User.IsMaster)
                         Markup.SendMarkup(IPAddress.Parse(Surgery.Master.MyIPAddress));
->>>>>>> 0abf7e5679816808f295a3f21cd72671cc04575d
                 }
             }
             //else if (!startZoomPt.IsEmpty)
@@ -542,7 +538,9 @@ namespace TelSurge
         {
             Markup.MyMarkings.Clear();
             tmpPoints = new List<Point>();
-            Markup.ClearMarkingsReq = true;
+            SocketMessage sm = new SocketMessage(Surgery, User);
+            sm.ClearMarkingsReq = true;
+            SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.SerializeObject<SocketMessage>(sm));
         }
         private void btn_Capture_Click(object sender, EventArgs e)
         {

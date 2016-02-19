@@ -18,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using GalaSoft.MvvmLight.Messaging;
 using TelSurge;
+using TelSurge.DataModels;
 using System.Windows.Forms;
 using System.Windows.Interop;
 
@@ -41,6 +42,7 @@ namespace RobotApp.Views.Plugins
         public double forceRY = 0;
         public double forceRZ = 0;
         public bool hapticEnable = false;
+        bool newForces = false;
 
         /// <summary>
         /// This function is manually called at the end of the constructor (below) as well as automatically getting called after deserialization.
@@ -57,43 +59,37 @@ namespace RobotApp.Views.Plugins
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceLX"].UniqueID, (message) =>
              {
                  forceLX = message.Value;
-                 if (hapticEnable)
-                    telSurge.setForces(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ);
+                 newForces = true;
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceLY"].UniqueID, (message) =>
              {
                  forceLY = message.Value;
-                 if (hapticEnable)
-                    telSurge.setForces(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ);
+                 newForces = true;
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceLZ"].UniqueID, (message) =>
              {
                  forceLZ = message.Value;
-                 if (hapticEnable)
-                    telSurge.setForces(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ);
+                 newForces = true;
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceRX"].UniqueID, (message) =>
              {
                  forceRX = message.Value;
-                 if (hapticEnable)
-                    telSurge.setForces(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ);
+                 newForces = true;
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceRY"].UniqueID, (message) =>
              {
                  forceRY = message.Value;
-                 if (hapticEnable)
-                    telSurge.setForces(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ);
+                 newForces = true;
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceRZ"].UniqueID, (message) =>
              {
                  forceRZ = message.Value;
-                 if(hapticEnable)
-                    telSurge.setForces(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ);
+                 newForces = true;
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["HapticEnable"].UniqueID, (message) =>
@@ -103,6 +99,21 @@ namespace RobotApp.Views.Plugins
                  else
                      hapticEnable = false;
              });
+
+             Messenger.Default.Register<Messages.Signal>(this, Inputs["FreezeIn"].UniqueID, (message) =>
+             {
+                 if (message.Value.Equals(0))
+                 {
+                     telSurge.Freeze();
+                     Outputs["FreezeOut"].Value = Convert.ToDouble(!telSurge.User.IsFrozen);
+                 }
+             });
+
+             if (newForces)
+             {
+                 telSurge.User.SetOmniForce(new OmniPosition(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ));
+                 newForces = false;
+             }
 
              base.PostLoadSetup();
          }
@@ -137,7 +148,7 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("RButton1", new OutputSignalViewModel("Right Button 1"));
             Outputs.Add("RButton2", new OutputSignalViewModel("Right Button 2"));
 
-            Outputs.Add("Freeze", new OutputSignalViewModel("Freeze"));
+            Outputs.Add("FreezeOut", new OutputSignalViewModel("FreezeOut"));
             Outputs.Add("ExButton1", new OutputSignalViewModel("ExButton1"));
             Outputs.Add("ExButton2", new OutputSignalViewModel("ExButton2"));
             Outputs.Add("ExButton3", new OutputSignalViewModel("ExButton3"));
@@ -153,6 +164,7 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("ForceRX", new ViewModel.InputSignalViewModel("ForceRX", this.InstanceName));
             Inputs.Add("ForceRY", new ViewModel.InputSignalViewModel("ForceRY", this.InstanceName));
             Inputs.Add("ForceRZ", new ViewModel.InputSignalViewModel("ForceRZ", this.InstanceName));
+            Inputs.Add("FreezeIn", new ViewModel.InputSignalViewModel("FreezeIn", this.InstanceName));
             Inputs.Add("HapticEnable", new ViewModel.InputSignalViewModel("HapticEnable", this.InstanceName));
             Inputs.Add("EmergencySwitch", new ViewModel.InputSignalViewModel("EmergencySwitch", this.InstanceName));
 
@@ -191,7 +203,6 @@ namespace RobotApp.Views.Plugins
                 Outputs["RButton1"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsRight.Equals(1));
                 Outputs["RButton2"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsRight.Equals(2));
 
-                Outputs["Freeze"].Value = Convert.ToDouble(telSurge.RelayFreeze);
 
                 //Update output for any external buttons
                 for (int i = 1; i <= telSurge.OutputPosition.ExtraButtons.Length; i++)
