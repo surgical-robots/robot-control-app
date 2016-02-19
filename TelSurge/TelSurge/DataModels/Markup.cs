@@ -68,10 +68,10 @@ namespace TelSurge
                 Main.ShowError(ex.Message, ex.ToString());
             }
         }
-        private async void markingsReceived(IAsyncResult AsyncResult)
+        private void markingsReceived(IAsyncResult AsyncResult)
         {
-            await Task.Delay(Main.User.NetworkDelay);
-            IPEndPoint clientEP = new IPEndPoint(IPAddress.Parse(Main.Surgery.Master.MyIPAddress), markingsPort);
+            //await Task.Delay(Main.User.NetworkDelay);
+            IPEndPoint clientEP = new IPEndPoint(IPAddress.Any, markingsPort);
             byte[] arry = markingsListener.EndReceive(AsyncResult, ref clientEP);
             Markings clientMarkings = SocketData.DeserializeObject<Markings>(arry);
             MyMarkings.Merge(clientMarkings);

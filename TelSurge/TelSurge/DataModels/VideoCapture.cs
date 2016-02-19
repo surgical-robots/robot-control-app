@@ -56,7 +56,7 @@ namespace TelSurge
             this.IsListeningForVideo = false;
             this.IsStreaming = false;
         }
-        private void addMarkup(Image<Bgr, byte> Frame) 
+        private Image<Bgr, byte> addMarkup(Image<Bgr, byte> Frame) 
         {
             if (Main.Markup.MyMarkings.RedMarkings.Count > 0)
                 Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.RedMarkings), false, new Bgr(Color.Red), Main.Markup.PenThickness);
@@ -70,6 +70,7 @@ namespace TelSurge
                 Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.YellowMarkings), false, new Bgr(Color.Yellow), Main.Markup.PenThickness);
             if (Main.Markup.MyMarkings.GreenMarkings.Count > 0)
                 Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.GreenMarkings), false, new Bgr(Color.Green), Main.Markup.PenThickness);
+            return Frame;
         }
         private void ProcessFrame(object sender, EventArgs arg)
         {
@@ -79,7 +80,7 @@ namespace TelSurge
                 if (_capture != null)
                     frame = _capture.RetrieveBgrFrame();
                 frame = frame.Resize(((double)Main.CaptureImageBox.Width / (double)frame.Width), Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR);
-                addMarkup(frame);
+                frame = addMarkup(frame);
                 Main.ShowVideoFrame(frame);
                 //Main.CaptureImageBox.Image = frame;
                 sendVideoStream(frame);
@@ -106,7 +107,7 @@ namespace TelSurge
             byte[] arry = videoListener.EndReceive(Ar, ref masterEP);
             Image<Bgr, Byte> receivedImg = Image<Bgr, Byte>.FromRawImageData(arry);
             //Image<Bgr, Byte> resizedImg = receivedImg.Resize(((double)captureImageBox.Width / (double)receivedImg.Width), Emgu.CV.CvEnum.INTER.CV_INTER_AREA);
-            addMarkup(receivedImg);
+            receivedImg = addMarkup(receivedImg);
             //myMarkings.OffsetX = receivedImg.Width - resizedImg.Width;
             //myMarkings.OffsetY = receivedImg.Height - resizedImg.Height;
             Main.CaptureImageBox.Image = receivedImg;
