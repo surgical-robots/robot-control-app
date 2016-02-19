@@ -100,6 +100,37 @@ namespace TelSurge
                     throw new Exception("Invalid color selected.");
             }
         }
+        public void SetMarksList(Color Color, List<Point[]> List)
+        {
+            List<Figure> figureList = new List<Figure>();
+            foreach (Point[] p in List) 
+            {
+                figureList.Add(new Figure(Color, p));
+            }
+            switch (Color.Name)
+            {
+                case "Red":
+                    MyMarkings.RedMarkings = figureList;
+                    break;
+                case "Black":
+                    MyMarkings.BlackMarkings = figureList;
+                    break;
+                case "Blue":
+                    MyMarkings.BlueMarkings = figureList;
+                    break;
+                case "White":
+                    MyMarkings.WhiteMarkings = figureList;
+                    break;
+                case "Yellow":
+                    MyMarkings.YellowMarkings = figureList;
+                    break;
+                case "Green":
+                    MyMarkings.GreenMarkings = figureList;
+                    break;
+                default:
+                    throw new Exception("Invalid color selected.");
+            }
+        }
 
         /*----------------------------------------------------------------
 

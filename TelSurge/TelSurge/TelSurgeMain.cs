@@ -435,8 +435,9 @@ namespace TelSurge
                         }
                         else
                         {
-                            marksList[marksList.Count] = tmpPoints.ToArray();
+                            marksList[marksList.Count - 1] = tmpPoints.ToArray();
                         }
+                        Markup.SetMarksList(penColor, marksList);
                     }
                     catch (Exception ex)
                     {
@@ -474,11 +475,13 @@ namespace TelSurge
                 isDrawing = false;
                 try
                 {
-                    for (int i = 0; i < tmpPoints.Count; i++)
-                    {
-                        tmpPoints[i].Offset((int)Markup.MyMarkings.OffsetX, (int)Markup.MyMarkings.OffsetY);
-                    }
-                    List<Point[]> marksList = Markup.GetMarksList(penColor);
+                    isFirstPointOfFigure = true;
+                    tmpPoints = new List<Point>();
+                    //for (int i = 0; i < tmpPoints.Count; i++)
+                    //{
+                    //    tmpPoints[i].Offset((int)Markup.MyMarkings.OffsetX, (int)Markup.MyMarkings.OffsetY);
+                    //}
+                    
                 }
                 catch (Exception ex)
                 {
