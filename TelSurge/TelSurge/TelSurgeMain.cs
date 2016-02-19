@@ -122,7 +122,7 @@ namespace TelSurge
         }
         public void ClearMarkup() 
         {
-
+            Markup.MyMarkings.Clear();
         }
         private void showOmniPositions()
         {
@@ -443,7 +443,8 @@ namespace TelSurge
                     {
                         ShowError(ex.Message, ex.ToString());
                     }
-                    Markup.SendMarkup(IPAddress.Parse(Surgery.Master.MyIPAddress));
+                    if (!User.IsMaster)
+                        Markup.SendMarkup(IPAddress.Parse(Surgery.Master.MyIPAddress));
                 }
             }
             //else if (!startZoomPt.IsEmpty)
@@ -913,6 +914,7 @@ namespace TelSurge
                         sendVideoThread.IsBackground = true;
                         sendVideoThread.Start();
 
+                        Markup.IsListeningForMarkup = true;
                         Thread listenForNewMarkings = new Thread(new ThreadStart(Markup.ListenForMarkup));
                         listenForNewMarkings.IsBackground = true;
                         listenForNewMarkings.Start();
