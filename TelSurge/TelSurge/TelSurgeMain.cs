@@ -573,7 +573,8 @@ namespace TelSurge
                 else
                 {
                     int success = 0;
-                    success = User.InitializeOmnis(spLeftOmni.SelectedItem.ToString(), spRightOmni.SelectedItem.ToString());
+                    if (spLeftOmni.Items.Count > 0 && spRightOmni.Items.Count > 0)
+                        success = User.InitializeOmnis(spLeftOmni.SelectedItem.ToString(), spRightOmni.SelectedItem.ToString());
 
                     if (success == 1 || !User.HasOmnis)
                     {
@@ -633,6 +634,16 @@ namespace TelSurge
             try
             {
                 showOmniPositions();
+                if (User.IsInControl)
+                {
+                    Surgery.UserInControl = User;
+                    Surgery.InControlPosition = User.GetOmniPositions();
+                }
+                if (Surgery.InControlPosition != null)
+                    OutputPosition = Surgery.InControlPosition;
+                if (OutputPosition != null)
+                    showOutputPosition();
+
                 if (!User.IsMaster)
                 {
                     if (User.IsInControl)
@@ -643,15 +654,6 @@ namespace TelSurge
                     if (Surgery.ConnectedClients.Count > 0)
                         SocketData.MasterSendData();
                 }
-                if (User.IsInControl)
-                {
-                    Surgery.UserInControl = User;
-                    Surgery.InControlPosition = User.GetOmniPositions();
-                }
-                if (Surgery.InControlPosition != null)
-                    OutputPosition = Surgery.InControlPosition;
-                if (OutputPosition != null)
-                showOutputPosition();
             }
             catch (Exception ex)
             {

@@ -55,7 +55,6 @@ namespace TelSurge
             this.videoPort = VideoPort;
             this.IsListeningForVideo = false;
             this.IsStreaming = false;
-            _capture = new Capture();
         }
         private void addMarkup(Markup Markup, Image<Bgr, byte> Frame) 
         {
@@ -110,6 +109,7 @@ namespace TelSurge
             addMarkup(Main.Markup, receivedImg);
             //myMarkings.OffsetX = receivedImg.Width - resizedImg.Width;
             //myMarkings.OffsetY = receivedImg.Height - resizedImg.Height;
+            Main.CaptureImageBox.Image = receivedImg;
 
             if (IsListeningForVideo)
                 ListenForVideo();

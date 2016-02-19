@@ -76,6 +76,16 @@ namespace TelSurge
         public static extern int ReleaseMemory(IntPtr ptr);
 
 
+        public User()
+        {
+            this.MyName = "";
+            this.IsFrozen = false;
+            this.IsMaster = false;
+            this.NetworkDelay = 0;
+            this.ConnectedToMaster = false;
+            this.IsInControl = false;
+            this.HasOmnis = true;
+        }
         public User(TelSurgeMain MainForm, int ConnectionPort)
         {
             this.Main = MainForm;

@@ -17,6 +17,7 @@ namespace TelSurge
         public Surgery()
         {
             this.ConnectedClients = new List<User>();
+            this.Master = new User();
         }
     }
 }

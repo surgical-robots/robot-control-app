@@ -143,13 +143,14 @@ namespace TelSurge
 
 
                 SocketMessage dataMsg = DeserializeObject<SocketMessage>(arry);
-                dataBuffer.Enqueue(dataMsg);
-                dataAvailable = true;
-                if (networkDataDelayChanged && Main.User.NetworkDelay > 0 && !dataWatch.IsRunning)
-                {
-                    networkDataDelayChanged = false;
-                    dataWatch.Start();
-                }
+                Main.Surgery = dataMsg.Surgery;
+                //dataBuffer.Enqueue(dataMsg);
+                //dataAvailable = true;
+                //if (networkDataDelayChanged && Main.User.NetworkDelay > 0 && !dataWatch.IsRunning)
+                //{
+                //    networkDataDelayChanged = false;
+                //    dataWatch.Start();
+                //}
                 if (dataMsg.ClearMarkingsReq)
                 {
                     Main.ClearMarkup();
