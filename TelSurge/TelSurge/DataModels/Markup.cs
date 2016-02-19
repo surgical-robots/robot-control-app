@@ -52,7 +52,7 @@ namespace TelSurge
         public void SendMarkup(IPAddress Address) 
         {
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            s.SendTo(SocketData.SerializeObject(MyMarkings), new IPEndPoint(Address, markingsPort));
+            s.SendTo(SocketData.SerializeObject<Markings>(MyMarkings), new IPEndPoint(Address, markingsPort));
         }
         public void ListenForMarkup()
         {

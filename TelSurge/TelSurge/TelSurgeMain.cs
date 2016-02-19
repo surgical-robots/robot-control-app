@@ -438,12 +438,13 @@ namespace TelSurge
                             marksList[marksList.Count - 1] = tmpPoints.ToArray();
                         }
                         Markup.SetMarksList(penColor, marksList);
+                        if (!User.IsMaster)
+                            Markup.SendMarkup(IPAddress.Parse(Surgery.Master.MyIPAddress));
                     }
                     catch (Exception ex)
                     {
                         ShowError(ex.Message, ex.ToString());
                     }
-                    Markup.SendMarkup(IPAddress.Parse(Surgery.Master.MyIPAddress));
                 }
             }
             //else if (!startZoomPt.IsEmpty)
