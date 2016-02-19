@@ -443,6 +443,7 @@ namespace TelSurge
                     {
                         ShowError(ex.Message, ex.ToString());
                     }
+                    Markup.SendMarkup(IPAddress.Parse(Surgery.Master.MyIPAddress));
                 }
             }
             //else if (!startZoomPt.IsEmpty)

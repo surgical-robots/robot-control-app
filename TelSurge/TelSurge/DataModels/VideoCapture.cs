@@ -56,20 +56,20 @@ namespace TelSurge
             this.IsListeningForVideo = false;
             this.IsStreaming = false;
         }
-        private void addMarkup(Markup Markup, Image<Bgr, byte> Frame) 
+        private void addMarkup(Image<Bgr, byte> Frame) 
         {
-            if (Markup.MyMarkings.RedMarkings.Count > 0)
-                Frame.DrawPolyline(Markup.MyMarkings.GetAllPaths(Markup.MyMarkings.RedMarkings), false, new Bgr(Color.Red), Markup.PenThickness);
-            if (Markup.MyMarkings.BlackMarkings.Count > 0)
-                Frame.DrawPolyline(Markup.MyMarkings.GetAllPaths(Markup.MyMarkings.BlackMarkings), false, new Bgr(Color.Black), Markup.PenThickness);
-            if (Markup.MyMarkings.BlueMarkings.Count > 0)
-                Frame.DrawPolyline(Markup.MyMarkings.GetAllPaths(Markup.MyMarkings.BlueMarkings), false, new Bgr(Color.Blue), Markup.PenThickness);
-            if (Markup.MyMarkings.WhiteMarkings.Count > 0)
-                Frame.DrawPolyline(Markup.MyMarkings.GetAllPaths(Markup.MyMarkings.WhiteMarkings), false, new Bgr(Color.White), Markup.PenThickness);
-            if (Markup.MyMarkings.YellowMarkings.Count > 0)
-                Frame.DrawPolyline(Markup.MyMarkings.GetAllPaths(Markup.MyMarkings.YellowMarkings), false, new Bgr(Color.Yellow), Markup.PenThickness);
-            if (Markup.MyMarkings.GreenMarkings.Count > 0)
-                Frame.DrawPolyline(Markup.MyMarkings.GetAllPaths(Markup.MyMarkings.GreenMarkings), false, new Bgr(Color.Green), Markup.PenThickness);
+            if (Main.Markup.MyMarkings.RedMarkings.Count > 0)
+                Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.RedMarkings), false, new Bgr(Color.Red), Main.Markup.PenThickness);
+            if (Main.Markup.MyMarkings.BlackMarkings.Count > 0)
+                Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.BlackMarkings), false, new Bgr(Color.Black), Main.Markup.PenThickness);
+            if (Main.Markup.MyMarkings.BlueMarkings.Count > 0)
+                Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.BlueMarkings), false, new Bgr(Color.Blue), Main.Markup.PenThickness);
+            if (Main.Markup.MyMarkings.WhiteMarkings.Count > 0)
+                Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.WhiteMarkings), false, new Bgr(Color.White), Main.Markup.PenThickness);
+            if (Main.Markup.MyMarkings.YellowMarkings.Count > 0)
+                Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.YellowMarkings), false, new Bgr(Color.Yellow), Main.Markup.PenThickness);
+            if (Main.Markup.MyMarkings.GreenMarkings.Count > 0)
+                Frame.DrawPolyline(Main.Markup.MyMarkings.GetAllPaths(Main.Markup.MyMarkings.GreenMarkings), false, new Bgr(Color.Green), Main.Markup.PenThickness);
         }
         private void ProcessFrame(object sender, EventArgs arg)
         {
@@ -79,7 +79,7 @@ namespace TelSurge
                 if (_capture != null)
                     frame = _capture.RetrieveBgrFrame();
                 frame = frame.Resize(((double)Main.CaptureImageBox.Width / (double)frame.Width), Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR);
-                addMarkup(Main.Markup, frame);
+                addMarkup(frame);
                 Main.ShowVideoFrame(frame);
                 //Main.CaptureImageBox.Image = frame;
                 sendVideoStream(frame);
@@ -106,7 +106,7 @@ namespace TelSurge
             byte[] arry = videoListener.EndReceive(Ar, ref masterEP);
             Image<Bgr, Byte> receivedImg = Image<Bgr, Byte>.FromRawImageData(arry);
             //Image<Bgr, Byte> resizedImg = receivedImg.Resize(((double)captureImageBox.Width / (double)receivedImg.Width), Emgu.CV.CvEnum.INTER.CV_INTER_AREA);
-            addMarkup(Main.Markup, receivedImg);
+            addMarkup(receivedImg);
             //myMarkings.OffsetX = receivedImg.Width - resizedImg.Width;
             //myMarkings.OffsetY = receivedImg.Height - resizedImg.Height;
             Main.CaptureImageBox.Image = receivedImg;

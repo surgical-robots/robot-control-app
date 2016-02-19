@@ -49,10 +49,10 @@ namespace TelSurge
             this.ClearMarkingsReq = false;
             this.PenThickness = 5;
         }
-        private void sendMarkup(IPAddress Address, int Port) 
+        public void SendMarkup(IPAddress Address) 
         {
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            s.SendTo(SocketData.SerializeObject(MyMarkings), new IPEndPoint(Address, Port));
+            s.SendTo(SocketData.SerializeObject(MyMarkings), new IPEndPoint(Address, markingsPort));
         }
         public void ListenForMarkup()
         {
