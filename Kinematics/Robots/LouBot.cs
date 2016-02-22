@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace Kinematics.Robots
 {
-    class TomShortArm : CoupledShoulderAndElbow3DOF
+    class LouBot : CoupledShoulder3DOF
     {
-        public TomShortArm()
+        public LouBot()
         {
             this.ShoulderOffset = 17.78;
-            this.LengthUpperArm = 54;
-            this.LengthForearm = 63;
-            this.Theta1Max = 40;
+            this.LengthUpperArm = 68.58;
+            this.LengthForearm = 96.393;
+            this.Theta1Max = 90;
             this.Theta1Min = -90;
             this.Theta2Max = 90;
-            this.Theta2Min = -20;
-            this.Theta3Max = 155;
+            this.Theta2Min = -45;
+            this.Theta3Max = 105;
             this.Theta3Min = 0;
         }
     }

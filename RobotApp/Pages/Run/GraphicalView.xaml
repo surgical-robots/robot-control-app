@@ -11,46 +11,52 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Style="{StaticResource ContentRoot}">
        
-        <Grid ShowGridLines="True">
+        <Grid ShowGridLines="False">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" ShowGridLines="True">
+            <Grid Grid.Column="0" ShowGridLines="False" MaxWidth="500">
 
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <h:HelixViewport3D Grid.Row="0" Title="Top Down View" TitleBackground="Gray" Orthographic="True" ZoomExtentsWhenLoaded="True" IsRotationEnabled="False" Background="Transparent">
+                <h:HelixViewport3D Grid.Row="0" Orthographic="True" ZoomExtentsWhenLoaded="True" IsRotationEnabled="True" Background="Transparent">
                     <h:HelixViewport3D.Camera>
                         <OrthographicCamera NearPlaneDistance="-1.7976931348623157E+8" FarPlaneDistance="1.7976931348623157E+8"/>
                     </h:HelixViewport3D.Camera>
                     <h:SunLight/>
-                    <ModelVisual3D x:Name="topModel"/>
-                    <HelixToolkit:GridLinesVisual3D Width="500" Length="500" MinorDistance="10" MajorDistance="10" Thickness="0.4" Center="0 100 -200" />
+                    <ModelVisual3D x:Name="robotModel"/>
+                    <!--<HelixToolkit:GridLinesVisual3D Width="500" Length="500" MinorDistance="10" MajorDistance="10" Thickness="0.1" Center="0 100 -200" />-->
                 </h:HelixViewport3D>
 
-                <h:HelixViewport3D Grid.Row="1" Title="Side View" TitleBackground="Gray" Orthographic="True" ZoomExtentsWhenLoaded="True" IsRotationEnabled="False" Background="Transparent">
-                    <h:HelixViewport3D.Camera>
-                        <OrthographicCamera NearPlaneDistance="-1.7976931348623157E+8" FarPlaneDistance="1.7976931348623157E+8" LookDirection="-1,0,0" UpDirection="0,0,1"/>
-                    </h:HelixViewport3D.Camera>
-                    <h:SunLight/>
-                    <ModelVisual3D x:Name="sideModel"/>
-                </h:HelixViewport3D>
+                <Grid Grid.Row="1">
+                    <ProgressBar Minimum="0" Maximum="500" Value="{Binding GrasperForceL}"/>
+                    <ProgressBar Minimum="0" Maximum="500" Value="{Binding GrasperForceR}"/>
+                </Grid>
 
             </Grid>
 
-            <h:HelixViewport3D Grid.Column="1" Orthographic="True" ZoomExtentsWhenLoaded="True" ShowFrameRate="True" Background="Transparent">
-                <h:HelixViewport3D.Camera>
-                    <OrthographicCamera NearPlaneDistance="-1.7976931348623157E+8" FarPlaneDistance="1.7976931348623157E+8"/>
-                </h:HelixViewport3D.Camera>
-                <h:SunLight/>
-                <ModelVisual3D x:Name="robotModel"/>
-            </h:HelixViewport3D>
+            <Grid Grid.Column="1" ShowGridLines="False">
+
+                <StackPanel>
+                    <UniformGrid Columns="2">
+                        <TextBlock Text="Video Source:"/>
+                        <ComboBox Name="DeviceNamesBox" ItemsSource="{Binding GrapicalView.DeviceNames}" SelectedItem="{Binding GrapicalView.SelectedDeviceName}" />
+
+                        <TextBlock Text="Format:"/>
+                        <ComboBox Name="SettingNamesBox" ItemsSource="{Binding GrapicalView.SettingNames}" SelectedIndex="{Binding GrapicalView.SelectedSetting}"/>
+                    </UniformGrid>
+                    <Button Content="{Binding GrapicalView.ConnectButtonText}" Command="{Binding GrapicalView.StartCommand}" />
+                    <Image Name="VideoImage" />
+                </StackPanel>
+
+            </Grid>
+
         </Grid>
 
     </Grid>

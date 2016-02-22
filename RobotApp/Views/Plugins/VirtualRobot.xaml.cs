@@ -1,23 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Media.Media3D;
-using System.Diagnostics.CodeAnalysis;
 using System.Windows.Threading;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
-using System.Windows.Media.Animation;
 using HelixToolkit.Wpf;
 using RobotApp.Pages;
 
@@ -544,10 +530,6 @@ namespace RobotApp.Views.Plugins
                 //newWindow.DModel = wholeModel2;
                 //newWindow.SModel = wholeModel3;
                 
-                graphicView.FullModel = wholeModel;
-                graphicView.DModel = wholeModel2;
-                graphicView.SModel = wholeModel3;
-            
             }));
             
         }

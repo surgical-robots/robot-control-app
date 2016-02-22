@@ -1,18 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace RobotApp.Views.Plugins
@@ -26,6 +12,8 @@ namespace RobotApp.Views.Plugins
         System.Windows.Forms.Timer closeTimer = new System.Windows.Forms.Timer();
 
         double GrasperSetpoint = 0;
+        private double grasperTwist = 0;
+        private double grasperMax = 1500;
 
         public override void PostLoadSetup()
         {
@@ -45,6 +33,12 @@ namespace RobotApp.Views.Plugins
                     openTimer.Stop();
             });
 
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["GrasperTwist"].UniqueID, (message) =>
+            {
+                grasperTwist = message.Value;
+                Outputs["GrasperSetpoint"].Value = GrasperSetpoint - grasperTwist;
+            });
+
             base.PostLoadSetup();
         }
 
@@ -55,8 +49,9 @@ namespace RobotApp.Views.Plugins
 
             Outputs.Add("GrasperSetpoint", new ViewModel.OutputSignalViewModel("Grasper Setpoint"));
 
-            Inputs.Add("GrasperClose", new ViewModel.InputSignalViewModel("GrasperClose", this.InstanceName));
-            Inputs.Add("GrasperOpen", new ViewModel.InputSignalViewModel("GrasperOpen", this.InstanceName));
+            Inputs.Add("GrasperClose", new ViewModel.InputSignalViewModel("Grasper Close", this.InstanceName));
+            Inputs.Add("GrasperOpen", new ViewModel.InputSignalViewModel("Grasper Open", this.InstanceName));
+            Inputs.Add("GrasperTwist", new ViewModel.InputSignalViewModel("Grasper Twist", this.InstanceName));
 
             openTimer.Interval = GraspPeriod;
             openTimer.Tick += openTimer_Tick;
@@ -69,10 +64,10 @@ namespace RobotApp.Views.Plugins
 
         void openTimer_Tick(object sender, EventArgs e)
         {
-            if(GrasperSetpoint < 100)
+            if(GrasperSetpoint < grasperMax)
             {
-                GrasperSetpoint += 2;
-                Outputs["GrasperSetpoint"].Value = GrasperSetpoint;
+                GrasperSetpoint += (grasperMax / 50);
+                Outputs["GrasperSetpoint"].Value = GrasperSetpoint - grasperTwist;
             }
         }
 
@@ -80,8 +75,8 @@ namespace RobotApp.Views.Plugins
         {
             if (GrasperSetpoint > 0)
             {
-                GrasperSetpoint -= 2;
-                Outputs["GrasperSetpoint"].Value = GrasperSetpoint;
+                GrasperSetpoint -= (grasperMax / 50);
+                Outputs["GrasperSetpoint"].Value = GrasperSetpoint - grasperTwist;
             }
         }
 

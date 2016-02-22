@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace RobotApp.Views.Plugins
