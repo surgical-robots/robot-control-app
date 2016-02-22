@@ -35,14 +35,7 @@ namespace RobotApp.Views.Plugins
 
         public System.Windows.Forms.Timer UpdateTimer = new System.Windows.Forms.Timer();
 
-        public double forceLX = 0;
-        public double forceLY = 0;
-        public double forceLZ = 0;
-        public double forceRX = 0;
-        public double forceRY = 0;
-        public double forceRZ = 0;
         public bool hapticEnable = false;
-        bool newForces = false;
 
         /// <summary>
         /// This function is manually called at the end of the constructor (below) as well as automatically getting called after deserialization.
@@ -58,38 +51,32 @@ namespace RobotApp.Views.Plugins
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceLX"].UniqueID, (message) =>
              {
-                 forceLX = message.Value;
-                 newForces = true;
+                 telSurge.SetForceX(message.Value, true);
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceLY"].UniqueID, (message) =>
              {
-                 forceLY = message.Value;
-                 newForces = true;
+                 telSurge.SetForceY(message.Value, true);
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceLZ"].UniqueID, (message) =>
              {
-                 forceLZ = message.Value;
-                 newForces = true;
+                 telSurge.SetForceZ(message.Value, true);
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceRX"].UniqueID, (message) =>
              {
-                 forceRX = message.Value;
-                 newForces = true;
+                 telSurge.SetForceX(message.Value, false);
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceRY"].UniqueID, (message) =>
              {
-                 forceRY = message.Value;
-                 newForces = true;
+                 telSurge.SetForceY(message.Value, false);
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceRZ"].UniqueID, (message) =>
              {
-                 forceRZ = message.Value;
-                 newForces = true;
+                 telSurge.SetForceZ(message.Value, false);
              });
 
              Messenger.Default.Register<Messages.Signal>(this, Inputs["HapticEnable"].UniqueID, (message) =>
@@ -108,12 +95,6 @@ namespace RobotApp.Views.Plugins
                      Outputs["FreezeOut"].Value = Convert.ToDouble(!telSurge.User.IsFrozen);
                  }
              });
-
-             if (newForces)
-             {
-                 telSurge.User.SetOmniForce(new OmniPosition(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ));
-                 newForces = false;
-             }
 
              base.PostLoadSetup();
          }
