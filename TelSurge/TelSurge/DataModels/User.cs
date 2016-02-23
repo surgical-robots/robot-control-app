@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
-using GeomagicTouch;
 
 namespace TelSurge
 {
@@ -30,8 +29,6 @@ namespace TelSurge
         private int connectionPort;
         public string EmergencySwitchBoundBtn { get; set; }
         public int EmergencySwitchBoundValue { get; set; }
-        public Device LeftOmni;
-        public Device RightOmni;
         /*
         private string myName = "";
         private volatile bool isInControl = false;
@@ -43,7 +40,6 @@ namespace TelSurge
         */
 
         //Geomagic Touch methods from newphantom.dll
-        /*
         const string address = "newphantom.dll";
 
         [DllImport(address, CallingConvention = CallingConvention.Cdecl)]
@@ -78,7 +74,7 @@ namespace TelSurge
         public static extern IntPtr getpos2();
         [DllImport(address, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ReleaseMemory(IntPtr ptr);
-        */
+
 
         public User()
         {
@@ -105,10 +101,19 @@ namespace TelSurge
         }
         public OmniPosition GetOmniPositions()
         {
-            LeftOmni.Update();
-            RightOmni.Update();
+            OmniPosition currentPosition = new OmniPosition();
+            double[] pos1 = { 0, 0, 0, 0, 0, 0, 0, 0 };
+            double[] pos2 = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
-            OmniPosition currentPosition = new OmniPosition(LeftOmni, RightOmni);
+            IntPtr ptr = getpos1();
+            Marshal.Copy(ptr, pos1, 0, 8);
+            ReleaseMemory(ptr);
+
+            IntPtr ptr2 = getpos2();
+            Marshal.Copy(ptr2, pos2, 0, 8);
+            ReleaseMemory(ptr2);
+
+            currentPosition = new OmniPosition(pos1, pos2);
             //add any external buttons
             if (externalButtons != null)
                 currentPosition.ExtraButtons = externalButtons;
@@ -213,12 +218,8 @@ namespace TelSurge
         {
             if (HasOmnis)
             {
-                LeftOmni.SetpointX = Force.LeftX;
-                LeftOmni.SetpointY = Force.LeftY;
-                LeftOmni.SetpointZ = Force.LeftZ;
-                RightOmni.SetpointX = Force.RightX;
-                RightOmni.SetpointY = Force.RightY;
-                RightOmni.SetpointZ = Force.RightZ;
+                setForce1(Force.LeftX, Force.LeftY, Force.LeftZ);
+                setForce2(Force.RightX, Force.RightY, Force.RightZ);
             }
         }
         public void OmniFollow(OmniPosition InControlPosition)
@@ -260,17 +261,11 @@ namespace TelSurge
 
             if (HasOmnis)
             {
-                try
+                success = initAndSchedule(LeftOmniName, RightOmniName);
+                if (success == 1)
                 {
-                    LeftOmni = new Device(LeftOmniName);
-                    RightOmni = new Device(RightOmniName);
-                    LeftOmni.Start();
-                    RightOmni.Start();
-                    success = 1;
-                }
-                catch (Exception ex)
-                {
-                    Main.ShowError(ex.Message, ex.ToString());
+                    lock1();
+                    lock2();
                 }
             }
 

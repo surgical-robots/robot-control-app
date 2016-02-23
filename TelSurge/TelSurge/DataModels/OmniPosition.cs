@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GeomagicTouch;
 
 namespace TelSurge.DataModels
 {
@@ -101,36 +100,6 @@ namespace TelSurge.DataModels
             Gimbal3Right = rightPos[5];
             ButtonsRight = rightPos[6];
             InkwellRight = rightPos[7];
-            ExtraButtons = new bool[0];
-        }
-
-        public OmniPosition(Device Left, Device Right)
-        {
-            LeftX = Left.X;
-            LeftY = Left.Y;
-            LeftZ = Left.Z;
-            Gimbal1Left = Left.Theta1 * (180 / Math.PI);
-            Gimbal2Left = Left.Theta2 * (180 / Math.PI);
-            Gimbal3Left = Left.Theta3 * (180 / Math.PI);
-            ButtonsLeft = 0;
-            if (Left.Button1)
-                ButtonsLeft = 1;
-            else if (Left.Button2)
-                ButtonsLeft = 2;
-            InkwellLeft = Convert.ToDouble(Left.IsInInkwell);
-
-            LeftX = Right.X;
-            LeftY = Right.Y;
-            LeftZ = Right.Z;
-            Gimbal1Left = Right.Theta1 * (180 / Math.PI);
-            Gimbal2Left = Right.Theta2 * (180 / Math.PI);
-            Gimbal3Left = Right.Theta3 * (180 / Math.PI);
-            ButtonsLeft = 0;
-            if (Right.Button1)
-                ButtonsLeft = 1;
-            else if (Right.Button2)
-                ButtonsLeft = 2;
-            InkwellLeft = Convert.ToDouble(Right.IsInInkwell);
             ExtraButtons = new bool[0];
         }
 
