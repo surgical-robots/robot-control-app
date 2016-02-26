@@ -34,17 +34,20 @@ namespace TelSurge
             if (ddl_Devices.Items[choice].Equals("Master Video Feed"))
             {
                 //Master Video Feed
-                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.MasterFeed, "");
+                _main.VideoCapture.CaptureDevice = "";
+                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.MasterFeed);
             }
             else if (choice >= IPCamerasIndex)
             {
                 //IP source
-                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.IP, ipSources[choice - IPCamerasIndex].Address);
+                _main.VideoCapture.CaptureDevice = ipSources[choice - IPCamerasIndex].Address;
+                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.IP);
             }
             else
             {
                 //Local device
-                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.Local, choice.ToString());
+                _main.VideoCapture.CaptureDevice = choice.ToString();
+                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.Local);
             }
             this.Close();
         }

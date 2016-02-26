@@ -59,36 +59,9 @@ namespace TelSurge.DataModels
             GreenMarkings = new List<Figure>();
         }
 
-        public void AddFigure(Figure figure)
+        public void RemoveLastFigure(List<Figure> Markings)
         {
-            List<Figure> markings = getMarkingsOfFigure(figure);
-            figure.MarkingsIndex = markings.Count;
-            markings.Add(figure);
-        }
-
-        private List<Figure> getMarkingsOfFigure(Figure figure)
-        {
-            switch (figure.Color.ToString()) {
-                case "Red":
-                    return RedMarkings;
-                case "Black":
-                    return BlackMarkings;
-                case "Blue":
-                    return BlueMarkings;
-                case "White":
-                    return WhiteMarkings;
-                case "Yellow":
-                    return YellowMarkings;
-                case "Green":
-                    return GreenMarkings;
-                default:
-                    throw new Exception("Could not find the specified color (if any) in the list of markings.");
-            }
-        }
-
-        public void RemoveFigure(Figure figure)
-        {
-            getMarkingsOfFigure(figure).RemoveAt(figure.MarkingsIndex);
+            Markings.RemoveAt(Markings.Count);
         }
     }
 }

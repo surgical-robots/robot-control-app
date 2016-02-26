@@ -29,7 +29,6 @@ namespace TelSurge
         public Surgery Surgery { get; set; }
         public Markup Markup { get; set; }
         public SocketData SocketData { get; set; }
-        private bool noRobot = true;
         private string logFile = "log.csv";
         private string sendGRAddr = "";
         public int networkDelay = 0; //in ms
@@ -47,6 +46,8 @@ namespace TelSurge
         private bool logDataTurnAroundTime = false;
         private System.Windows.Forms.Timer turnAroundTimer = new System.Windows.Forms.Timer();
         private TcpListener grantReqListener = null;
+        private bool telSurgeOnly = false;
+        private bool buttonIsPressed = false;
 
         //OUTPUTS
         public OmniPosition OutputPosition { get; set; }
@@ -155,19 +156,6 @@ namespace TelSurge
         {
             tb_SendingLeft.Text = "X = " + OutputPosition.LeftX + Environment.NewLine + "Y = " + OutputPosition.LeftY + Environment.NewLine + "Z = " + OutputPosition.LeftZ;
             tb_SendingRight.Text = "X = " + OutputPosition.RightX + Environment.NewLine + "Y = " + OutputPosition.RightY + Environment.NewLine + "Z = " + OutputPosition.RightZ;
-        }
-        private void sendOmniFreeze()
-        {
-            
-            /*
-            //make sure this method is executed once
-            buttonPressed = true;
-            //save current position
-            frozenPosition = pos;
-            //Relieve any forces on omnis
-            feedbackEnabled = false;
-            setForces(new OmniPosition());
-            */
         }
         public void SetForceX(double ForceX, bool IsLeft)
         {
@@ -335,7 +323,7 @@ namespace TelSurge
         }
         public void emergencySwitchControl()
         {
-            if (User.IsInControl)
+            if (User.IsMaster && !User.IsInControl)
             {
                 sendGRAddr = Surgery.UserInControl.MyIPAddress;
                 Thread t = new Thread(new ParameterizedThreadStart(sendGrantReq));
@@ -359,14 +347,65 @@ namespace TelSurge
         public void Freeze()
         {
             User.IsFrozen = !User.IsFrozen;
-            if (noRobot)
+            if (telSurgeOnly && User.IsFrozen)
             {
-                //manually freeze omnis
+                User.FrozenPosition = User.GetOmniPositions();
             }
             if (User.IsFrozen)
                 tb_InControl.Text = "You are frozen.";
             else
                 tb_InControl.Text = "You are in control!";
+        }
+        private void forceOmnisToPosition(OmniPosition omniPosition)
+        {
+            int resumeRange = 20;
+            int maxForce = 3;
+            OmniPosition differencePos = User.FrozenPosition.Subtract(User.GetOmniPositions());
+            while (differencePos.LeftX > resumeRange && differencePos.LeftY > resumeRange && differencePos.LeftZ > resumeRange && differencePos.RightX > resumeRange && differencePos.RightY > resumeRange && differencePos.RightZ > resumeRange)
+            {
+                OmniPosition Forces = differencePos;
+                if (Forces.LeftX > maxForce)
+                    Forces.LeftX = maxForce;
+                if (Forces.LeftY > maxForce)
+                    Forces.LeftY = maxForce;
+                if (Forces.LeftZ > maxForce)
+                    Forces.LeftZ = maxForce;
+                if (Forces.RightX > maxForce)
+                    Forces.RightX = maxForce;
+                if (Forces.RightY > maxForce)
+                    Forces.RightY = maxForce;
+                if (Forces.RightZ > maxForce)
+                    Forces.RightZ = maxForce;
+                SetForceX(Forces.LeftX, true);
+                SetForceY(Forces.LeftY, true);
+                SetForceZ(Forces.LeftZ, true);
+                SetForceX(Forces.RightX, false);
+                SetForceY(Forces.RightY, false);
+                SetForceZ(Forces.RightZ, false);
+                differencePos = User.FrozenPosition.Subtract(User.GetOmniPositions());
+            }
+        }
+        private void disconnectClient(User client)
+        {
+            foreach (ToolStripItem item in ss_Connections.Items)
+            {
+                if (item.ToolTipText.Equals(client.MyIPAddress))
+                {
+                    ss_Connections.Items.Remove(item);
+                    break;
+                }
+            }
+            int indexOfName = lbl_Connections.Text.IndexOf(client.MyName);
+            if (indexOfName > -1)
+                lbl_Connections.Text = lbl_Connections.Text.Remove(indexOfName, client.MyName.Length);
+            Surgery.ConnectedClients.Remove(client);
+
+            if (Surgery.ConnectedClients.Count == 0)
+            {
+                VideoCapture.IsStreaming = false;
+                Markup.IsListeningForMarkup = false;
+                lbl_Connections.Text = "Connections: None";
+            }
         }
 
         //Old Methods        
@@ -451,17 +490,15 @@ namespace TelSurge
                     try
                     {
                         tmpPoints.Add(e.Location);
-                        List<Point[]> marksList = Markup.GetMarksList(penColor);
+                        List<Figure> tmpFig = Markup.GetCurrentFigureList(penColor);
                         if (isFirstPointOfFigure)
                         {
-                            marksList.Add(tmpPoints.ToArray());
+                            tmpFig.Add(new Figure(penColor));
                             isFirstPointOfFigure = false;
                         }
-                        else
-                        {
-                            marksList[marksList.Count - 1] = tmpPoints.ToArray();
-                        }
-                        Markup.SetMarksList(penColor, marksList);
+                        tmpFig[tmpFig.Count - 1].Path = tmpPoints.ToArray();
+                        Markup.SetCurrentFigureList(penColor, tmpFig);
+                        
                         if (!User.IsMaster)
                             Markup.SendMarkup(IPAddress.Parse(Surgery.Master.MyIPAddress));
                     }
@@ -469,9 +506,6 @@ namespace TelSurge
                     {
                         ShowError(ex.Message, ex.ToString());
                     }
-
-                    if (!User.IsMaster)
-                        Markup.SendMarkup(IPAddress.Parse(Surgery.Master.MyIPAddress));
                 }
             }
             //else if (!startZoomPt.IsEmpty)
@@ -504,13 +538,7 @@ namespace TelSurge
                 isDrawing = false;
                 try
                 {
-                    isFirstPointOfFigure = true;
                     tmpPoints = new List<Point>();
-                    //for (int i = 0; i < tmpPoints.Count; i++)
-                    //{
-                    //    tmpPoints[i].Offset((int)Markup.MyMarkings.OffsetX, (int)Markup.MyMarkings.OffsetY);
-                    //}
-                    
                 }
                 catch (Exception ex)
                 {
@@ -547,8 +575,8 @@ namespace TelSurge
         {
             //if ((isMaster && _captureInProgress && !videoIsPTZ) || (!isMaster && !ConnectToMasterButton.Enabled && receiveMasterVideo))
             //{
-                isDrawing = true;
-                isFirstPointOfFigure = true;
+            isDrawing = true;
+            isFirstPointOfFigure = true;
             //}
             //else if (videoIsPTZ)
             //{
@@ -564,9 +592,12 @@ namespace TelSurge
         {
             Markup.MyMarkings.Clear();
             tmpPoints = new List<Point>();
-            SocketMessage sm = new SocketMessage(Surgery, User);
-            sm.ClearMarkingsReq = true;
-            SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.SerializeObject<SocketMessage>(sm));
+            if (!User.IsMaster)
+            {
+                SocketMessage sm = new SocketMessage(Surgery, User);
+                sm.ClearMarkingsReq = true;
+                SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.SerializeObject<SocketMessage>(sm));
+            }
         }
         private void btn_Capture_Click(object sender, EventArgs e)
         {
@@ -667,27 +698,79 @@ namespace TelSurge
         {
             try
             {
-                showOmniPositions();
-                if (User.IsInControl)
+                OmniPosition currentPos = User.GetOmniPositions();
+                if (telSurgeOnly && User.IsFrozen)
                 {
-                    Surgery.UserInControl = User;
-                    Surgery.InControlPosition = User.GetOmniPositions();
-                }
-                if (Surgery.InControlPosition != null)
-                    OutputPosition = Surgery.InControlPosition;
-                if (OutputPosition != null)
-                    showOutputPosition();
-
-                if (!User.IsMaster)
-                {
-                    if (User.IsInControl)
-                        SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
+                    OmniPosition pos = User.GetOmniPositions();
+                    if (pos.ButtonsRight.Equals(1))
+                    {
+                        buttonIsPressed = true;
+                    }
+                    else if (buttonIsPressed)
+                    {
+                        forceOmnisToPosition(User.FrozenPosition);
+                        Freeze();
+                        buttonIsPressed = false;
+                    }
                 }
                 else
                 {
-                    if (Surgery.ConnectedClients.Count > 0)
-                        SocketData.MasterSendData();
+                    showOmniPositions();
+                    if (User.IsInControl)
+                    {
+                        Surgery.UserInControl = User;
+                        Surgery.InControlPosition = currentPos;
+                    }
+                    if (Surgery.InControlPosition != null)
+                        OutputPosition = Surgery.InControlPosition;
+                    if (OutputPosition != null)
+                        showOutputPosition();
+
+                    if (!User.IsMaster)
+                    {
+                        if (User.IsInControl)
+                            SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
+                    }
+                    else
+                    {
+                        if (Surgery.ConnectedClients.Count > 0)
+                            SocketData.MasterSendData();
+                    }
                 }
+                if (User.IsMaster)
+                {
+                    //check if any users haven't responded for a while
+                    foreach (User u in Surgery.ConnectedClients)
+                    {
+                        if (DateTime.Now.Subtract(u.LastHeardFrom).Minutes > 1)
+                        {
+                            disconnectClient(u);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    //remind Master that you are still connected
+                    if (DateTime.Now.Subtract(User.LastHeardFrom).Seconds > 20)
+                    {
+                        TcpClient tCPClient = new TcpClient();
+                        tCPClient.Connect(IPAddress.Parse(Surgery.Master.MyIPAddress), connectionPort);
+                        SocketMessage sm = new SocketMessage(Surgery, User);
+                        SocketData.SendTCPDataTo(tCPClient, SocketData.SerializeObject<SocketMessage>(sm));
+
+                        User.LastHeardFrom = DateTime.Now;
+                    }
+                }
+                if (!User.IsInControl)
+                {
+                    this.User.CheckIfFollowing(currentPos);
+                    if (User.IsFollowing)
+                        User.OmniFollow(Surgery.InControlPosition);
+                }
+                if (this.User.CheckForEmergencySwitch(currentPos))
+                    emergencySwitchControl();
+                    
             }
             catch (Exception ex)
             {
@@ -702,8 +785,10 @@ namespace TelSurge
             {
                 try
                 {
+                    TcpClient tCPClient = new TcpClient();
+                    tCPClient.Connect(IPAddress.Parse(Surgery.Master.MyIPAddress), connectionPort);
                     SocketMessage sm = new SocketMessage(Surgery, User);
-                    SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.SerializeObject<SocketMessage>(sm));
+                    SocketData.SendTCPDataTo(tCPClient, SocketData.SerializeObject<SocketMessage>(sm));
 
                     //start listening for master's position
                     SocketData.IsListeningForData = true;
@@ -897,7 +982,17 @@ namespace TelSurge
                 turnAroundTimer.Stop();
 
             logDataTurnAroundTime = !logDataTurnAroundTime;
-            toolStripMenuItem1.Checked = logDataTurnAroundTime;
+            logDataTimesToolStripMenuItem.Checked = logDataTurnAroundTime;
+        }
+        private void assignButtonsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AssignButtons form = new AssignButtons(this);
+            form.ShowDialog();
+        }
+        private void telSurgeOnlyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            telSurgeOnly = !telSurgeOnly;
+            telSurgeOnlyToolStripMenuItem.Checked = telSurgeOnly;
         }
 
         //Thread Methods
@@ -920,46 +1015,63 @@ namespace TelSurge
                     byte[] arry = new byte[2000];
                     s.Read(arry, 0, arry.Length);
                     SocketMessage sm = SocketData.DeserializeObject<SocketMessage>(arry);
-                    if (lbl_Connections.Text.Equals("Connections: None"))
-                        lbl_Connections.Text = "Connections: ";
 
-                    if (!sm.User.HasOmnis)
+                    int connectedUserIndex = -1;
+                    for (int i = 0; i < Surgery.ConnectedClients.Count; i++) 
                     {
-                        //If client does not have Omnis, don't allow control to be given
-                        lbl_Connections.Text += sm.User.MyName;
+                        if (Surgery.ConnectedClients[i].MyIPAddress.Equals(sm.User.MyIPAddress)) 
+                        {
+                            connectedUserIndex = i;
+                            break;
+                        }
+                    }
+                    if (connectedUserIndex > -1)
+                    {
+                        Surgery.ConnectedClients[connectedUserIndex].LastHeardFrom = DateTime.Now;
                     }
                     else
                     {
-                        string dir = Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"..\..\Content\pc.png");
-                        Image clientImg = Image.FromFile(dir);
-                        ToolStripItem newItem = new ToolStripButton(sm.User.MyName, clientImg, sendClientGrantReq, "btn_" + sm.User.MyName);
-                        newItem.ToolTipText = sm.User.MyIPAddress;
-                        ss_Connections.Items.Add(newItem);
+                        if (lbl_Connections.Text.Equals("Connections: None"))
+                            lbl_Connections.Text = "Connections: ";
+
+                        if (!sm.User.HasOmnis)
+                        {
+                            //If client does not have Omnis, don't allow control to be given
+                            lbl_Connections.Text += sm.User.MyName;
+                        }
+                        else
+                        {
+                            string dir = Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"..\..\Content\pc.png");
+                            Image clientImg = Image.FromFile(dir);
+                            ToolStripItem newItem = new ToolStripButton(sm.User.MyName, clientImg, sendClientGrantReq, "btn_" + sm.User.MyName);
+                            newItem.ToolTipText = sm.User.MyIPAddress;
+                            ss_Connections.Items.Add(newItem);
+                        }
+
+                        if (Surgery.ConnectedClients.Count == 0)
+                        {
+                            Thread sendVideoThread = new Thread(new ThreadStart(MasterSendVideo));
+                            sendVideoThread.IsBackground = true;
+                            sendVideoThread.Start();
+
+                            Markup.IsListeningForMarkup = true;
+                            Thread listenForNewMarkings = new Thread(new ThreadStart(Markup.ListenForMarkup));
+                            listenForNewMarkings.IsBackground = true;
+                            listenForNewMarkings.Start();
+
+                            Thread listenForControlReq = new Thread(new ThreadStart(listenForGrantReq));
+                            listenForControlReq.IsBackground = true;
+                            listenForControlReq.Start();
+
+                            //Thread readFromDataBuffer = new Thread(new ThreadStart(readDataBuffer));
+                            //readFromDataBuffer.IsBackground = true;
+                            //readFromDataBuffer.Start();
+                        }
+                        Surgery.ConnectedClients.Add(sm.User);
+
+                        //Log Connection
+                        LogMessage("Connection successfully made to " + sm.User.MyName + ".", "A client successfully connected to this machine with the name " + sm.User.MyName + " and address " + sm.User.MyIPAddress + " .", Logging.StatusTypes.Running);
                     }
-
-                    if (Surgery.ConnectedClients.Count == 0)
-                    {
-                        Thread sendVideoThread = new Thread(new ThreadStart(MasterSendVideo));
-                        sendVideoThread.IsBackground = true;
-                        sendVideoThread.Start();
-
-                        Markup.IsListeningForMarkup = true;
-                        Thread listenForNewMarkings = new Thread(new ThreadStart(Markup.ListenForMarkup));
-                        listenForNewMarkings.IsBackground = true;
-                        listenForNewMarkings.Start();
-
-                        Thread listenForControlReq = new Thread(new ThreadStart(listenForGrantReq));
-                        listenForControlReq.IsBackground = true;
-                        listenForControlReq.Start();
-
-                        //Thread readFromDataBuffer = new Thread(new ThreadStart(readDataBuffer));
-                        //readFromDataBuffer.IsBackground = true;
-                        //readFromDataBuffer.Start();
-                    }
-                    Surgery.ConnectedClients.Add(sm.User);
-
-                    //Log Connection
-                    LogMessage("Connection successfully made to " + sm.User.MyName + ".", "A client successfully connected to this machine with the name " + sm.User.MyName + " and address " + sm.User.MyIPAddress + " .", Logging.StatusTypes.Running);
                 }
             }
             catch (Exception ex)
@@ -1049,11 +1161,6 @@ namespace TelSurge
             {
                 ShowError(ex.Message, ex.ToString());
             }
-        }
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            AssignButtons form = new AssignButtons(this);
-            form.ShowDialog();
         }
     }
 }

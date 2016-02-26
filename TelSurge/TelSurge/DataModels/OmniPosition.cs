@@ -119,18 +119,18 @@ namespace TelSurge.DataModels
                 ButtonsLeft = 2;
             InkwellLeft = Convert.ToDouble(Left.IsInInkwell);
 
-            LeftX = Right.X;
-            LeftY = Right.Y;
-            LeftZ = Right.Z;
-            Gimbal1Left = Right.Theta1 * (180 / Math.PI);
-            Gimbal2Left = Right.Theta2 * (180 / Math.PI);
-            Gimbal3Left = Right.Theta3 * (180 / Math.PI);
-            ButtonsLeft = 0;
+            RightX = Right.X;
+            RightY = Right.Y;
+            RightZ = Right.Z;
+            Gimbal1Right = Right.Theta1 * (180 / Math.PI);
+            Gimbal2Right = Right.Theta2 * (180 / Math.PI);
+            Gimbal3Right = Right.Theta3 * (180 / Math.PI);
+            ButtonsRight = 0;
             if (Right.Button1)
-                ButtonsLeft = 1;
+                ButtonsRight = 1;
             else if (Right.Button2)
-                ButtonsLeft = 2;
-            InkwellLeft = Convert.ToDouble(Right.IsInInkwell);
+                ButtonsRight = 2;
+            InkwellRight = Convert.ToDouble(Right.IsInInkwell);
             ExtraButtons = new bool[0];
         }
 
