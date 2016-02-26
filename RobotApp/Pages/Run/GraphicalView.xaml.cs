@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Drawing;
 using System.Windows.Threading;
 using System.Windows;
@@ -565,12 +566,24 @@ namespace RobotApp.Pages
             }
         }
 
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
         void CaptureDevice_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
         {
             Bitmap frame = eventArgs.Frame;
             this.Dispatcher.Invoke((Action)(() =>
             {
-                VideoImage.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(frame.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                IntPtr hBitmap = frame.GetHbitmap();
+                try
+                {
+                    VideoImage.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                }
+                finally
+                {
+                    DeleteObject(hBitmap);
+                    frame.Dispose();
+                }
             }));
         }
 
