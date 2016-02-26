@@ -47,7 +47,6 @@ namespace TelSurge
         private System.Windows.Forms.Timer turnAroundTimer = new System.Windows.Forms.Timer();
         private TcpListener grantReqListener = null;
         private bool telSurgeOnly = false;
-        private bool buttonIsPressed = false;
         //OUTPUTS
         public OmniPosition OutputPosition { get; set; }
 
@@ -328,9 +327,16 @@ namespace TelSurge
         public void Freeze()
         {
             User.IsFrozen = !User.IsFrozen;
-            if (telSurgeOnly && User.IsFrozen)
+            if (telSurgeOnly)
             {
-                User.FrozenPosition = User.GetOmniPositions();
+                if (User.IsFrozen)
+                {
+                    User.FrozenPosition = User.GetOmniPositions();
+                }
+                else
+                {
+                    forceOmnisToPosition(User.FrozenPosition);
+                }
             }
             if (User.IsFrozen)
                 tb_InControl.Text = "You are frozen.";
@@ -339,10 +345,10 @@ namespace TelSurge
         }
         private void forceOmnisToPosition(OmniPosition omniPosition)
         {
-            int resumeRange = 20;
-            int maxForce = 3;
+            int resumeRange = 2;
+            int maxForce = 1;
             OmniPosition differencePos = User.FrozenPosition.Subtract(User.GetOmniPositions());
-            while (differencePos.LeftX > resumeRange && differencePos.LeftY > resumeRange && differencePos.LeftZ > resumeRange && differencePos.RightX > resumeRange && differencePos.RightY > resumeRange && differencePos.RightZ > resumeRange)
+            while (differencePos.LeftX > resumeRange || differencePos.LeftY > resumeRange || differencePos.LeftZ > resumeRange || differencePos.RightX > resumeRange || differencePos.RightY > resumeRange || differencePos.RightZ > resumeRange)
             {
                 OmniPosition Forces = differencePos;
                 if (Forces.LeftX > maxForce)
@@ -357,14 +363,10 @@ namespace TelSurge
                     Forces.RightY = maxForce;
                 if (Forces.RightZ > maxForce)
                     Forces.RightZ = maxForce;
-                SetForceX(Forces.LeftX, true);
-                SetForceY(Forces.LeftY, true);
-                SetForceZ(Forces.LeftZ, true);
-                SetForceX(Forces.RightX, false);
-                SetForceY(Forces.RightY, false);
-                SetForceZ(Forces.RightZ, false);
+                User.SetOmniForce(Forces);
                 differencePos = User.FrozenPosition.Subtract(User.GetOmniPositions());
             }
+            User.SetOmniForce(new OmniPosition());
         }
         private void disconnectClient(User client)
         {
@@ -554,15 +556,11 @@ namespace TelSurge
         }
         private void captureImageBox_MouseDown(object sender, MouseEventArgs e)
         {
-            //if ((isMaster && _captureInProgress && !videoIsPTZ) || (!isMaster && !ConnectToMasterButton.Enabled && receiveMasterVideo))
-            //{
-            isDrawing = true;
-            isFirstPointOfFigure = true;
-            //}
-            //else if (videoIsPTZ)
-            //{
-            //    startZoomPt = e.Location;
-            //}
+            if ((User.IsMaster && VideoCapture.IsCapturing) || VideoCapture.IsListeningForVideo)
+            {
+                isDrawing = true;
+                isFirstPointOfFigure = true;
+            }
         }
         private void btn_PenColor_Click(object sender, EventArgs e)
         {
@@ -680,46 +678,40 @@ namespace TelSurge
             try
             {
                 OmniPosition currentPos = User.GetOmniPositions();
-                if (telSurgeOnly && User.IsFrozen)
+                showOmniPositions();
+
+                if (User.IsInControl)
                 {
-                    OmniPosition pos = User.GetOmniPositions();
-                    if (pos.ButtonsRight.Equals(1))
-                    {
-                        buttonIsPressed = true;
-                    }
-                    else if (buttonIsPressed)
-                    {
-                        forceOmnisToPosition(User.FrozenPosition);
-                        Freeze();
-                        buttonIsPressed = false;
-                    }
-                }
-                else
-                {
-                    showOmniPositions();
-                    if (User.IsInControl)
-                    {
-                        Surgery.UserInControl = User;
+                    Surgery.UserInControl = User;
+                    if (User.IsFrozen)
+                        Surgery.InControlPosition = User.FrozenPosition;
+                    else
                         Surgery.InControlPosition = currentPos;
-                    }
-                    if (Surgery.InControlPosition != null)
-                        OutputPosition = Surgery.InControlPosition;
-                    if (OutputPosition != null)
-                        showOutputPosition();
 
                     if (!User.IsMaster)
                     {
                         if (User.IsInControl)
                             SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
                     }
-                    else
-                    {
-                        if (Surgery.ConnectedClients.Count > 0)
-                            SocketData.MasterSendData();
-                    }
+                    if (telSurgeOnly && this.User.CheckForFreeze(currentPos))
+                        Freeze();
+                }
+                else
+                {
+                    this.User.CheckIfFollowing(currentPos);
+                    if (User.IsFollowing)
+                        User.OmniFollow(Surgery.InControlPosition);
+                }
+
+                if (Surgery.InControlPosition != null)
+                {
+                    OutputPosition = Surgery.InControlPosition;
+                    showOutputPosition();
                 }
                 if (User.IsMaster)
                 {
+                    if (Surgery.ConnectedClients.Count > 0)
+                        SocketData.MasterSendData();
                     //check if any users haven't responded for a while
                     foreach (User u in Surgery.ConnectedClients)
                     {
@@ -729,6 +721,8 @@ namespace TelSurge
                             break;
                         }
                     }
+                    if (this.User.CheckForEmergencySwitch(currentPos))
+                        emergencySwitchControl();
                 }
                 else
                 {
@@ -746,15 +740,6 @@ namespace TelSurge
                         }
                     }
                 }
-                if (!User.IsInControl)
-                {
-                    this.User.CheckIfFollowing(currentPos);
-                    if (User.IsFollowing)
-                        User.OmniFollow(Surgery.InControlPosition);
-                }
-                if (this.User.CheckForEmergencySwitch(currentPos))
-                    emergencySwitchControl();
-                    
             }
             catch (Exception ex)
             {
@@ -996,7 +981,7 @@ namespace TelSurge
                     TcpClient client = listener.AcceptTcpClient();
                     //get Name and IP of Incoming Connection
                     Stream s = client.GetStream();
-                    byte[] arry = new byte[2000];
+                    byte[] arry = new byte[10000];
                     s.Read(arry, 0, arry.Length);
                     SocketMessage sm = SocketData.DeserializeObject<SocketMessage>(arry);
 

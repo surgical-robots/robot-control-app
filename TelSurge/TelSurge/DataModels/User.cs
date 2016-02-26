@@ -35,6 +35,8 @@ namespace TelSurge
         public int EmergencySwitchBoundValue { get; set; }
         public string FollowingBoundBtn { get; set; }
         public int FollowingBoundValue { get; set; }
+        public string FreezeBoundBtn { get; set; }
+        public int FreezeBoundValue { get; set; }
         private Device LeftOmni = null;
         private Device RightOmni = null;
         public DateTime LastHeardFrom { get; set; }
@@ -42,6 +44,9 @@ namespace TelSurge
         private SerialPort extButtonsPort = null;
         private bool extButtonsConnected = false;
         public int NumExternalButtons = 0;
+        private bool EmergBtnPressed = false;
+        private bool FollowBtnPressed = false;
+        private bool FreezeBtnPressed = false;
         /*
         private string myName = "";
         private volatile bool isInControl = false;
@@ -102,6 +107,7 @@ namespace TelSurge
             this.IsFollowing = false;
             this.EmergencySwitchBoundBtn = "";
             this.FollowingBoundBtn = "";
+            this.FreezeBoundBtn = "";
         }
         public User(TelSurgeMain MainForm, int ConnectionPort)
         {
@@ -118,6 +124,7 @@ namespace TelSurge
             this.IsFollowing = false;
             this.EmergencySwitchBoundBtn = "";
             this.FollowingBoundBtn = "";
+            this.FreezeBoundBtn = "";
         }
         public OmniPosition GetOmniPositions()
         {
@@ -304,6 +311,9 @@ namespace TelSurge
                     RightOmni = new Device(RightOmniName);
                     LeftOmni.Start();
                     RightOmni.Start();
+                    SetOmniForce(new OmniPosition());
+                    LeftOmni.SetpointEnabled = true;
+                    RightOmni.SetpointEnabled = true;
                     success = 1;
                 }
                 catch (Exception ex)
@@ -338,66 +348,60 @@ namespace TelSurge
         }
         public bool CheckForEmergencySwitch(OmniPosition Position)
         {
-            if (!EmergencySwitchBoundBtn.Equals(""))
+            bool btnPressed = checkButton(Position, EmergencySwitchBoundBtn, EmergencySwitchBoundValue);
+            if (!btnPressed && EmergBtnPressed)
             {
-                if (EmergencySwitchBoundBtn.Contains("Left"))
-                {
-                    if (Position.ButtonsLeft.Equals(EmergencySwitchBoundValue))
-                    {
-                        return true;
-                    }
-                }
-                else if (EmergencySwitchBoundBtn.Contains("Right"))
-                {
-                    if (Position.ButtonsRight.Equals(EmergencySwitchBoundValue))
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < Position.ExtraButtons.Count(); i++)
-                    {
-                        if (Position.ExtraButtons[i])
-                        {
-                            if (i.Equals(EmergencySwitchBoundValue))
-                                return true;
-                        }
-                    }
-                }
+                EmergBtnPressed = false;
+                return true;
             }
+            EmergBtnPressed = btnPressed;
             return false;
         }
         public void CheckIfFollowing(OmniPosition Position)
         {
-            if (!FollowingBoundBtn.Equals(""))
+            bool btnPressed = checkButton(Position, FollowingBoundBtn, FollowingBoundValue);
+            if (!btnPressed && FollowBtnPressed)
             {
-                if (FollowingBoundBtn.Contains("Left"))
+                FollowBtnPressed = false;
+                IsFollowing = !IsFollowing;
+            }
+            FollowBtnPressed = btnPressed;
+        }
+        public bool CheckForFreeze(OmniPosition Position)
+        {
+            bool btnPressed = checkButton(Position, FreezeBoundBtn, FreezeBoundValue);
+            if (!btnPressed && FreezeBtnPressed)
+            {
+                FreezeBtnPressed = false;
+                return true;
+            }
+            FreezeBtnPressed = btnPressed;
+            return false;
+        }
+        private bool checkButton(OmniPosition pos, string btn, int value)
+        {
+            if (!btn.Equals(""))
+            {
+                if (btn.Contains("Left"))
                 {
-                    if (Position.ButtonsLeft.Equals(FollowingBoundValue))
-                    {
-                        IsFollowing = !IsFollowing;
-                    }
+                    if (pos.ButtonsLeft.Equals(value))
+                        return true;
                 }
-                else if (FollowingBoundBtn.Contains("Right"))
+                else if (btn.Contains("Right"))
                 {
-                    if (Position.ButtonsRight.Equals(FollowingBoundValue))
-                    {
-                        IsFollowing = !IsFollowing;
-                    }
+                    if (pos.ButtonsRight.Equals(value))
+                        return true;
                 }
                 else
                 {
-                    for (int i = 0; i < Position.ExtraButtons.Count(); i++)
+                    for (int i = 0; i < pos.ExtraButtons.Count(); i++)
                     {
-                        if (Position.ExtraButtons[i])
-                        {
-                            if (i.Equals(FollowingBoundValue))
-                                IsFollowing = !IsFollowing;
-                        }
+                        if (pos.ExtraButtons[i] && i.Equals(value))
+                            return true;
                     }
                 }
             }
+            return false;
         }
         public void SetOmniForceX(double ForceX, bool IsLeft)
         {

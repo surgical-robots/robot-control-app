@@ -23,26 +23,26 @@ namespace TelSurge
         private void fillAvailableBtns()
         {
             //Emergency Switch
-            lb_AvailableEmergencyBtns.Items.Add("OmniLeft_Front");
-            lb_AvailableEmergencyBtns.Items.Add("OmniLeft_Back");
-            lb_AvailableEmergencyBtns.Items.Add("OmniRight_Front");
-            lb_AvailableEmergencyBtns.Items.Add("OmniRight_Back");
-
+            List<string> availableBtns = new List<string>() {
+                "OmniLeft_Front",
+                "OmniLeft_Back",
+                "OmniRight_Front",
+                "OmniRight_Back"
+            };
             for (int i = 0; i < _main.User.NumExternalButtons; i++)
-                lb_AvailableEmergencyBtns.Items.Add("Ext_" + i);
-
+                availableBtns.Add("Ext_" + i);
+            
+            lb_AvailableEmergencyBtns.DataSource = availableBtns;
             lb_AvailableEmergencyBtns.SelectedIndex = 0;
 
+            
             //Following Button
-            lb_AvailableFollowingBtns.Items.Add("OmniLeft_Front");
-            lb_AvailableFollowingBtns.Items.Add("OmniLeft_Back");
-            lb_AvailableFollowingBtns.Items.Add("OmniRight_Front");
-            lb_AvailableFollowingBtns.Items.Add("OmniRight_Back");
+            lb_AvailableFollowingBtns.DataSource = availableBtns.ToList();
+            lb_AvailableFollowingBtns.SelectedIndex = 0;
 
-            for (int i = 0; i < _main.User.NumExternalButtons; i++)
-                lb_AvailableFollowingBtns.Items.Add("Ext_" + i);
-
-            lb_AvailableFollowingBtns.SelectedIndex = 1;
+            //Freeze Button
+            lb_AvailableFreezeBtns.DataSource = availableBtns.ToList();
+            lb_AvailableFreezeBtns.SelectedIndex = 0;
         }
 
         private void AssignButtons_FormClosing(object sender, FormClosingEventArgs e)
@@ -57,41 +57,40 @@ namespace TelSurge
                 try
                 {
                     //Emergency Switch
-                    string selectedEmergencyBtn = (string)lb_AvailableEmergencyBtns.SelectedItem;
-                    _main.User.EmergencySwitchBoundBtn = selectedEmergencyBtn;
-                    if (selectedEmergencyBtn.Contains("Left"))
-                    {
-                        _main.User.EmergencySwitchBoundValue = lb_AvailableEmergencyBtns.SelectedIndex + 1;
-                    }
-                    else if (selectedEmergencyBtn.Contains("Right"))
-                    {
-                        _main.User.EmergencySwitchBoundValue = lb_AvailableEmergencyBtns.SelectedIndex - 2;
-                    }
-                    else
-                    {
-                        _main.User.EmergencySwitchBoundValue = lb_AvailableEmergencyBtns.SelectedIndex - 4;
-                    }
+                    string selectedButton = (string)lb_AvailableEmergencyBtns.SelectedItem;
+                    _main.User.EmergencySwitchBoundBtn = selectedButton;
+                    _main.User.EmergencySwitchBoundValue = getButtonValue(lb_AvailableEmergencyBtns);
 
                     //Following Button
-                    string selectedFollowingBtn = (string)lb_AvailableFollowingBtns.SelectedItem;
-                    _main.User.FollowingBoundBtn = selectedFollowingBtn;
-                    if (selectedFollowingBtn.Contains("Left"))
-                    {
-                        _main.User.FollowingBoundValue = lb_AvailableFollowingBtns.SelectedIndex + 1;
-                    }
-                    else if (selectedFollowingBtn.Contains("Right"))
-                    {
-                        _main.User.FollowingBoundValue = lb_AvailableFollowingBtns.SelectedIndex - 2;
-                    }
-                    else
-                    {
-                        _main.User.FollowingBoundValue = lb_AvailableFollowingBtns.SelectedIndex - 4;
-                    }
+                    selectedButton = (string)lb_AvailableFollowingBtns.SelectedItem;
+                    _main.User.FollowingBoundBtn = selectedButton;
+                    _main.User.FollowingBoundValue = getButtonValue(lb_AvailableFollowingBtns);
+
+                    //Freeze Button
+                    selectedButton = (string)lb_AvailableFreezeBtns.SelectedItem;
+                    _main.User.FreezeBoundBtn = selectedButton;
+                    _main.User.FreezeBoundValue = getButtonValue(lb_AvailableFreezeBtns);
                 }
                 catch (Exception ex)
                 {
                     _main.ShowError(ex.Message, ex.ToString());
                 }
+            }
+        }
+        private int getButtonValue(ListBox lb)
+        {
+            string selectedButton = (string)lb.SelectedItem;
+            if (selectedButton.Contains("Left"))
+            {
+                return lb.SelectedIndex + 1;
+            }
+            else if (selectedButton.Contains("Right"))
+            {
+                return lb.SelectedIndex - 1;
+            }
+            else
+            {
+                return lb.SelectedIndex - 4;
             }
         }
     }
