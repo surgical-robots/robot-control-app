@@ -732,15 +732,18 @@ namespace TelSurge
                 }
                 else
                 {
-                    //remind Master that you are still connected
-                    if (DateTime.Now.Subtract(User.LastHeardFrom).Seconds > 20)
+                    if (User.ConnectedToMaster)
                     {
-                        TcpClient tCPClient = new TcpClient();
-                        tCPClient.Connect(IPAddress.Parse(Surgery.Master.MyIPAddress), connectionPort);
-                        SocketMessage sm = new SocketMessage(Surgery, User);
-                        SocketData.SendTCPDataTo(tCPClient, SocketData.SerializeObject<SocketMessage>(sm));
+                        //remind Master that you are still connected
+                        if (DateTime.Now.Subtract(User.LastHeardFrom).Seconds > 20)
+                        {
+                            TcpClient tCPClient = new TcpClient();
+                            tCPClient.Connect(IPAddress.Parse(Surgery.Master.MyIPAddress), connectionPort);
+                            SocketMessage sm = new SocketMessage(Surgery, User);
+                            SocketData.SendTCPDataTo(tCPClient, SocketData.SerializeObject<SocketMessage>(sm));
 
-                        User.LastHeardFrom = DateTime.Now;
+                            User.LastHeardFrom = DateTime.Now;
+                        }
                     }
                 }
                 if (!User.IsInControl)

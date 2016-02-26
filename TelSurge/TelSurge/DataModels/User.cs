@@ -8,7 +8,9 @@ using System.Runtime.InteropServices;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using System.IO.Ports;
 using GeomagicTouch;
+using System.Threading;
 
 namespace TelSurge
 {
@@ -36,7 +38,9 @@ namespace TelSurge
         private Device LeftOmni = null;
         private Device RightOmni = null;
         public DateTime LastHeardFrom { get; set; }
-        public bool ExtButtonsConnected { get; set; }
+
+        private SerialPort extButtonsPort = null;
+        private bool extButtonsConnected = false;
         public int NumExternalButtons = 0;
         /*
         private string myName = "";
@@ -96,8 +100,8 @@ namespace TelSurge
             this.IsInControl = false;
             this.HasOmnis = true;
             this.IsFollowing = false;
-            EmergencySwitchBoundBtn = "";
-            FollowingBoundBtn = "";
+            this.EmergencySwitchBoundBtn = "";
+            this.FollowingBoundBtn = "";
             ExtButtonsConnected = false;
         }
         public User(TelSurgeMain MainForm, int ConnectionPort)
@@ -113,8 +117,8 @@ namespace TelSurge
             this.HasOmnis = true;
             this.connectionPort = ConnectionPort;
             this.IsFollowing = false;
-            EmergencySwitchBoundBtn = "";
-            FollowingBoundBtn = "";
+            this.EmergencySwitchBoundBtn = "";
+            this.FollowingBoundBtn = "";
             ExtButtonsConnected = false;
         }
         public OmniPosition GetOmniPositions()
@@ -124,8 +128,30 @@ namespace TelSurge
 
             OmniPosition currentPosition = new OmniPosition(LeftOmni, RightOmni);
             //add any external buttons
-            if (externalButtons != null)
-                currentPosition.ExtraButtons = externalButtons;
+            if (extButtonsConnected)
+            {
+                if (extButtonsPort.BytesToRead >= NumExternalButtons)
+                {
+                    int intReturnASCII = 0;
+                    string returnMessage = "";
+
+                    for (int i = NumExternalButtons; i > 0 ; i--)
+                    {
+                        intReturnASCII = extButtonsPort.ReadByte();
+                        returnMessage = returnMessage + Convert.ToChar(intReturnASCII);
+                    }
+
+                    if (returnMessage != "")
+                    {
+                        if (externalButtons == new bool[0])
+                            externalButtons = new bool[NumExternalButtons];
+                        for (int i = 0; i < NumExternalButtons; i++)
+                        {
+                            externalButtons[i] = Convert.ToBoolean(Char.GetNumericValue(returnMessage[i]));
+                        }
+                    }
+                }
+            }
 
             return currentPosition;
 
@@ -404,6 +430,57 @@ namespace TelSurge
                 else
                     RightOmni.SetpointZ = ForceZ;
             }
+        }
+        public void SetOmniForceX(double ForceX, bool IsLeft)
+        {
+            if (HasOmnis)
+            {
+                if (IsLeft)
+                    LeftOmni.SetpointX = ForceX;
+                else
+                    RightOmni.SetpointX = ForceX;
+            }
+        }
+        public void SetOmniForceY(double ForceY, bool IsLeft)
+        {
+            if (HasOmnis)
+            {
+                if (IsLeft)
+                    LeftOmni.SetpointY = ForceY;
+                else
+                    RightOmni.SetpointY = ForceY;
+            }
+        }
+        public void SetOmniForceZ(double ForceZ, bool IsLeft)
+        {
+            if (HasOmnis)
+            {
+                if (IsLeft)
+                    LeftOmni.SetpointX = ForceZ;
+                else
+                    RightOmni.SetpointX = ForceZ;
+            }
+        }
+        public void ConnectExternalButtons(SerialPort ConnectionPort, bool Disconnect, int numOfButtons)
+        {
+            extButtonsPort = ConnectionPort;
+
+            if (Disconnect)
+            {
+                if (ConnectionPort.IsOpen)
+                    ConnectionPort.Close();
+                numOfButtons = 0;
+                extButtonsConnected = false;
+            }
+            else
+            {
+                if (!ConnectionPort.IsOpen)
+                    ConnectionPort.Open();
+
+                NumExternalButtons = numOfButtons;
+                extButtonsConnected = true;
+            }
+            
         }
     }
 }
