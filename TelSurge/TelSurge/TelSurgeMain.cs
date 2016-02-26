@@ -775,7 +775,7 @@ namespace TelSurge
             catch (Exception ex)
             {
                 UnderlyingTimer.Enabled = false;
-                ShowError("An error occured during routine program timer. Application must be reset.", ex.Message);
+                ShowError("An error occured during routine program timer. Application must be reset.", ex.Message+" => "+ex.ToString());
             }
         }
         private void ConnectToMasterButtonClick(object sender, EventArgs e)

@@ -81,11 +81,14 @@ namespace TelSurge
                 Image<Bgr, byte> frame =  new Image<Bgr,byte>(100, 100);
                 if (_capture != null)
                     frame = _capture.RetrieveBgrFrame();
-                frame = frame.Resize(((double)Main.CaptureImageBox.Width / (double)frame.Width), Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR);
-                frame = addMarkup(frame);
-                Main.ShowVideoFrame(frame);
-                //Main.CaptureImageBox.Image = frame;
-                sendVideoStream(frame);
+                if (frame != null)
+                {
+                    frame = frame.Resize(((double)Main.CaptureImageBox.Width / (double)frame.Width), Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR);
+                    frame = addMarkup(frame);
+                    Main.ShowVideoFrame(frame);
+                    //Main.CaptureImageBox.Image = frame;
+                    sendVideoStream(frame);
+                }
             }
             catch (AccessViolationException ave)
             {

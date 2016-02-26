@@ -94,6 +94,8 @@ namespace TelSurge
             this.IsInControl = false;
             this.HasOmnis = true;
             this.IsFollowing = false;
+            EmergencySwitchBoundBtn = "";
+            FollowingBoundBtn = "";
         }
         public User(TelSurgeMain MainForm, int ConnectionPort)
         {
@@ -108,6 +110,8 @@ namespace TelSurge
             this.HasOmnis = true;
             this.connectionPort = ConnectionPort;
             this.IsFollowing = false;
+            EmergencySwitchBoundBtn = "";
+            FollowingBoundBtn = "";
         }
         public OmniPosition GetOmniPositions()
         {
@@ -306,28 +310,31 @@ namespace TelSurge
         }
         public bool CheckForEmergencySwitch(OmniPosition Position)
         {
-            if (EmergencySwitchBoundBtn.Contains("Left"))
+            if (!EmergencySwitchBoundBtn.Equals(""))
             {
-                if (Position.ButtonsLeft.Equals(EmergencySwitchBoundValue))
+                if (EmergencySwitchBoundBtn.Contains("Left"))
                 {
-                    return true;
-                }
-            }
-            else if (EmergencySwitchBoundBtn.Contains("Right"))
-            {
-                if (Position.ButtonsRight.Equals(EmergencySwitchBoundValue))
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < Position.ExtraButtons.Count(); i++)
-                {
-                    if (Position.ExtraButtons[i])
+                    if (Position.ButtonsLeft.Equals(EmergencySwitchBoundValue))
                     {
-                        if (i.Equals(EmergencySwitchBoundValue))
-                            return true;
+                        return true;
+                    }
+                }
+                else if (EmergencySwitchBoundBtn.Contains("Right"))
+                {
+                    if (Position.ButtonsRight.Equals(EmergencySwitchBoundValue))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < Position.ExtraButtons.Count(); i++)
+                    {
+                        if (Position.ExtraButtons[i])
+                        {
+                            if (i.Equals(EmergencySwitchBoundValue))
+                                return true;
+                        }
                     }
                 }
             }
@@ -335,28 +342,31 @@ namespace TelSurge
         }
         public void CheckIfFollowing(OmniPosition Position)
         {
-            if (FollowingBoundBtn.Contains("Left"))
+            if (!FollowingBoundBtn.Equals(""))
             {
-                if (Position.ButtonsLeft.Equals(FollowingBoundValue))
+                if (FollowingBoundBtn.Contains("Left"))
                 {
-                    IsFollowing = !IsFollowing;
-                }
-            }
-            else if (FollowingBoundBtn.Contains("Right"))
-            {
-                if (Position.ButtonsRight.Equals(FollowingBoundValue))
-                {
-                    IsFollowing = !IsFollowing;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < Position.ExtraButtons.Count(); i++)
-                {
-                    if (Position.ExtraButtons[i])
+                    if (Position.ButtonsLeft.Equals(FollowingBoundValue))
                     {
-                        if (i.Equals(FollowingBoundValue))
-                            IsFollowing = !IsFollowing;
+                        IsFollowing = !IsFollowing;
+                    }
+                }
+                else if (FollowingBoundBtn.Contains("Right"))
+                {
+                    if (Position.ButtonsRight.Equals(FollowingBoundValue))
+                    {
+                        IsFollowing = !IsFollowing;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < Position.ExtraButtons.Count(); i++)
+                    {
+                        if (Position.ExtraButtons[i])
+                        {
+                            if (i.Equals(FollowingBoundValue))
+                                IsFollowing = !IsFollowing;
+                        }
                     }
                 }
             }
