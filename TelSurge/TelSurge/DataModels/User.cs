@@ -102,7 +102,6 @@ namespace TelSurge
             this.IsFollowing = false;
             this.EmergencySwitchBoundBtn = "";
             this.FollowingBoundBtn = "";
-            ExtButtonsConnected = false;
         }
         public User(TelSurgeMain MainForm, int ConnectionPort)
         {
@@ -119,7 +118,6 @@ namespace TelSurge
             this.IsFollowing = false;
             this.EmergencySwitchBoundBtn = "";
             this.FollowingBoundBtn = "";
-            ExtButtonsConnected = false;
         }
         public OmniPosition GetOmniPositions()
         {
@@ -429,36 +427,6 @@ namespace TelSurge
                     LeftOmni.SetpointZ = ForceZ;
                 else
                     RightOmni.SetpointZ = ForceZ;
-            }
-        }
-        public void SetOmniForceX(double ForceX, bool IsLeft)
-        {
-            if (HasOmnis)
-            {
-                if (IsLeft)
-                    LeftOmni.SetpointX = ForceX;
-                else
-                    RightOmni.SetpointX = ForceX;
-            }
-        }
-        public void SetOmniForceY(double ForceY, bool IsLeft)
-        {
-            if (HasOmnis)
-            {
-                if (IsLeft)
-                    LeftOmni.SetpointY = ForceY;
-                else
-                    RightOmni.SetpointY = ForceY;
-            }
-        }
-        public void SetOmniForceZ(double ForceZ, bool IsLeft)
-        {
-            if (HasOmnis)
-            {
-                if (IsLeft)
-                    LeftOmni.SetpointX = ForceZ;
-                else
-                    RightOmni.SetpointX = ForceZ;
             }
         }
         public void ConnectExternalButtons(SerialPort ConnectionPort, bool Disconnect, int numOfButtons)
