@@ -11,8 +11,15 @@ namespace TelSurge.DataModels
     {
         public Color Color { get; set; }
         public Point[] Path { get; set; }
-        public int MarkingsIndex { get; set; }
 
+        public Figure()
+        {
+            this.Color = Color.Red;
+        }
+        public Figure(Color Color)
+        {
+            this.Color = Color;
+        }
         public Figure(Color color, Point[] path)
         {
             this.Color = color;

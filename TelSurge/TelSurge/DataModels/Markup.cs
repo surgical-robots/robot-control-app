@@ -19,7 +19,6 @@ namespace TelSurge
         private int markingsPort;
         public int PenThickness { get; set; }
         public bool IsListeningForMarkup { get; set; }
-
         public bool ClearMarkingsReq { get; set; }
 
         /*
@@ -80,52 +79,47 @@ namespace TelSurge
             if (IsListeningForMarkup)
                 ListenForMarkup();
         }
-        public List<Point[]> GetMarksList(Color Color)
+        public List<Figure> GetCurrentFigureList(Color Color)
         {
             switch (Color.Name)
             {
                 case "Red":
-                    return MyMarkings.GetAllPaths(MyMarkings.RedMarkings).ToList<Point[]>();
+                    return MyMarkings.RedMarkings;
                 case "Black":
-                    return MyMarkings.GetAllPaths(MyMarkings.BlackMarkings).ToList<Point[]>();
+                    return MyMarkings.BlackMarkings;
                 case "Blue":
-                    return MyMarkings.GetAllPaths(MyMarkings.BlueMarkings).ToList<Point[]>();
+                    return MyMarkings.BlueMarkings;
                 case "White":
-                    return MyMarkings.GetAllPaths(MyMarkings.WhiteMarkings).ToList<Point[]>();
+                    return MyMarkings.WhiteMarkings;
                 case "Yellow":
-                    return MyMarkings.GetAllPaths(MyMarkings.YellowMarkings).ToList<Point[]>();
+                    return MyMarkings.YellowMarkings;
                 case "Green":
-                    return MyMarkings.GetAllPaths(MyMarkings.GreenMarkings).ToList<Point[]>();
+                    return MyMarkings.GreenMarkings;
                 default:
                     throw new Exception("Invalid color selected.");
             }
         }
-        public void SetMarksList(Color Color, List<Point[]> List)
+        public void SetCurrentFigureList(Color Color, List<Figure> FigList)
         {
-            List<Figure> figureList = new List<Figure>();
-            foreach (Point[] p in List) 
-            {
-                figureList.Add(new Figure(Color, p));
-            }
             switch (Color.Name)
             {
                 case "Red":
-                    MyMarkings.RedMarkings = figureList;
+                    MyMarkings.RedMarkings = FigList;
                     break;
                 case "Black":
-                    MyMarkings.BlackMarkings = figureList;
+                    MyMarkings.BlackMarkings = FigList;
                     break;
                 case "Blue":
-                    MyMarkings.BlueMarkings = figureList;
+                    MyMarkings.BlueMarkings = FigList;
                     break;
                 case "White":
-                    MyMarkings.WhiteMarkings = figureList;
+                    MyMarkings.WhiteMarkings = FigList;
                     break;
                 case "Yellow":
-                    MyMarkings.YellowMarkings = figureList;
+                    MyMarkings.YellowMarkings = FigList;
                     break;
                 case "Green":
-                    MyMarkings.GreenMarkings = figureList;
+                    MyMarkings.GreenMarkings = FigList;
                     break;
                 default:
                     throw new Exception("Invalid color selected.");

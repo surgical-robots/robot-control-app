@@ -25,8 +25,9 @@ namespace TelSurge
         private UdpClient videoListener = null;
         public bool IsListeningForVideo { get; set; }
         public enum CaptureType { Local, IP, MasterFeed }
-        private CaptureType CapturingType;
+        private CaptureType capturingType;
         public bool IsStreaming { get; set; }
+        public string CaptureDevice { get; set; }
         /*
         private bool _captureInProgress = false;
         
@@ -55,6 +56,7 @@ namespace TelSurge
             this.videoPort = VideoPort;
             this.IsListeningForVideo = false;
             this.IsStreaming = false;
+            this.CaptureDevice = "";
         }
         private Image<Bgr, byte> addMarkup(Image<Bgr, byte> Frame) 
         {
@@ -137,11 +139,13 @@ namespace TelSurge
                 }
             }
         }
-        public void SwitchVideoFeed(CaptureType type, string deviceInfo) 
+        public void SwitchVideoFeed(CaptureType type) 
         {
             try
             {
                 bool switchWhileCapturing = IsCapturing;
+                capturingType = type;
+                
                 if (IsCapturing)
                     StopCapturing();
                 if (type.Equals(CaptureType.MasterFeed))
@@ -160,14 +164,11 @@ namespace TelSurge
                 {
                     if (!Main.User.IsMaster)
                         IsListeningForVideo = false;
-                    if (type.Equals(CaptureType.Local))
-                        _capture = new Capture(Convert.ToInt32(deviceInfo));
-                    else if (type.Equals(CaptureType.IP))
-                        _capture = new Capture(deviceInfo);
+                    
                     if (switchWhileCapturing || !Main.User.IsMaster)
                         StartCapturing();
                 }
-                CapturingType = type;
+                capturingType = type;
             }
             catch (Exception ex)
             {
@@ -176,7 +177,10 @@ namespace TelSurge
         }
         private void releaseData()
         {
-            if (_capture != null) _capture.Dispose();
+            if (_capture != null)
+            {
+                _capture.Dispose();
+            }
         }
         private ImageCodecInfo getEncoder(ImageFormat format)
         {
@@ -193,8 +197,15 @@ namespace TelSurge
         }
         public void StartCapturing()
         {
-            if (_capture == null)
+            if (CaptureDevice.Equals(""))
                 _capture = new Capture();
+            else
+            {
+                if (capturingType.Equals(CaptureType.Local))
+                    _capture = new Capture(Convert.ToInt32(CaptureDevice));
+                else if (capturingType.Equals(CaptureType.IP))
+                    _capture = new Capture(CaptureDevice);
+            }
             _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FPS, 30);
             _capture.ImageGrabbed += ProcessFrame;
             _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, Main.CaptureImageBox.Height);
