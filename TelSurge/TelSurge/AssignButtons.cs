@@ -27,11 +27,10 @@ namespace TelSurge
             lb_AvailableEmergencyBtns.Items.Add("OmniLeft_Back");
             lb_AvailableEmergencyBtns.Items.Add("OmniRight_Front");
             lb_AvailableEmergencyBtns.Items.Add("OmniRight_Back");
-            if (_main.User.externalButtons != null)
-            {
-                for (int i = 0; i < _main.User.externalButtons.Count(); i++)
-                    lb_AvailableEmergencyBtns.Items.Add("Ext_" + i);
-            }
+
+            for (int i = 0; i < _main.User.NumExternalButtons; i++)
+                lb_AvailableEmergencyBtns.Items.Add("Ext_" + i);
+
             lb_AvailableEmergencyBtns.SelectedIndex = 0;
 
             //Following Button
@@ -39,11 +38,10 @@ namespace TelSurge
             lb_AvailableFollowingBtns.Items.Add("OmniLeft_Back");
             lb_AvailableFollowingBtns.Items.Add("OmniRight_Front");
             lb_AvailableFollowingBtns.Items.Add("OmniRight_Back");
-            if (_main.User.externalButtons != null)
-            {
-                for (int i = 0; i < _main.User.externalButtons.Count(); i++)
-                    lb_AvailableFollowingBtns.Items.Add("Ext_" + i);
-            }
+
+            for (int i = 0; i < _main.User.NumExternalButtons; i++)
+                lb_AvailableFollowingBtns.Items.Add("Ext_" + i);
+
             lb_AvailableFollowingBtns.SelectedIndex = 1;
         }
 
