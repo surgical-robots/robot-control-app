@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Ports;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
-using System.Diagnostics;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Concurrent;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Windows.Threading;
 
 namespace RobotControl
 {
