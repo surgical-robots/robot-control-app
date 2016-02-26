@@ -48,7 +48,6 @@ namespace TelSurge
         private TcpListener grantReqListener = null;
         private bool telSurgeOnly = false;
         private bool buttonIsPressed = false;
-
         //OUTPUTS
         public OmniPosition OutputPosition { get; set; }
 
@@ -159,33 +158,15 @@ namespace TelSurge
         }
         public void SetForceX(double ForceX, bool IsLeft)
         {
-            if (User.HasOmnis)
-            {
-                if (IsLeft)
-                    User.LeftOmni.SetpointX = ForceX;
-                else
-                    User.RightOmni.SetpointX = ForceX;
-            }
+            User.SetOmniForceX(ForceX, IsLeft);
         }
         public void SetForceY(double ForceY, bool IsLeft)
         {
-            if (User.HasOmnis)
-            {
-                if (IsLeft)
-                    User.LeftOmni.SetpointY = ForceY;
-                else
-                    User.RightOmni.SetpointY = ForceY;
-            }
+            User.SetOmniForceY(ForceY, IsLeft);
         }
         public void SetForceZ(double ForceZ, bool IsLeft)
         {
-            if (User.HasOmnis)
-            {
-                if (IsLeft)
-                    User.LeftOmni.SetpointX = ForceZ;
-                else
-                    User.RightOmni.SetpointX = ForceZ;
-            }
+            User.SetOmniForceZ(ForceZ, IsLeft);
         }
         private void fillOmniDDL()
         {

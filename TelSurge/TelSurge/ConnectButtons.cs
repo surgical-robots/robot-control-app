@@ -108,7 +108,7 @@ namespace TelSurge
                     if (connectedPort.IsOpen)
                         connectedPort.Close();
                     btn_Connect.Text = "Connect";
-                    _main.User.externalButtons = null;
+                    _main.User.ExternalButtons = null;
                     listen = false;
                     ListenThread.Abort();
                 }
@@ -117,7 +117,7 @@ namespace TelSurge
                     if (!connectedPort.IsOpen)
                         connectedPort.Open();
                     btn_Connect.Text = "Disconnect";
-                    _main.User.externalButtons = new bool[numOfButtons[connectedPort.PortName]];
+                    _main.User.ExternalButtons = new bool[numOfButtons[connectedPort.PortName]];
                     listen = true;
                     ListenThread = new Thread(new ThreadStart(Listen));
                     ListenThread.Start();
@@ -152,11 +152,11 @@ namespace TelSurge
                     }
                     if (returnMessage != "")
                     {
-                        if (_main.User.externalButtons == null)
-                            _main.User.externalButtons = new bool[numOfButtons[connectedPort.PortName]];
+                        if (_main.User.ExternalButtons == null)
+                            _main.User.ExternalButtons = new bool[numOfButtons[connectedPort.PortName]];
                         for (int i = 0; i < numOfButtons[connectedPort.PortName]; i++)
                         {
-                            _main.User.externalButtons[i] = Convert.ToBoolean(Char.GetNumericValue(returnMessage[i]));
+                            _main.User.ExternalButtons[i] = Convert.ToBoolean(Char.GetNumericValue(returnMessage[i]));
                         }
                     }
                 }

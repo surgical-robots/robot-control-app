@@ -24,7 +24,7 @@ namespace TelSurge
         public bool ConnectedToMaster { get; set; }
         public bool IsInControl { get; set; }
         public bool IsFollowing { get; set; }
-        public bool[] externalButtons { get; set; }
+        private bool[] externalButtons = new bool[0];
         public bool HasOmnis { get; set; }
         private double followingForceConstant = 0.1;
         private double forceMax = 3;
@@ -33,9 +33,11 @@ namespace TelSurge
         public int EmergencySwitchBoundValue { get; set; }
         public string FollowingBoundBtn { get; set; }
         public int FollowingBoundValue { get; set; }
-        public Device LeftOmni;
-        public Device RightOmni;
+        private Device LeftOmni = null;
+        private Device RightOmni = null;
         public DateTime LastHeardFrom { get; set; }
+        public bool ExtButtonsConnected { get; set; }
+        public int NumExternalButtons = 0;
         /*
         private string myName = "";
         private volatile bool isInControl = false;
@@ -96,6 +98,7 @@ namespace TelSurge
             this.IsFollowing = false;
             EmergencySwitchBoundBtn = "";
             FollowingBoundBtn = "";
+            ExtButtonsConnected = false;
         }
         public User(TelSurgeMain MainForm, int ConnectionPort)
         {
@@ -112,6 +115,7 @@ namespace TelSurge
             this.IsFollowing = false;
             EmergencySwitchBoundBtn = "";
             FollowingBoundBtn = "";
+            ExtButtonsConnected = false;
         }
         public OmniPosition GetOmniPositions()
         {
@@ -369,6 +373,36 @@ namespace TelSurge
                         }
                     }
                 }
+            }
+        }
+        public void SetOmniForceX(double ForceX, bool IsLeft)
+        {
+            if (HasOmnis)
+            {
+                if (IsLeft)
+                    LeftOmni.SetpointX = ForceX;
+                else
+                    RightOmni.SetpointX = ForceX;
+            }
+        }
+        public void SetOmniForceY(double ForceY, bool IsLeft)
+        {
+            if (HasOmnis)
+            {
+                if (IsLeft)
+                    LeftOmni.SetpointY = ForceY;
+                else
+                    RightOmni.SetpointY = ForceY;
+            }
+        }
+        public void SetOmniForceZ(double ForceZ, bool IsLeft)
+        {
+            if (HasOmnis)
+            {
+                if (IsLeft)
+                    LeftOmni.SetpointZ = ForceZ;
+                else
+                    RightOmni.SetpointZ = ForceZ;
             }
         }
     }
