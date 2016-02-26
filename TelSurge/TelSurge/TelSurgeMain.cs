@@ -169,9 +169,35 @@ namespace TelSurge
             setForces(new OmniPosition());
             */
         }
-        private void setForces(OmniPosition position)
+        public void SetForceX(double ForceX, bool IsLeft)
         {
-            User.SetOmniForce(position);
+            if (User.HasOmnis)
+            {
+                if (IsLeft)
+                    User.LeftOmni.SetpointX = ForceX;
+                else
+                    User.RightOmni.SetpointX = ForceX;
+            }
+        }
+        public void SetForceY(double ForceY, bool IsLeft)
+        {
+            if (User.HasOmnis)
+            {
+                if (IsLeft)
+                    User.LeftOmni.SetpointY = ForceY;
+                else
+                    User.RightOmni.SetpointY = ForceY;
+            }
+        }
+        public void SetForceZ(double ForceZ, bool IsLeft)
+        {
+            if (User.HasOmnis)
+            {
+                if (IsLeft)
+                    User.LeftOmni.SetpointX = ForceZ;
+                else
+                    User.RightOmni.SetpointX = ForceZ;
+            }
         }
         private void fillOmniDDL()
         {

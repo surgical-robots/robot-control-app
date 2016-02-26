@@ -575,9 +575,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\HelixToolkit.Wpf.dll" />
-    <Content Include="bin\Debug\newphantom.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Resource Include="Content\CityDelays.xml" />
     <Content Include="x64\cudart64_65.dll" />
     <Content Include="x64\cufft64_65.dll" />
