@@ -274,7 +274,6 @@ namespace TelSurge
         {
             if (takeControl)
             {
-                Surgery.UserInControl = User;
                 if (btn_Initialize.Enabled)
                     tb_InControl.Text = "You are in control.";
                 else
@@ -282,7 +281,7 @@ namespace TelSurge
                     User.FrozenPosition = Surgery.InControlPosition;
                     Freeze();
                 }
-
+                Surgery.UserInControl = User;
                 tb_InControl.BackColor = Color.Red;
             }
             else
@@ -290,7 +289,7 @@ namespace TelSurge
                 User.IsFrozen = false;
                 if (User.FrozenPosition != null)
                     Surgery.InControlPosition = User.FrozenPosition;
-                Thread.Sleep(100);
+                while (Surgery.UserInControl.MyName != User.MyName) { };
                 tb_InControl.Text = Surgery.UserInControl.MyName + " is in control.";
                 tb_InControl.BackColor = Color.Green;
             }
@@ -330,21 +329,23 @@ namespace TelSurge
             User.IsFrozen = !User.IsFrozen;
             if (telSurgeOnly)
             {
-                if (User.IsFrozen)
+                if (User.IsFrozen && User.IsInControl)
                 {
                     User.FrozenPosition = User.GetOmniPositions();
                 }
-                else
-                {
-                    forceOmnisToPosition(User.FrozenPosition);
-                }
+                //else
+                //{
+                //    Thread t = new Thread(new ThreadStart(forceOmnisToPosition));
+                //    t.IsBackground = true;
+                //    t.Start();
+                //}
             }
-            if (User.IsFrozen)
+            if (User.IsFrozen) 
                 tb_InControl.Text = "You are frozen.";
             else
                 tb_InControl.Text = "You are in control!";
         }
-        private void forceOmnisToPosition(OmniPosition omniPosition)
+        private void forceOmnisToPosition()
         {
             int resumeRange = 2;
             int maxForce = 1;
@@ -373,7 +374,7 @@ namespace TelSurge
         {
             foreach (ToolStripItem item in ss_Connections.Items)
             {
-                if (item.ToolTipText.Equals(client.MyIPAddress))
+                if (item.ToolTipText == client.MyIPAddress)
                 {
                     ss_Connections.Items.Remove(item);
                     break;
@@ -383,6 +384,9 @@ namespace TelSurge
             if (indexOfName > -1)
                 lbl_Connections.Text = lbl_Connections.Text.Remove(indexOfName, client.MyName.Length);
             Surgery.ConnectedClients.Remove(client);
+
+            if (Surgery.UserInControl.MyIPAddress == client.MyIPAddress)
+                emergencySwitchControl();
 
             if (Surgery.ConnectedClients.Count == 0)
             {
@@ -686,8 +690,10 @@ namespace TelSurge
                 if (User.IsInControl)
                 {
                     Surgery.UserInControl = User;
-                    if (User.IsFrozen)
+                    if (User.IsFrozen) 
+                    {
                         Surgery.InControlPosition = User.FrozenPosition;
+                    }
                     else
                         Surgery.InControlPosition = currentPos;
 
@@ -708,11 +714,16 @@ namespace TelSurge
                         User.SetOmniForce(new OmniPosition());
                 }
 
-                if (Surgery.InControlPosition != null)
+                if (telSurgeOnly)
                 {
-                    OutputPosition = Surgery.InControlPosition;
-                    showOutputPosition();
+                    if (Surgery.InControlPosition != null)
+                        OutputPosition = Surgery.InControlPosition;
                 }
+                else
+                {
+                    OutputPosition = currentPos;
+                }
+                showOutputPosition();
                 if (User.IsMaster)
                 {
                     if (Surgery.ConnectedClients.Count > 0)
@@ -720,7 +731,7 @@ namespace TelSurge
                     //check if any users haven't responded for a while
                     foreach (User u in Surgery.ConnectedClients)
                     {
-                        if (DateTime.Now.Subtract(u.LastHeardFrom).Minutes > 1)
+                        if (DateTime.Now.Subtract(u.LastHeardFrom).Seconds > 30)
                         {
                             disconnectClient(u);
                             break;
@@ -986,7 +997,7 @@ namespace TelSurge
                     TcpClient client = listener.AcceptTcpClient();
                     //get Name and IP of Incoming Connection
                     Stream s = client.GetStream();
-                    byte[] arry = new byte[10000];
+                    byte[] arry = new byte[50000];
                     s.Read(arry, 0, arry.Length);
                     SocketMessage sm = SocketData.DeserializeObject<SocketMessage>(arry);
 

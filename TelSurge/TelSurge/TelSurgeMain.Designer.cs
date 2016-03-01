@@ -795,7 +795,7 @@
             // 
             // UnderlyingTimer
             // 
-            this.UnderlyingTimer.Interval = 15;
+            this.UnderlyingTimer.Interval = 1;
             this.UnderlyingTimer.Tick += new System.EventHandler(this.UnderlyingTimerTick);
             // 
             // ss_Connections
