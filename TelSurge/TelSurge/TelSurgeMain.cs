@@ -290,6 +290,7 @@ namespace TelSurge
                 User.IsFrozen = false;
                 if (User.FrozenPosition != null)
                     Surgery.InControlPosition = User.FrozenPosition;
+                Thread.Sleep(100);
                 tb_InControl.Text = Surgery.UserInControl.MyName + " is in control.";
                 tb_InControl.BackColor = Color.Green;
             }
@@ -577,6 +578,8 @@ namespace TelSurge
                 sm.ClearMarkingsReq = true;
                 SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.SerializeObject<SocketMessage>(sm));
             }
+            else
+                Markup.ClearMarkingsReq = true;
         }
         private void btn_Capture_Click(object sender, EventArgs e)
         {
@@ -701,6 +704,8 @@ namespace TelSurge
                     this.User.CheckIfFollowing(currentPos);
                     if (User.IsFollowing)
                         User.OmniFollow(Surgery.InControlPosition);
+                    else
+                        User.SetOmniForce(new OmniPosition());
                 }
 
                 if (Surgery.InControlPosition != null)

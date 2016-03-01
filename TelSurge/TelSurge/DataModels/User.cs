@@ -271,17 +271,17 @@ namespace TelSurge
             if (HasOmnis)
             {
                 OmniPosition currentPosition = GetOmniPositions();
-                double forceLX = followingForceConstant * (currentPosition.LeftX - InControlPosition.LeftX);
-                if (forceLX > forceMax) forceLX = forceMax;
-                double forceLY = followingForceConstant * (currentPosition.LeftY - InControlPosition.LeftY);
-                if (forceLY > forceMax) forceLY = forceMax;
-                double forceLZ = followingForceConstant * (currentPosition.LeftZ - InControlPosition.LeftZ);
+                double forceLX = followingForceConstant * (InControlPosition.LeftX - currentPosition.LeftX);
+                if (forceLX > forceMax) forceLX = forceMax;                        
+                double forceLY = followingForceConstant * (InControlPosition.LeftY - currentPosition.LeftY);
+                if (forceLY > forceMax) forceLY = forceMax;                        
+                double forceLZ = followingForceConstant * (InControlPosition.LeftZ - currentPosition.LeftZ);
                 if (forceLZ > forceMax) forceLZ = forceMax;
-                double forceRX = followingForceConstant * (currentPosition.RightX - InControlPosition.RightX);
-                if (forceRX > forceMax) forceRX = forceMax;
-                double forceRY = followingForceConstant * (currentPosition.RightY - InControlPosition.RightY);
-                if (forceRY > forceMax) forceRY = forceMax;
-                double forceRZ = followingForceConstant * (currentPosition.RightZ - InControlPosition.RightZ);
+                double forceRX = followingForceConstant * (InControlPosition.RightX - currentPosition.RightX);
+                if (forceRX > forceMax) forceRX = forceMax;                         
+                double forceRY = followingForceConstant * (InControlPosition.RightY - currentPosition.RightY);
+                if (forceRY > forceMax) forceRY = forceMax;                         
+                double forceRZ = followingForceConstant * (InControlPosition.RightZ - currentPosition.RightZ);
                 if (forceRZ > forceMax) forceRZ = forceMax;
 
                 SetOmniForce(new OmniPosition(forceLX, forceLY, forceLZ, forceRX, forceRY, forceRZ));
