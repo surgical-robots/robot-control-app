@@ -144,6 +144,15 @@ namespace TelSurge
 
                 SocketMessage dataMsg = DeserializeObject<SocketMessage>(arry);
                 Main.Surgery = dataMsg.Surgery;
+                if (Main.User.IsInControl && dataMsg.Forces != null)
+                {
+                    Main.SetForceX(dataMsg.Forces.LeftX, true);
+                    Main.SetForceY(dataMsg.Forces.LeftY, true);
+                    Main.SetForceZ(dataMsg.Forces.LeftZ, true);
+                    Main.SetForceX(dataMsg.Forces.RightX, false);
+                    Main.SetForceY(dataMsg.Forces.RightY, false);
+                    Main.SetForceZ(dataMsg.Forces.RightZ, false);
+                }
                 //dataBuffer.Enqueue(dataMsg);
                 //dataAvailable = true;
                 //if (networkDataDelayChanged && Main.User.NetworkDelay > 0 && !dataWatch.IsRunning)

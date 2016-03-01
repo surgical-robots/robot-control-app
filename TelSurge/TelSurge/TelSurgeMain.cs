@@ -157,15 +157,39 @@ namespace TelSurge
         }
         public void SetForceX(double ForceX, bool IsLeft)
         {
-            User.SetOmniForceX(ForceX, IsLeft);
+            if (User.IsInControl)
+                User.SetOmniForceX(ForceX, IsLeft);
+            else
+            {
+                if (IsLeft)
+                    HapticForces.LeftX = ForceX;
+                else
+                    HapticForces.RightX = ForceX;
+            }
         }
         public void SetForceY(double ForceY, bool IsLeft)
         {
-            User.SetOmniForceY(ForceY, IsLeft);
+            if (User.IsInControl)
+                User.SetOmniForceY(ForceY, IsLeft);
+            else
+            {
+                if (IsLeft)
+                    HapticForces.LeftY = ForceY;
+                else
+                    HapticForces.RightY = ForceY;
+            }
         }
         public void SetForceZ(double ForceZ, bool IsLeft)
         {
-            User.SetOmniForceZ(ForceZ, IsLeft);
+            if (User.IsInControl)
+                User.SetOmniForceZ(ForceZ, IsLeft);
+            else
+            {
+                if (IsLeft)
+                    HapticForces.LeftZ = ForceZ;
+                else
+                    HapticForces.RightZ = ForceZ;
+            }
         }
         private void fillOmniDDL()
         {
