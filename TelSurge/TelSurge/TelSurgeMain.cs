@@ -350,19 +350,12 @@ namespace TelSurge
         public void Freeze()
         {
             User.IsFrozen = !User.IsFrozen;
-            if (telSurgeOnly)
+
+            if (User.IsFrozen && User.IsInControl)
             {
-                if (User.IsFrozen && User.IsInControl)
-                {
-                    User.FrozenPosition = User.GetOmniPositions();
-                }
-                //else
-                //{
-                //    Thread t = new Thread(new ThreadStart(forceOmnisToPosition));
-                //    t.IsBackground = true;
-                //    t.Start();
-                //}
+                User.FrozenPosition = User.GetOmniPositions();
             }
+
             if (User.IsFrozen) 
                 tb_InControl.Text = "You are frozen.";
             else
@@ -724,8 +717,7 @@ namespace TelSurge
 
                         if (!User.IsMaster)
                         {
-                            if (User.IsInControl)
-                                SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
+                            SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
                         }
                         if (telSurgeOnly && this.User.CheckForFreeze(currentPos))
                             Freeze();
@@ -739,19 +731,12 @@ namespace TelSurge
                             User.SetOmniForce(new OmniPosition());
                     }
 
-                    if (telSurgeOnly)
-                    {
-                        if (Surgery.InControlPosition != null)
-                            OutputPosition = Surgery.InControlPosition;
-                    }
-                    else
-                    {
-                        OutputPosition = currentPos;
-                    }
+                    OutputPosition = Surgery.InControlPosition;
+
                     showOutputPosition();
                     if (User.IsMaster)
                     {
-                        if (Surgery.ConnectedClients.Count > 0)
+                        if (User.IsInControl && Surgery.ConnectedClients.Count > 0)
                             SocketData.MasterSendData();
                         //check if any users haven't responded for a while
                         foreach (User u in Surgery.ConnectedClients)

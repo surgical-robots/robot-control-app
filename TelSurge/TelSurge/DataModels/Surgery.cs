@@ -19,5 +19,18 @@ namespace TelSurge
             this.ConnectedClients = new List<User>();
             this.Master = new User();
         }
+        public void Merge(Surgery Surgery, bool IsInControl, bool IsMaster)
+        {
+            if (!IsInControl)
+            {
+                this.InControlPosition = Surgery.InControlPosition;
+                this.UserInControl = Surgery.UserInControl;
+            }
+            if (!IsMaster)
+            {
+                this.Master = Surgery.Master;
+                this.ConnectedClients = Surgery.ConnectedClients;
+            }
+        }
     }
 }

@@ -82,10 +82,6 @@ namespace TelSurge
             byte[] arry = { };
             try
             {
-                if (Main.User.IsFrozen)
-                    sm.OmniPosition = Main.User.FrozenPosition;
-                else
-                    sm.OmniPosition = Main.Surgery.InControlPosition;
                 sm.ClearMarkingsReq = Main.Markup.ClearMarkingsReq;
                 Main.Markup.ClearMarkingsReq = false;
                 //sm.sendFreezeCmd = sendFreezeCmd;
@@ -94,6 +90,7 @@ namespace TelSurge
                 {
                     sm.Forces = Main.HapticForces;
                 }
+                sm.Surgery = Main.Surgery;
                 arry = SerializeObject(sm);
             }
             catch (Exception ex)
@@ -143,7 +140,7 @@ namespace TelSurge
 
 
                 SocketMessage dataMsg = DeserializeObject<SocketMessage>(arry);
-                Main.Surgery = dataMsg.Surgery;
+                Main.Surgery.Merge(dataMsg.Surgery, Main.User.IsInControl, Main.User.IsMaster);
                 if (Main.User.IsInControl && dataMsg.Forces != null)
                 {
                     Main.SetForceX(dataMsg.Forces.LeftX, true);
