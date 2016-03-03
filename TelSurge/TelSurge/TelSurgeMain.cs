@@ -121,9 +121,8 @@ namespace TelSurge
         {
             Markup.MyMarkings.Clear();
         }
-        private void showOmniPositions()
+        private void showOmniPositions(OmniPosition currentPosition)
         {
-            OmniPosition currentPosition = new OmniPosition();
             if (!cb_noOmnisAttached.Checked)
             {
                 currentPosition = User.GetOmniPositions();
@@ -708,75 +707,78 @@ namespace TelSurge
         {
             try
             {
-                OmniPosition currentPos = User.GetOmniPositions();
-                showOmniPositions();
+                if (User.HasOmnis)
+                {
+                    OmniPosition currentPos = User.GetOmniPositions();
+                    showOmniPositions(currentPos);
 
-                if (User.IsInControl)
-                {
-                    Surgery.UserInControl = User;
-                    if (User.IsFrozen) 
+                    if (User.IsInControl)
                     {
-                        Surgery.InControlPosition = User.FrozenPosition;
-                    }
-                    else
-                        Surgery.InControlPosition = currentPos;
-
-                    if (!User.IsMaster)
-                    {
-                        if (User.IsInControl)
-                            SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
-                    }
-                    if (telSurgeOnly && this.User.CheckForFreeze(currentPos))
-                        Freeze();
-                }
-                else
-                {
-                    this.User.CheckIfFollowing(currentPos);
-                    if (User.IsFollowing)
-                        User.OmniFollow(Surgery.InControlPosition);
-                    else
-                        User.SetOmniForce(new OmniPosition());
-                }
-
-                if (telSurgeOnly)
-                {
-                    if (Surgery.InControlPosition != null)
-                        OutputPosition = Surgery.InControlPosition;
-                }
-                else
-                {
-                    OutputPosition = currentPos;
-                }
-                showOutputPosition();
-                if (User.IsMaster)
-                {
-                    if (Surgery.ConnectedClients.Count > 0)
-                        SocketData.MasterSendData();
-                    //check if any users haven't responded for a while
-                    foreach (User u in Surgery.ConnectedClients)
-                    {
-                        if (DateTime.Now.Subtract(u.LastHeardFrom).Seconds > 30)
+                        Surgery.UserInControl = User;
+                        if (User.IsFrozen)
                         {
-                            disconnectClient(u);
-                            break;
+                            Surgery.InControlPosition = User.FrozenPosition;
                         }
-                    }
-                    if (this.User.CheckForEmergencySwitch(currentPos))
-                        emergencySwitchControl();
-                }
-                else
-                {
-                    if (User.ConnectedToMaster)
-                    {
-                        //remind Master that you are still connected
-                        if (DateTime.Now.Subtract(User.LastHeardFrom).Seconds > 20)
-                        {
-                            TcpClient tCPClient = new TcpClient();
-                            tCPClient.Connect(IPAddress.Parse(Surgery.Master.MyIPAddress), connectionPort);
-                            SocketMessage sm = new SocketMessage(Surgery, User);
-                            SocketData.SendTCPDataTo(tCPClient, SocketData.SerializeObject<SocketMessage>(sm));
+                        else
+                            Surgery.InControlPosition = currentPos;
 
-                            User.LastHeardFrom = DateTime.Now;
+                        if (!User.IsMaster)
+                        {
+                            if (User.IsInControl)
+                                SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
+                        }
+                        if (telSurgeOnly && this.User.CheckForFreeze(currentPos))
+                            Freeze();
+                    }
+                    else
+                    {
+                        this.User.CheckIfFollowing(currentPos);
+                        if (User.IsFollowing)
+                            User.OmniFollow(Surgery.InControlPosition);
+                        else
+                            User.SetOmniForce(new OmniPosition());
+                    }
+
+                    if (telSurgeOnly)
+                    {
+                        if (Surgery.InControlPosition != null)
+                            OutputPosition = Surgery.InControlPosition;
+                    }
+                    else
+                    {
+                        OutputPosition = currentPos;
+                    }
+                    showOutputPosition();
+                    if (User.IsMaster)
+                    {
+                        if (Surgery.ConnectedClients.Count > 0)
+                            SocketData.MasterSendData();
+                        //check if any users haven't responded for a while
+                        foreach (User u in Surgery.ConnectedClients)
+                        {
+                            if (DateTime.Now.Subtract(u.LastHeardFrom).Seconds > 30)
+                            {
+                                disconnectClient(u);
+                                break;
+                            }
+                        }
+                        if (this.User.CheckForEmergencySwitch(currentPos))
+                            emergencySwitchControl();
+                    }
+                    else
+                    {
+                        if (User.ConnectedToMaster)
+                        {
+                            //remind Master that you are still connected
+                            if (DateTime.Now.Subtract(User.LastHeardFrom).Seconds > 20)
+                            {
+                                TcpClient tCPClient = new TcpClient();
+                                tCPClient.Connect(IPAddress.Parse(Surgery.Master.MyIPAddress), connectionPort);
+                                SocketMessage sm = new SocketMessage(Surgery, User);
+                                SocketData.SendTCPDataTo(tCPClient, SocketData.SerializeObject<SocketMessage>(sm));
+
+                                User.LastHeardFrom = DateTime.Now;
+                            }
                         }
                     }
                 }
@@ -784,7 +786,7 @@ namespace TelSurge
             catch (Exception ex)
             {
                 UnderlyingTimer.Enabled = false;
-                ShowError("An error occured during routine program timer. Application must be reset.", ex.Message+" => "+ex.ToString());
+                ShowError("An error occured during routine program timer. Application must be reset.", ex.Message + " => " + ex.ToString());
             }
         }
         private void ConnectToMasterButtonClick(object sender, EventArgs e)
