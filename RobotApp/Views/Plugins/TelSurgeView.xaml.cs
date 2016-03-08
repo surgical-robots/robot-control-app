@@ -191,13 +191,9 @@ namespace RobotApp.Views.Plugins
                     string outputName = "ExButton" + i.ToString();
                     Outputs[outputName].Value = Convert.ToDouble(telSurge.OutputPosition.ExtraButtons[i-1]);
                 }
-                
 
-                //bool forcesSet = false;
-                //if (!Inputs["ForceLX"].Value.Equals(0) || !Inputs["ForceLY"].Value.Equals(0) || !Inputs["ForceLZ"].Value.Equals(0) || !Inputs["ForceRX"].Value.Equals(0) || !Inputs["ForceRY"].Value.Equals(0) || !Inputs["ForceRZ"].Value.Equals(0))
-                //{
-                //    forcesSet = telSurge.setForces(Inputs["ForceLX"].Value, Inputs["ForceLY"].Value, Inputs["ForceLZ"].Value, Inputs["ForceRX"].Value, Inputs["ForceRY"].Value, Inputs["ForceRZ"].Value);
-                //}
+                if (!telSurge.User.IsInControl)
+                    Outputs["FreezeOut"].Value = Convert.ToDouble(telSurge.Surgery.UserInControl.IsFrozen);
             }
         }
 
