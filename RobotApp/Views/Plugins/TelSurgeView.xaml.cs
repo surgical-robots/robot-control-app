@@ -92,7 +92,7 @@ namespace RobotApp.Views.Plugins
                  if (message.Value.Equals(0))
                  {
                      telSurge.Freeze();
-                     Outputs["FreezeOut"].Value = Convert.ToDouble(telSurge.User.IsFrozen);
+                     Outputs["FreezeOut"].Value = Convert.ToDouble(telSurge.Surgery.UserInControl.IsFrozen);
                  }
              });
 
@@ -191,9 +191,6 @@ namespace RobotApp.Views.Plugins
                     string outputName = "ExButton" + i.ToString();
                     Outputs[outputName].Value = Convert.ToDouble(telSurge.OutputPosition.ExtraButtons[i-1]);
                 }
-
-                if (!telSurge.User.IsInControl)
-                    Outputs["FreezeOut"].Value = Convert.ToDouble(telSurge.Surgery.UserInControl.IsFrozen);
             }
         }
 

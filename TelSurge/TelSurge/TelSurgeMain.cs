@@ -291,6 +291,7 @@ namespace TelSurge
         }
         private void switchControl(bool takeControl)
         {
+            User.IsInControl = takeControl;
             if (takeControl)
             {
                 if (btn_Initialize.Enabled)
@@ -306,13 +307,12 @@ namespace TelSurge
             else
             {
                 User.IsFrozen = false;
-                if (User.FrozenPosition != null)
-                    Surgery.InControlPosition = User.FrozenPosition;
+                //if (User.FrozenPosition != null)
+                //    Surgery.InControlPosition = User.FrozenPosition;
                 while (Surgery.UserInControl.MyName == User.MyName) { } //Allow for new InControl user to update Surgery
                 tb_InControl.Text = Surgery.UserInControl.MyName + " is in control.";
                 tb_InControl.BackColor = Color.Green;
             }
-            User.IsInControl = takeControl;
             groupBox3.Enabled = !takeControl;
             tb_forces.Enabled = !takeControl;
             btn_zeroForces.Enabled = !takeControl;
@@ -345,16 +345,14 @@ namespace TelSurge
         }
         public void Freeze()
         {
-            User.IsFrozen = !User.IsFrozen;
+            if (User.IsInControl)
+                User.IsFrozen = !User.IsFrozen;
+            else
+                SocketData.sendFreezeCmd = true;
             if (telSurgeOnly && User.IsFrozen)
             {
                 User.FrozenPosition = User.GetOmniPositions();
             }
-
-            if (User.IsFrozen) 
-                tb_InControl.Text = "You are frozen.";
-            else
-                tb_InControl.Text = "You are in control!";
         }
         private void forceOmnisToPosition()
         {
@@ -715,6 +713,11 @@ namespace TelSurge
                     //Check for freeze button press
                     if (this.User.CheckForFreeze(currentPos))
                         Freeze();
+                    //Display Frozen status
+                    if (User.IsFrozen)
+                        tb_InControl.Text = "You are frozen.";
+                    else
+                        tb_InControl.Text = "You are in control!";
                 }
                 else
                 {

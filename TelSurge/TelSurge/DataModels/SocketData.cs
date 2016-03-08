@@ -21,9 +21,8 @@ namespace TelSurge
         private bool logDataTurnAroundTime = false;
         private Stopwatch turnAroundTimer = new Stopwatch();
         private Queue<SocketMessage> dataBuffer = new Queue<SocketMessage>();
-        private bool dataAvailable = false;
         private Stopwatch dataWatch = new Stopwatch();
-        private bool networkDataDelayChanged = false;
+        public bool sendFreezeCmd = false;
         private bool hasMasterData = false;
         public bool IsListeningForData { get; set; }
 
@@ -84,8 +83,8 @@ namespace TelSurge
             {
                 sm.ClearMarkingsReq = Main.Markup.ClearMarkingsReq;
                 Main.Markup.ClearMarkingsReq = false;
-                //sm.sendFreezeCmd = sendFreezeCmd;
-                //sendFreezeComd = false;
+                sm.sendFreezeCmd = sendFreezeCmd;
+                sendFreezeCmd = false;
                 if (Main.User.IsMaster)
                 {
                     sm.Forces = Main.HapticForces;
@@ -141,6 +140,8 @@ namespace TelSurge
 
                 SocketMessage dataMsg = DeserializeObject<SocketMessage>(arry);
                 Main.Surgery.Merge(dataMsg.Surgery, Main.User.IsInControl, Main.User.IsMaster);
+                if (dataMsg.sendFreezeCmd)
+                    Main.Freeze();
                 if (Main.User.IsInControl && dataMsg.Forces != null)
                 {
                     Main.SetForceX(dataMsg.Forces.LeftX, true);
