@@ -13,14 +13,11 @@ namespace Kinematics
 {
     public class IKSolver : Kinematic
     {
-        double[] oldAngle;
         public double[] radAngle;
         public bool Initialized = false;
 
-        Point3D oldPoint;
-
-        const double IK_POS_THRESH = 3;
-        const int IK_MAX_TRIES = 500;
+        const double IK_POS_THRESH = 1;
+        const int IK_MAX_TRIES = 10000;
 
         /// <summary>
         /// index = 0        1          2
@@ -39,6 +36,21 @@ namespace Kinematics
         public Point[] MinMax { get; set; }
 
         /// <summary>
+        /// This returns the joint coupling of the manipulator
+        /// </summary>
+        public CouplingType Coupling { get; set; }
+
+        /// <summary>
+        /// This returns whether or not to output workspace forces
+        /// </summary>
+        public bool OutputWorkspace { get; set; }
+
+        /// <summary>
+        /// This returns whether or not to invert workspace forces
+        /// </summary>
+        public bool[] InvertForces { get; set; }
+
+        /// <summary>
         /// This returns the names of the angle outputs
         /// </summary>
         public string[] OutputStrings { get; set; }
@@ -53,9 +65,11 @@ namespace Kinematics
             if(!Initialized)
             {
                 radAngle = new double[N];
+                radAngle.Initialize();
                 Initialized = true;
             }
             double posError;
+            Vector3D Ph;
             // create desired position vector
             Vector3D Pd = new Vector3D(Position.X, Position.Y, Position.Z);
             // declare 3D array for each joint frame axis (xi, yi, zi, Pi)
@@ -89,7 +103,7 @@ namespace Kinematics
                     Pih[i] = Vector3D.Subtract(frame[N, 3], frame[i, 3]);
                 }
                 // set position of end effector
-                Vector3D Ph = frame[N, 3];
+                Ph = frame[N, 3];
                 posError = Math.Sqrt(Math.Pow(Ph.X - Pd.X, 2) + Math.Pow(Ph.Y - Pd.Y, 2) + Math.Pow(Ph.Z - Pd.Z, 2));
                 if (posError > IK_POS_THRESH)
                 {
@@ -105,7 +119,6 @@ namespace Kinematics
                         // use cross product to check rotation direction
                         Vector3D crossResult = Vector3D.CrossProduct(Pih[link], Target);
                         crossResult.Normalize();
-                        double sinAngle = crossResult.Length;
                         double turnAngle = Vector3D.AngleBetween(Target, Pih[link]) * Math.PI / 180;
                         double sign = Vector3D.DotProduct(frame[link, 2], crossResult);
                         if (sign < 0)
@@ -120,13 +133,59 @@ namespace Kinematics
                 if (link-- < 2) link = N - 1;
             }
             while (tries++ < IK_MAX_TRIES && posError > IK_POS_THRESH);
-            //convert angles to degrees
-            double[] angles = new double[N - 1];
-            for(int i = 0; i < N - 1; i++)
+            double[] angles;
+            // check if we are outputting workspace forces
+            if(OutputWorkspace)
             {
-                angles[i] = radAngle[i + 1] * 180 / Math.PI;
+                double forceGain = 0.5;
+                angles = new double[N + 2];
+                // calculate workspace forces if our position error is greater than the threshold
+                if (posError > IK_POS_THRESH)
+                {
+                    Vector3D forces = Vector3D.Multiply(forceGain, Vector3D.Subtract(Pd, Ph));
+                    // invert forces if desired
+                    angles[N - 1] = InvertForces[0] ? -forces.X : forces.X;
+                    angles[N] = InvertForces[1] ? -forces.Y : forces.Y;
+                    angles[N + 1] = InvertForces[2] ? -forces.Z : forces.Z;
+                }
+                else
+                {
+                    // no workspace force if we can reach desired point
+                    angles[N - 1] = 0;
+                    angles[N] = 0;
+                    angles[N + 1] = 0;
+                }
             }
+            else
+                angles = new double[N - 1];
+            // change output angles based on joint coupling
+            switch(Coupling)
+            {
+                case CouplingType.None:
+                    //convert angles to degrees
+                    for (int i = 0; i < N - 1; i++)
+                    {
+                        angles[i] = radAngle[i + 1] * 180 / Math.PI;
+                    }
+                    break;
+                case CouplingType.ShoulderTwoDOF:
+                    angles[0] = (radAngle[1] + radAngle[2]) * 180 / Math.PI ;
+                    angles[1] = (radAngle[1] - radAngle[2]) * 180 / Math.PI;
+                    for (int i = 2; i < N - 1; i++)
+                    {
+                        angles[i] = radAngle[i + 1] * 180 / Math.PI;
+                    }
+                    break;
+            }
+            switch(N)
+            {
+                case 4:
+                    Func<double[], double> f = (q) => 
+                    Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph));
+                    Func<double[], double[]> g = (q) =>  ;
 
+                    break;
+            }
             return angles;
         }
 

@@ -8,6 +8,13 @@ namespace Kinematics
 {
     public class Kinematic
     {
+        public enum CouplingType
+        {
+            None,
+            ShoulderTwoDOF,
+            ShoulderThreeDOF
+        }
+
         /// <summary>
         /// Gets a list of joint angles from a three-dimensional position
         /// </summary>
