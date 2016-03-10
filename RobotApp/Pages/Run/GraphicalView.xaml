@@ -14,11 +14,11 @@
         <Grid ShowGridLines="False">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" ShowGridLines="False" MaxWidth="500">
+            <Grid Grid.Column="0" ShowGridLines="False">
 
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -34,10 +34,12 @@
                     <!--<HelixToolkit:GridLinesVisual3D Width="500" Length="500" MinorDistance="10" MajorDistance="10" Thickness="0.1" Center="0 100 -200" />-->
                 </h:HelixViewport3D>
 
-                <Grid Grid.Row="1">
+                <StackPanel Grid.Row="1">
+                    <TextBlock Text="Grasper 1"/>
                     <ProgressBar Minimum="0" Maximum="500" Value="{Binding GrasperForceL}"/>
+                    <TextBlock Text="Grasper 2"/>
                     <ProgressBar Minimum="0" Maximum="500" Value="{Binding GrasperForceR}"/>
-                </Grid>
+                </StackPanel>
 
             </Grid>
 
@@ -45,13 +47,13 @@
 
                 <StackPanel>
                     <UniformGrid Columns="2">
-                        <TextBlock Text="Video Source:"/>
-                        <ComboBox Name="DeviceNamesBox" ItemsSource="{Binding GrapicalView.DeviceNames}" SelectedItem="{Binding GrapicalView.SelectedDeviceName}" />
+                        <TextBlock Text="Video Source: " HorizontalAlignment="Right"/>
+                        <ComboBox Name="DeviceNamesBox" ItemsSource="{Binding DeviceNames}" SelectedItem="{Binding SelectedDeviceName}" />
 
-                        <TextBlock Text="Format:"/>
-                        <ComboBox Name="SettingNamesBox" ItemsSource="{Binding GrapicalView.SettingNames}" SelectedIndex="{Binding GrapicalView.SelectedSetting}"/>
+                        <TextBlock Text="Format: " HorizontalAlignment="Right"/>
+                        <ComboBox Name="SettingNamesBox" ItemsSource="{Binding SettingNames}" SelectedIndex="{Binding SelectedSetting}"/>
                     </UniformGrid>
-                    <Button Content="{Binding GrapicalView.ConnectButtonText}" Command="{Binding GrapicalView.StartCommand}" />
+                    <Button Content="{Binding ConnectButtonText}" Command="{Binding StartCommand}" />
                     <Image Name="VideoImage" />
                 </StackPanel>
 
