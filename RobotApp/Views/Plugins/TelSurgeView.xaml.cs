@@ -91,8 +91,13 @@ namespace RobotApp.Views.Plugins
              {
                  if (message.Value.Equals(0))
                  {
-                     telSurge.Freeze();
-                     Outputs["FreezeOut"].Value = Convert.ToDouble(telSurge.Surgery.UserInControl.IsFrozen);
+                     //Get current frozen state
+                     bool currentlyFrozen = telSurge.Surgery.UserInControl.IsFrozen;
+                     if (currentlyFrozen)
+                         telSurge.UnFreeze();
+                     else
+                         telSurge.Freeze();
+                     Outputs["FreezeOut"].Value = Convert.ToDouble(!currentlyFrozen);
                  }
              });
 
@@ -191,6 +196,11 @@ namespace RobotApp.Views.Plugins
                     string outputName = "ExButton" + i.ToString();
                     Outputs[outputName].Value = Convert.ToDouble(telSurge.OutputPosition.ExtraButtons[i-1]);
                 }
+                if (telSurge.SendFrozen)
+                {
+                    Outputs["FreezeOut"].Value = 1;
+                    telSurge.SendFrozen = false;
+                }
             }
         }
 
@@ -244,7 +254,7 @@ namespace RobotApp.Views.Plugins
         /// </summary>
         public const string UpdatePeriodPropertyName = "UpdatePeriod";
 
-        private int updatePeriod = 15;
+        private int updatePeriod = 1;
 
         /// <summary>
         /// Sets and gets the UpdatePeriod property.

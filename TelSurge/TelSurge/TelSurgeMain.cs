@@ -47,6 +47,7 @@ namespace TelSurge
         private System.Windows.Forms.Timer turnAroundTimer = new System.Windows.Forms.Timer();
         private TcpListener grantReqListener = null;
         private bool telSurgeOnly = false;
+        public bool SendFrozen { get; set; }
         //OUTPUTS
         public OmniPosition OutputPosition { get; set; }
 
@@ -95,6 +96,7 @@ namespace TelSurge
                 fillOmniDDL();
                 fillAudioDeviceDDL();
                 HapticForces = new OmniPosition();
+                SendFrozen = false;
 
                 //Set Force Trackbar
                 //want force divider between 20 and 220
@@ -306,13 +308,16 @@ namespace TelSurge
             }
             else
             {
-                User.IsFrozen = false;
+                UnFreeze();
                 //if (User.FrozenPosition != null)
                 //    Surgery.InControlPosition = User.FrozenPosition;
                 while (Surgery.UserInControl.MyName == User.MyName) { } //Allow for new InControl user to update Surgery
                 tb_InControl.Text = Surgery.UserInControl.MyName + " is in control.";
                 tb_InControl.BackColor = Color.Green;
             }
+            if (!btn_Initialize.Enabled)
+                SendFrozen = true; //Always freeze when switching control
+
             groupBox3.Enabled = !takeControl;
             tb_forces.Enabled = !takeControl;
             btn_zeroForces.Enabled = !takeControl;
@@ -346,13 +351,20 @@ namespace TelSurge
         public void Freeze()
         {
             if (User.IsInControl)
-                User.IsFrozen = !User.IsFrozen;
+                User.IsFrozen = true;
             else
-                SocketData.sendFreezeCmd = true;
-            if (telSurgeOnly && User.IsFrozen)
+                SocketData.sendToggleFrozen = true;
+            if (telSurgeOnly)
             {
                 User.FrozenPosition = User.GetOmniPositions();
             }
+        }
+        public void UnFreeze()
+        {
+            if (User.IsInControl)
+                User.IsFrozen = false;
+            else
+                SocketData.sendToggleFrozen = true;
         }
         private void forceOmnisToPosition()
         {
@@ -880,7 +892,14 @@ namespace TelSurge
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            
+            try
+            {
+                User.DisconnectOmnis();
+            }
+            catch (Exception)
+            {
+
+            }
         }
         private void btn_StartAudio_Click(object sender, EventArgs e)
         {

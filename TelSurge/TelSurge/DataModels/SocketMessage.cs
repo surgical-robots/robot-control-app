@@ -18,7 +18,7 @@ namespace TelSurge.DataModels
         //other message type information
         public User User { get; set; }
         public OmniPosition Forces { get; set; } 
-        public bool sendFreezeCmd { get; set; }
+        public bool sendToggleFrozen { get; set; }
         public bool EmergencySwitch { get; set; }
         public bool ClearMarkingsReq { get; set; }
 

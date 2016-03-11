@@ -454,5 +454,10 @@ namespace TelSurge
             }
             
         }
+        public void DisconnectOmnis()
+        {
+            LeftOmni.Stop();
+            RightOmni.Stop();
+        }
     }
 }
