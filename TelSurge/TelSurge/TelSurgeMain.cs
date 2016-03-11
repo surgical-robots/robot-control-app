@@ -308,7 +308,7 @@ namespace TelSurge
             }
             else
             {
-                UnFreeze();
+                User.IsFrozen = false;
                 //if (User.FrozenPosition != null)
                 //    Surgery.InControlPosition = User.FrozenPosition;
                 while (Surgery.UserInControl.MyName == User.MyName) { } //Allow for new InControl user to update Surgery
@@ -407,7 +407,7 @@ namespace TelSurge
             Surgery.ConnectedClients.Remove(client);
 
             if (Surgery.UserInControl.MyIPAddress == client.MyIPAddress)
-                emergencySwitchControl();
+                switchControl(true);
 
             if (Surgery.ConnectedClients.Count == 0)
             {
@@ -723,7 +723,7 @@ namespace TelSurge
                         SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
                     }
                     //Check for freeze button press
-                    if (this.User.CheckForFreeze(currentPos))
+                    if (telSurgeOnly && this.User.CheckForFreeze(currentPos))
                         Freeze();
                     //Display Frozen status
                     if (User.IsFrozen)
