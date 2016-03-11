@@ -766,8 +766,11 @@ namespace TelSurge
                     }
                 }
                 //Update and show output data (RobotApp)
-                OutputPosition = Surgery.InControlPosition;
-                showOutputPosition();
+                if (Surgery.InControlPosition != null)
+                {
+                    OutputPosition = Surgery.InControlPosition;
+                    showOutputPosition();
+                }
             }
             catch (Exception ex)
             {
