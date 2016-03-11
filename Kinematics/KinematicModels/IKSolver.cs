@@ -13,11 +13,18 @@ namespace Kinematics
 {
     public class IKSolver : Kinematic
     {
-        public double[] radAngle;
-        public bool Initialized = false;
+        private double[] radAngle;  // array of joint angles in radians
+        private Vector3D[,] frame;  // array of joint frame vectors
+        private Vector3D Pd;        // desired position vector
+        private Vector3D Ph;        // position of end effector
+        private Vector3D[] Pih;     // array of relative position of end effector with respect to each frame
+        private double Ec;          // current error
+        private double Ep;          // previous error
+        private bool Initialized = false;
 
-        const double IK_POS_THRESH = 1;
+        const double IK_POS_THRESH = 0.5;
         const int IK_MAX_TRIES = 10000;
+        const double BETA = 1;
 
         /// <summary>
         /// index = 0        1          2
@@ -68,12 +75,10 @@ namespace Kinematics
                 radAngle.Initialize();
                 Initialized = true;
             }
-            double posError;
-            Vector3D Ph;
             // create desired position vector
-            Vector3D Pd = new Vector3D(Position.X, Position.Y, Position.Z);
+            Pd = new Vector3D(Position.X, Position.Y, Position.Z);
             // declare 3D array for each joint frame axis (xi, yi, zi, Pi)
-            Vector3D[,] frame = new Vector3D[N + 1, 4];
+            frame = new Vector3D[N + 1, 4];
             frame.Initialize();
             // set base frame
             frame[0, 0].X = 1;
@@ -97,15 +102,31 @@ namespace Kinematics
                     frame[i, 3] = Vector3D.Add(Vector3D.Add(Vector3D.Multiply(LinkTable[i - 1, 2], frame[i - 1, 2]), Vector3D.Multiply(LinkTable[i - 1, 1], frame[i, 0])), frame[i-1, 3]);
                 }
                 // compute relative positions
-                Vector3D[] Pih = new Vector3D[N+1];
+                Pih = new Vector3D[N+1];
                 for(int i = N - 1; i >= 0; i--)
                 {
                     Pih[i] = Vector3D.Subtract(frame[N, 3], frame[i, 3]);
                 }
                 // set position of end effector
                 Ph = frame[N, 3];
-                posError = Math.Sqrt(Math.Pow(Ph.X - Pd.X, 2) + Math.Pow(Ph.Y - Pd.Y, 2) + Math.Pow(Ph.Z - Pd.Z, 2));
-                if (posError > IK_POS_THRESH)
+                // calculate current position error
+                Ec = Math.Abs(Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph)));
+
+                if ((Ec > IK_POS_THRESH) && (Ec < BETA) && (Ec > Math.Pow(Ep, 2))) // begin BFGS optimization
+                {
+                    double epsg = 0.0000000001;
+                    double epsf = 0;
+                    double epsx = 0;
+                    int maxits = 0;             // maximum number of iterations, for unlimited = 0
+                    alglib.minlbfgsstate state;
+                    alglib.minlbfgsreport rep;
+
+                    alglib.minlbfgscreate(N, 3, radAngle, out state);         // create optimizer with current joint angles for initial values
+                    alglib.minlbfgssetcond(state, epsg, epsf, epsx, maxits);        // set optimizer options
+                    alglib.minlbfgsoptimize(state, function1_grad, null, null);     // optimize
+                    alglib.minlbfgsresults(state, out radAngle, out rep);           // get results
+                }
+                else if (Ec > IK_POS_THRESH) // begin Cyclic Coordinate Descent loop
                 {
                     // create target effector position vector
                     Vector3D Target = Vector3D.Subtract(Pd, frame[link, 3]);
@@ -129,10 +150,14 @@ namespace Kinematics
                         else if (radAngle[link] > (MinMax[link - 1].Y * Math.PI / 180))
                             radAngle[link] = MinMax[link - 1].Y * Math.PI / 180;
                     }
+                    // backward recurssion through joints for CCD
+                    if (link-- < 2) link = N - 1;
                 }
-                if (link-- < 2) link = N - 1;
+                // set previous error value for next loop
+                Ep = Ec;
             }
-            while (tries++ < IK_MAX_TRIES && posError > IK_POS_THRESH);
+            while (tries++ < IK_MAX_TRIES && Ec > IK_POS_THRESH);
+
             double[] angles;
             // check if we are outputting workspace forces
             if(OutputWorkspace)
@@ -140,7 +165,7 @@ namespace Kinematics
                 double forceGain = 0.5;
                 angles = new double[N + 2];
                 // calculate workspace forces if our position error is greater than the threshold
-                if (posError > IK_POS_THRESH)
+                if (Ec > IK_POS_THRESH)
                 {
                     Vector3D forces = Vector3D.Multiply(forceGain, Vector3D.Subtract(Pd, Ph));
                     // invert forces if desired
@@ -177,16 +202,39 @@ namespace Kinematics
                     }
                     break;
             }
-            switch(N)
-            {
-                case 4:
-                    Func<double[], double> f = (q) => 
-                    Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph));
-                    Func<double[], double[]> g = (q) =>  ;
-
-                    break;
-            }
             return angles;
+        }
+
+        public void function1_grad(double[] q, ref double func, double[] grad, object obj)
+        {
+            // calculate frame positions
+            for (int i = 1; i < N + 1; i++)
+            {
+                // x(i)
+                frame[i, 0] = Vector3D.Add((Vector3D.Multiply(Math.Cos(q[i - 1]), frame[(i - 1), 0])), (Vector3D.Multiply(Math.Sin(q[i - 1]), frame[(i - 1), 1])));
+                // z(i)
+                frame[i, 2] = Vector3D.Add((Vector3D.Multiply(Math.Cos(LinkTable[i - 1, 0]), frame[(i - 1), 2])), Vector3D.Multiply(Math.Sin(LinkTable[(i - 1), 0]), Vector3D.CrossProduct(frame[i, 0], frame[(i - 1), 2])));
+                // y(i)
+                frame[i, 1] = Vector3D.CrossProduct(frame[i, 2], frame[i, 0]);
+                //P(i)
+                frame[i, 3] = Vector3D.Add(Vector3D.Add(Vector3D.Multiply(LinkTable[i - 1, 2], frame[i - 1, 2]), Vector3D.Multiply(LinkTable[i - 1, 1], frame[i, 0])), frame[i - 1, 3]);
+            }
+            // compute relative positions
+            Pih = new Vector3D[N + 1];
+            for (int i = N - 1; i >= 0; i--)
+            {
+                Pih[i] = Vector3D.Subtract(frame[N, 3], frame[i, 3]);
+            }
+            // set position of end effector
+            Ph = frame[N, 3];
+
+            // function to be minimized
+            func = Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph));
+            // declare gradient vector elements for each joint
+            for (int i = 0; i < N-1; i++)
+            {
+                grad[i] = Vector3D.DotProduct(Vector3D.Multiply(2, frame[i, 2]), (Vector3D.CrossProduct(Vector3D.Subtract(Pd, Ph), Pih[i])));
+            }
         }
 
         public override string[] OutputNames
