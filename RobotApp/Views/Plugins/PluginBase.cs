@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
@@ -217,6 +218,7 @@ namespace RobotApp.Views.Plugins
             {
                 MainViewModel.Instance.InputSignalRegistry.Remove(input.Value.UniqueID);
             }
+            
         }
 
         public virtual void PostLoadSetup()

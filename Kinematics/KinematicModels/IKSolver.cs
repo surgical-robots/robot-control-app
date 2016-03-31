@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Windows;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kinematics
 {
@@ -21,9 +14,10 @@ namespace Kinematics
         private double Ec;          // current error
         private double Ep;          // previous error
         private bool Initialized = false;
+        private double maxForce = 4;
 
-        const double IK_POS_THRESH = 0.5;
-        const int IK_MAX_TRIES = 10000;
+        const double IK_POS_THRESH = 5;
+        const int IK_MAX_TRIES = 1000;
         const double BETA = 1;
 
         /// <summary>
@@ -172,6 +166,11 @@ namespace Kinematics
                     angles[N - 1] = InvertForces[0] ? -forces.X : forces.X;
                     angles[N] = InvertForces[1] ? -forces.Y : forces.Y;
                     angles[N + 1] = InvertForces[2] ? -forces.Z : forces.Z;
+                    for(int i = N-1; i < N+2; i++)
+                    {
+                        if (angles[i] > maxForce) angles[i] = maxForce;
+                        else if (angles[i] < -maxForce) angles[i] = -maxForce;
+                    }
                 }
                 else
                 {

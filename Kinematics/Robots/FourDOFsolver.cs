@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kinematics.Robots
+﻿namespace Kinematics.Robots
 {
     class FourDOFsolver : IKSolver
     {
@@ -21,7 +15,7 @@ namespace Kinematics.Robots
             this.MinMax[2] = new System.Windows.Point(0, 105);
             this.Coupling = CouplingType.ShoulderTwoDOF;
             this.OutputWorkspace = true;
-            this.InvertForces = new bool[3] { false, false, false };
+            this.InvertForces = new bool[3] { false, false, true };
             this.OutputStrings = new string[6] { "Upper Bevel", "Lower Bevel", "Elbow", "Workspace FX", "Workspace FY", "Workspace FZ" };
         }
     }
