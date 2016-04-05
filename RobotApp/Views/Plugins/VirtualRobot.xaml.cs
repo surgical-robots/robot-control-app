@@ -89,7 +89,7 @@ namespace RobotApp.Views.Plugins
         public ModelVisual3D rightSpaceVisual3 = new ModelVisual3D();
         public ModelVisual3D leftSpaceVisual3 = new ModelVisual3D();
 
-//        public VirtualRobotWindow newWindow = new VirtualRobotWindow();
+        public VirtualRobotWindow newWindow = new VirtualRobotWindow();
         public GraphicalView graphicView;
         
         
@@ -526,9 +526,9 @@ namespace RobotApp.Views.Plugins
                 wholeModel3.Transform = modelTransform;
 
                 // Add content to HelixViewport3D in VirtualRobotWindow.xaml
-                //newWindow.FullModel = wholeModel;
-                //newWindow.DModel = wholeModel2;
-                //newWindow.SModel = wholeModel3;
+                newWindow.FullModel = wholeModel;
+                newWindow.DModel = wholeModel2;
+                newWindow.SModel = wholeModel3;
                 
             }));
             
@@ -709,7 +709,7 @@ namespace RobotApp.Views.Plugins
                     ?? (startCommand = new RelayCommand<string>(
                     p =>
                     {
-                        //newWindow.Show();
+                        newWindow.Show();
                     }));
             }
         }
