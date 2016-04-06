@@ -57,6 +57,7 @@
     <Compile Include="KinematicModels\CoupledShoulder3DOF.cs" />
     <Compile Include="KinematicModels\CoupledShoulderAndElbow3DOF.cs" />
     <Compile Include="KinematicModels\IKSolver.cs" />
+    <Compile Include="KinematicModels\TwoArmCoupledShoulder3DOF.cs" />
     <Compile Include="Point3D.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KinematicModels\TwoArmCoupledShoulder.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Robots\LouBotWithCamera.cs" />
     <Compile Include="Robots\TomBot.cs" />
     <Compile Include="Robots\TomShortArm.cs" />
+    <Compile Include="Robots\TwoArmLouBot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
