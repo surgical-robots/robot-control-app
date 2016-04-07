@@ -42,6 +42,7 @@ namespace TelSurge
                 //IP source
                 _main.VideoCapture.CaptureDevice = ipSources[choice - IPCamerasIndex].Address;
                 _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.IP);
+                _main.VideoCapture.PTZAddress = ipSources[choice - IPCamerasIndex].PTZAddress;
             }
             else
             {

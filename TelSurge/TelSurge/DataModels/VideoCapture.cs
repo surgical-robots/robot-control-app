@@ -28,6 +28,7 @@ namespace TelSurge
         private CaptureType capturingType;
         public bool IsStreaming { get; set; }
         public string CaptureDevice { get; set; }
+        public string PTZAddress { get; set; }
         /*
         private bool _captureInProgress = false;
         
@@ -57,6 +58,7 @@ namespace TelSurge
             this.IsListeningForVideo = false;
             this.IsStreaming = false;
             this.CaptureDevice = "";
+            this.PTZAddress = "";
         }
         private Image<Bgr, byte> addMarkup(Image<Bgr, byte> Frame) 
         {
@@ -208,6 +210,7 @@ namespace TelSurge
                     _capture = new Capture(Convert.ToInt32(CaptureDevice));
                 else if (capturingType.Equals(CaptureType.IP))
                     _capture = new Capture(CaptureDevice);
+
             }
             _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FPS, 40);
             _capture.ImageGrabbed += ProcessFrame;

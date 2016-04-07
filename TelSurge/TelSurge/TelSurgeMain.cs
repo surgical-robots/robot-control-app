@@ -50,6 +50,7 @@ namespace TelSurge
         public bool SendFrozen { get; set; }
         //OUTPUTS
         public OmniPosition OutputPosition { get; set; }
+        private Point videoClickPoint = new Point();
 
         /*
         double forceOffset_LX = 0;
@@ -335,14 +336,17 @@ namespace TelSurge
                 t.Start(true);
             }
         }
-        public static async void sendCmdToCamera(string cmd)
+        public async void sendCmdToCamera(string cmd)
         {
-            WebRequestHandler handler = new WebRequestHandler();
-            handler.Credentials = new NetworkCredential("admin", "admin");
-            HttpClient _client = new HttpClient(handler);
-            HttpResponseMessage result;
-            result = await _client.GetAsync("http://129.93.8.214/cgi-bin/ptzctrl.cgi?ptzcmd&" + cmd);
-            result.EnsureSuccessStatusCode();
+            if (VideoCapture.PTZAddress != "")
+            {
+                WebRequestHandler handler = new WebRequestHandler();
+                handler.Credentials = new NetworkCredential("admin", "admin");
+                HttpClient _client = new HttpClient(handler);
+                HttpResponseMessage result;
+                result = await _client.GetAsync("http://" + VideoCapture.PTZAddress + "/cgi-bin/ptzctrl.cgi?ptzcmd&" + cmd);
+                result.EnsureSuccessStatusCode();
+            }
         }
         public void ShowVideoFrame(Image<Bgr, Byte> Frame)
         {
@@ -414,6 +418,21 @@ namespace TelSurge
                 VideoCapture.IsStreaming = false;
                 Markup.IsListeningForMarkup = false;
                 lbl_Connections.Text = "Connections: None";
+            }
+        }
+        private int calculatePanTiltDuration(int location, int offset, bool isX) //in ms
+        {
+            //calculate origin with respect to the capture image box
+            Point origin = new Point(Convert.ToInt32(CaptureImageBox.Width / 2), Convert.ToInt32(CaptureImageBox.Height / 2));
+            if (isX)
+            {
+                MessageBox.Show((location - origin.X).ToString());
+                return offset * (location - origin.X);
+            }
+            else
+            {
+                MessageBox.Show((origin.Y - location).ToString());
+                return offset * (origin.Y - location);
             }
         }
 
@@ -542,9 +561,36 @@ namespace TelSurge
         }
         private void captureImageBox_MouseUp(object sender, MouseEventArgs e)
         {
-            if (isDrawing)
+            if (VideoCapture.PTZAddress != "")
             {
-                isDrawing = false;
+                if (e.Location.Equals(videoClickPoint) && tmpPoints.Count.Equals(0))
+                {
+                    //Move PTZ camera to center on click location
+                    //Get duration of pan (X)
+                    int panTime = calculatePanTiltDuration(videoClickPoint.X, 0, true);
+                    bool turnRight = panTime > 0;
+                    panTime = Math.Abs(panTime);
+
+                    //Get duration of tilt (Y)
+                    int tiltTime = calculatePanTiltDuration(videoClickPoint.Y, 0, false);
+                    bool turnUp = tiltTime > 0;
+                    tiltTime = Math.Abs(tiltTime);
+
+                    //move camera
+                    Stopwatch movePTZWatch = new Stopwatch();
+                    movePTZWatch.Start();
+                    sendCmdToCamera((turnRight ? "right" : "left")+"&3&3"); //send start moving
+                    while (movePTZWatch.ElapsedMilliseconds < panTime) { };
+                    sendCmdToCamera("ptzstop&3&3"); //send stop command
+                    movePTZWatch.Restart();
+                    sendCmdToCamera((turnUp ? "up" : "down")+"&3&3"); //send start moving
+                    while (movePTZWatch.ElapsedMilliseconds < tiltTime) { };
+                    sendCmdToCamera("ptzstop&3&3"); //send stop command
+                    movePTZWatch.Stop();
+                }
+            }
+            else if (isDrawing)
+            {
                 try
                 {
                     tmpPoints = new List<Point>();
@@ -555,6 +601,7 @@ namespace TelSurge
                 }
                 //btn_UndoMark.Visible = true;
             }
+            isDrawing = false;
             //If camera can be controlled over network and mouse down event occured in captureImageBox
             //if (videoIsPTZ && !startZoomPt.IsEmpty)
             //{
@@ -587,6 +634,7 @@ namespace TelSurge
                 isDrawing = true;
                 isFirstPointOfFigure = true;
             }
+            videoClickPoint = e.Location;
         }
         private void btn_PenColor_Click(object sender, EventArgs e)
         {
@@ -992,7 +1040,7 @@ namespace TelSurge
         }
         private void iPCameraControlsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CameraControl cameraControlForm = new CameraControl();
+            CameraControl cameraControlForm = new CameraControl(this);
             cameraControlForm.Show();
         }
         private void logDataTurnAroundTime_Click(object sender, EventArgs e)
@@ -1175,6 +1223,48 @@ namespace TelSurge
                 }
                 s.Close();
                 btn_ReqControl.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                ShowError(ex.Message, ex.ToString());
+            }
+        }
+
+        private void btn_laser_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Create a request using a URL that can receive a post. 
+                WebRequest request = WebRequest.Create("https://api.particle.io/v1/devices/3c002d000c47343432313031/led?access_token=623b6d6ba0fcd4715c7c60d80f802e522f32903b");
+                // Set the Method property of the request to POST.
+                request.Method = "POST";
+                // Create POST data and convert it to a byte array.
+                string postData = "LED";
+                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+                // Set the ContentLength property of the WebRequest.
+                request.ContentLength = byteArray.Length;
+                // Get the request stream.
+                Stream dataStream = request.GetRequestStream();
+                // Write the data to the request stream.
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                // Close the Stream object.
+                dataStream.Close();
+                // Get the response.
+                WebResponse response = request.GetResponse();
+                // Display the status.
+                //MessageBox.Show(((HttpWebResponse)response).StatusDescription);
+                // Get the stream containing content returned by the server.
+                dataStream = response.GetResponseStream();
+                // Open the stream using a StreamReader for easy access.
+                StreamReader reader = new StreamReader(dataStream);
+                // Read the content.
+                string responseFromServer = reader.ReadToEnd();
+                // Display the content.
+                //MessageBox.Show(responseFromServer);
+                // Clean up the streams.
+                reader.Close();
+                dataStream.Close();
+                response.Close();
             }
             catch (Exception ex)
             {

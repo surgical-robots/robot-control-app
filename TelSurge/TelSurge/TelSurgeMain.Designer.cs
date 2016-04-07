@@ -112,6 +112,7 @@
             this.logDataTimesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btn_laser = new System.Windows.Forms.Button();
             this.gb_OmniControls.SuspendLayout();
             this.gb_SendingRight.SuspendLayout();
             this.gb_SendingLeft.SuspendLayout();
@@ -130,6 +131,7 @@
             // 
             this.gb_OmniControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gb_OmniControls.Controls.Add(this.btn_laser);
             this.gb_OmniControls.Controls.Add(this.tb_InControl);
             this.gb_OmniControls.Controls.Add(this.gb_SendingRight);
             this.gb_OmniControls.Controls.Add(this.gb_SendingLeft);
@@ -964,6 +966,16 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
+            // btn_laser
+            // 
+            this.btn_laser.Location = new System.Drawing.Point(37, 86);
+            this.btn_laser.Name = "btn_laser";
+            this.btn_laser.Size = new System.Drawing.Size(92, 20);
+            this.btn_laser.TabIndex = 103;
+            this.btn_laser.Text = "laser";
+            this.btn_laser.UseVisualStyleBackColor = true;
+            this.btn_laser.Click += new System.EventHandler(this.btn_laser_Click);
+            // 
             // TelSurgeMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1088,6 +1100,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem telSurgeOnlyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logDataTimesToolStripMenuItem;
+        private System.Windows.Forms.Button btn_laser;
 
 
 
