@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Kinematic.cs" />
+    <Compile Include="KinematicModels\CombinedBot.cs" />
     <Compile Include="KinematicModels\CoupledShoulder3DOF.cs" />
     <Compile Include="KinematicModels\CoupledShoulderAndElbow3DOF.cs" />
     <Compile Include="KinematicModels\IKSolver.cs" />
