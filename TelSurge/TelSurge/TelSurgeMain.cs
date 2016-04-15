@@ -426,7 +426,7 @@ namespace TelSurge
             Point origin = new Point(Convert.ToInt32(CaptureImageBox.Width / 2), Convert.ToInt32(CaptureImageBox.Height / 2));
             if (isX)
             {
-                MessageBox.Show((location - origin.X).ToString());
+                MessageBox.Show((((location - origin.X) / CaptureImageBox.Width) * 100).ToString());
                 return offset * (location - origin.X);
             }
             else
@@ -435,7 +435,6 @@ namespace TelSurge
                 return offset * (origin.Y - location);
             }
         }
-
         //Old Methods        
         /*
         private void disconnect(string ipAddress)
@@ -576,17 +575,17 @@ namespace TelSurge
                     bool turnUp = tiltTime > 0;
                     tiltTime = Math.Abs(tiltTime);
 
-                    //move camera
-                    Stopwatch movePTZWatch = new Stopwatch();
-                    movePTZWatch.Start();
-                    sendCmdToCamera((turnRight ? "right" : "left")+"&3&3"); //send start moving
-                    while (movePTZWatch.ElapsedMilliseconds < panTime) { };
-                    sendCmdToCamera("ptzstop&3&3"); //send stop command
-                    movePTZWatch.Restart();
-                    sendCmdToCamera((turnUp ? "up" : "down")+"&3&3"); //send start moving
-                    while (movePTZWatch.ElapsedMilliseconds < tiltTime) { };
-                    sendCmdToCamera("ptzstop&3&3"); //send stop command
-                    movePTZWatch.Stop();
+                    ////move camera
+                    //Stopwatch movePTZWatch = new Stopwatch();
+                    //movePTZWatch.Start();
+                    //sendCmdToCamera((turnRight ? "right" : "left")+"&3&3"); //send start moving
+                    //while (movePTZWatch.ElapsedMilliseconds < panTime) { };
+                    //sendCmdToCamera("ptzstop&3&3"); //send stop command
+                    //movePTZWatch.Restart();
+                    //sendCmdToCamera((turnUp ? "up" : "down")+"&3&3"); //send start moving
+                    //while (movePTZWatch.ElapsedMilliseconds < tiltTime) { };
+                    //sendCmdToCamera("ptzstop&3&3"); //send stop command
+                    //movePTZWatch.Stop();
                 }
             }
             else if (isDrawing)

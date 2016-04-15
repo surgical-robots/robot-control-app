@@ -18,8 +18,8 @@
   <IPCamera>
     <Identifier>3</Identifier>
     <Name>PTZOptics</Name>
-    <Address>rtsp://129.93.23.131/1</Address>
-    <PTZAddress>129.93.23.131</PTZAddress>
+    <Address>rtsp://129.93.14.183/1</Address>
+    <PTZAddress>129.93.14.183</PTZAddress>
   </IPCamera>
   <IPCamera>
     <Identifier>4</Identifier>
