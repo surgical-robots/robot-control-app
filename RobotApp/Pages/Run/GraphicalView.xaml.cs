@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Command;
@@ -27,7 +21,7 @@ namespace RobotApp.Pages
     /// <summary>
     /// Interaction logic for GraphicalViewPage.xaml
     /// </summary>
-    public partial class GraphicalView : UserControl
+    public partial class GraphicalView : UserControl, INotifyPropertyChanged
     {
         private readonly Dispatcher dispatcher;
 
@@ -84,8 +78,69 @@ namespace RobotApp.Pages
         public double cTwist = 0;
 
         // video stream objects
-        public ObservableCollection<string> DeviceNames { get; set; }
-        public ObservableCollection<string> SettingNames { get; set; }
+
+        //public ObservableCollection<string> DeviceNames { get; set; }
+        /// <summary>
+        /// The <see cref="DeviceNames" /> property's name.
+        /// </summary>
+        public const string DeviceNamesPropertyName = "DeviceNames";
+
+        private ObservableCollection<string> deviceNames = null;
+
+        /// <summary>
+        /// Sets and gets the DeviceNames property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public ObservableCollection<string> DeviceNames
+        {
+            get
+            {
+                return deviceNames;
+            }
+
+            set
+            {
+                if (deviceNames == value)
+                {
+                    return;
+                }
+
+                deviceNames = value;
+                RaisePropertyChanged(DeviceNamesPropertyName);
+            }
+        }
+
+        //public ObservableCollection<string> SettingNames { get; set; }
+        /// <summary>
+        /// The <see cref="SettingNames" /> property's name.
+        /// </summary>
+        public const string SettingNamesPropertyName = "SettingNames";
+
+        private ObservableCollection<string> settingNames = null;
+
+        /// <summary>
+        /// Sets and gets the SettingNames property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public ObservableCollection<string> SettingNames
+        {
+            get
+            {
+                return settingNames;
+            }
+
+            set
+            {
+                if (settingNames == value)
+                {
+                    return;
+                }
+
+                settingNames = value;
+                RaisePropertyChanged(SettingNamesPropertyName);
+            }
+        }
+
         public VideoCaptureDevice CaptureDevice;
         private FilterInfoCollection _deviceList;
         private VideoCapabilities[] _deviceCapabilites;
@@ -490,7 +545,7 @@ namespace RobotApp.Pages
                 }
 
                 selectedDevice = value;
-                //RaisePropertyChanged(SelectedDeviceNamePropertyName);
+                RaisePropertyChanged(SelectedDeviceNamePropertyName);
                 if (CaptureDevice != null && CaptureDevice.IsRunning)
                     CaptureDevice.SignalToStop();
                 if (_wasRunning)
@@ -511,12 +566,24 @@ namespace RobotApp.Pages
             }
         }
 
+        [System.Runtime.InteropServices.DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
         void CaptureDevice_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
         {
             Bitmap frame = eventArgs.Frame;
             this.Dispatcher.Invoke((Action)(() =>
             {
-                VideoImage.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(frame.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                IntPtr hBitmap = frame.GetHbitmap();
+                try
+                {
+                    VideoImage.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                }
+                finally
+                {
+                    DeleteObject(hBitmap);
+                    frame.Dispose();
+                }
             }));
         }
 
@@ -558,7 +625,7 @@ namespace RobotApp.Pages
                 }
 
                 selectedSetting = value;
-                //RaisePropertyChanged(SelectedSettingPropertyName);
+                RaisePropertyChanged(SelectedSettingPropertyName);
                 if (selectedSetting != -1)
                     CaptureDevice.VideoResolution = _deviceCapabilites[selectedSetting];
             }
@@ -590,7 +657,7 @@ namespace RobotApp.Pages
                 }
 
                 connectButtonText = value;
-                //RaisePropertyChanged(ConnectButtonTextPropertyName);
+                RaisePropertyChanged(ConnectButtonTextPropertyName);
             }
         }
 
@@ -624,6 +691,7 @@ namespace RobotApp.Pages
         /// <summary>
         /// The <see cref="GrasperForceL" /> property's name.
         /// </summary>
+        public const string GrasperForceLPropertyName = "GrasperForceL";
 
         private double grasperForceL = 0;
 
@@ -646,12 +714,14 @@ namespace RobotApp.Pages
                 }
 
                 grasperForceL = value;
+                RaisePropertyChanged(GrasperForceLPropertyName);
             }
         }
 
         /// <summary>
         /// The <see cref="GrasperForceR" /> property's name.
         /// </summary>
+        public const string GrasperForceRPropertyName = "GrasperForceR";
 
         private double grasperForceR = 200;
 
@@ -674,7 +744,19 @@ namespace RobotApp.Pages
                 }
 
                 grasperForceR = value;
+                RaisePropertyChanged(GrasperForceRPropertyName);
             }
         }
+
+        public void RaisePropertyChanged(string propName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propName));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
     }
 }

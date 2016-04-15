@@ -43,6 +43,7 @@ SerialPortPacketTransport::SerialPortPacketTransport(String^ comPort, Robot^ rob
 	Port->WriteTimeout = 25;
 	Port->Open();
 	serialOpsThread = gcnew Thread(gcnew ThreadStart(this, &SerialPortPacketTransport::SerialOps));
+	serialOpsThread->Name = "SerialThread";
 	serialOpsThread->IsBackground = true;
 	serialOpsThread->Start();
 }
