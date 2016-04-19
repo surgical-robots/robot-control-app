@@ -32,13 +32,19 @@
                     <TextBlock Text="Pitch: "/>
                     <TextBlock Text="{Binding DataContext.Slider2Value}"/>
                 </UniformGrid>
-                <Slider Minimum="30" Maximum="127" Value="{Binding DataContext.Slider2Value, Mode=TwoWay}" />
+                <Slider Minimum="40" Maximum="127" Value="{Binding DataContext.Slider2Value, Mode=TwoWay}" />
 
                 <UniformGrid Columns="2">
+                    <TextBlock Text="Yaw: "/>
+                    <TextBlock Text="{Binding DataContext.Slider4Value}"/>
+                </UniformGrid>
+                <Slider Minimum="0" Maximum="360" Value="{Binding DataContext.Slider4Value, Mode=TwoWay}" />
+                
+                <!--<UniformGrid Columns="2">
                     <TextBlock Text="Acceleration"/>
                     <TextBlock Text="{Binding DataContext.Slider3Value}"/>
                 </UniformGrid>
-                <Slider Minimum="1" Maximum="255" Value="{Binding DataContext.Slider3Value, Mode=TwoWay}" />
+                <Slider Minimum="1" Maximum="255" Value="{Binding DataContext.Slider3Value, Mode=TwoWay}" />-->
 
                 <UniformGrid Columns="2">
                     <TextBlock Text="Torque Enable Motor 1"/>
