@@ -10,15 +10,18 @@ namespace Kinematics
         private Vector3D[,] frame;  // array of joint frame vectors
         private Vector3D Pd;        // desired position vector
         private Vector3D Ph;        // position of end effector
+        private Vector3D[] Rd;      // desired orientation of end effector
+        private Vector3D[] Rh;      // orientation of end effector
         private Vector3D[] Pih;     // array of relative position of end effector with respect to each frame
+        private double Eo;          // orientation error
         private double Ec;          // current error
         private double Ep;          // previous error
         private bool Initialized = false;
         private double maxForce = 4;
 
-        const double IK_POS_THRESH = 5;
-        const int IK_MAX_TRIES = 1000;
-        const double BETA = 1;
+        const double IK_POS_THRESH = 2;
+        const int IK_MAX_TRIES = 3000;
+        const double BETA = 10;
 
         /// <summary>
         /// index = 0        1          2
@@ -30,6 +33,11 @@ namespace Kinematics
         /// This returns the number of links in the manipulator
         /// </summary>
         public int N { get; set; }
+
+        /// <summary>
+        /// This returns the weights (0 or 1) of each end effector orientations
+        /// </summary>
+        public bool[] Sigma { get; set; }
 
         /// <summary>
         /// This returns the minimum and maximum angles for each joint in degrees
@@ -65,12 +73,15 @@ namespace Kinematics
         {
             if(!Initialized)
             {
-                radAngle = new double[N];
+                radAngle = new double[N + 1];
                 radAngle.Initialize();
                 Initialized = true;
             }
             // create desired position vector
             Pd = new Vector3D(Position.X, Position.Y, Position.Z);
+            // create desired orientation vector
+            Rd = new Vector3D[3];
+            Rh = new Vector3D[3];
             // declare 3D array for each joint frame axis (xi, yi, zi, Pi)
             frame = new Vector3D[N + 1, 4];
             frame.Initialize();
@@ -79,7 +90,7 @@ namespace Kinematics
             frame[0, 1].Y = 1;
             frame[0, 2].Z = 1;
 
-            int link = N - 1;
+            int link = N;
             int tries = 0;
             // begin Cyclic Coordinate Descent loop
             do
@@ -103,8 +114,21 @@ namespace Kinematics
                 }
                 // set position of end effector
                 Ph = frame[N, 3];
+                // set end effector orientation
+                Rh[0] = frame[N, 0];
+                Rh[1] = frame[N, 1];
+                Rh[2] = frame[N, 2];
+                // calculate orientation error
+                Eo = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    if(Sigma[i])
+                    {
+                        Eo += Math.Pow((Vector3D.DotProduct(Rd[i], Rh[i]) - 1), 2);
+                    }
+                }
                 // calculate current position error
-                Ec = Math.Abs(Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph)));
+                Ec = Eo + Math.Pow(Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph)), 2);
 
                 if ((Ec > IK_POS_THRESH) && (Ec < BETA) && (Ec > Math.Pow(Ep, 2))) // begin BFGS optimization
                 {
@@ -112,40 +136,82 @@ namespace Kinematics
                     double epsf = 0;
                     double epsx = 0;
                     int maxits = 0;             // maximum number of iterations, for unlimited = 0
+                    double[] optiAngle = new double[N];
                     alglib.minlbfgsstate state;
                     alglib.minlbfgsreport rep;
 
-                    alglib.minlbfgscreate(N, 3, radAngle, out state);         // create optimizer with current joint angles for initial values
+                    alglib.minlbfgscreate(N, 4, radAngle, out state);         // create optimizer with current joint angles for initial values
                     alglib.minlbfgssetcond(state, epsg, epsf, epsx, maxits);        // set optimizer options
                     alglib.minlbfgsoptimize(state, function1_grad, null, null);     // optimize
-                    alglib.minlbfgsresults(state, out radAngle, out rep);           // get results
+                    alglib.minlbfgsresults(state, out optiAngle, out rep);           // get results
+                    for(int i = 0; i < N; i++)
+                    {
+                        radAngle[i + 1] = optiAngle[i];
+                    }
                 }
                 else if (Ec > IK_POS_THRESH) // begin Cyclic Coordinate Descent loop
                 {
+                    
                     // create target effector position vector
-                    Vector3D Target = Vector3D.Subtract(Pd, frame[link, 3]);
-                    Target.Normalize();
-                    Pih[link].Normalize();
+                    Vector3D Pid = Vector3D.Subtract(Pd, frame[link, 3]);
+                    //Pid.Normalize();
+                    //Pih[link].Normalize();
+                    double wp = 1;      // position weight
+                    double wo = 1;      // orientation weight
+
+                    double k1 = 0;
+                    for(int i = 0; i < 3; i++)
+                    {
+                        if(Sigma[i])
+                            k1 += wo * Vector3D.DotProduct(Rd[i], frame[link, 2]) * Vector3D.DotProduct(Rh[i], frame[link, 2]);
+                    }
+                    k1 += wp * Vector3D.DotProduct(Pid, frame[link, 2]) * Vector3D.DotProduct(Pih[link], frame[link, 2]);
+
+                    double k2 = 0;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if(Sigma[i])
+                            k2 += wo * Vector3D.DotProduct(Rd[i], Rh[i]);
+                    }
+                    k2 += wp * Vector3D.DotProduct(Pid, Pih[link]);
+
+                    double k3 = 0;
+                    Vector3D ko3 = new Vector3D();
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (Sigma[i])
+                            ko3 = Vector3D.Add(ko3, wo * Vector3D.CrossProduct(Rh[i], Rd[i]));
+                    }
+                    k3 = Vector3D.DotProduct(frame[link, 2], Vector3D.Add(wp * Vector3D.CrossProduct(Pih[link], Pid), ko3));
+                    // minimize position and orientation error
+                    double turnAngle = Math.Atan(-k3 / (k1 - k2));
+                    radAngle[link] += turnAngle;
+                    /*
                     // use the dot product to calculate the cos of the desired angle
-                    double cosAngle = Vector3D.DotProduct(Target,Pih[link]);
+                    double cosAngle = Vector3D.DotProduct(Pid,Pih[link]);
                     // check if we need to rotate the link
                     if(cosAngle < 0.99999)
                     {
                         // use cross product to check rotation direction
-                        Vector3D crossResult = Vector3D.CrossProduct(Pih[link], Target);
+                        Vector3D crossResult = Vector3D.CrossProduct(Pih[link], Pid);
                         crossResult.Normalize();
-                        double turnAngle = Vector3D.AngleBetween(Target, Pih[link]) * Math.PI / 180;
+                        double turnAngle = Vector3D.AngleBetween(Pid, Pih[link]) * Math.PI / 180;
                         double sign = Vector3D.DotProduct(frame[link, 2], crossResult);
                         if (sign < 0)
                             turnAngle = -turnAngle;
                         radAngle[link] += turnAngle;
-                        if (radAngle[link] < (MinMax[link - 1].X * Math.PI / 180))
-                            radAngle[link] = MinMax[link - 1].X * Math.PI / 180;
-                        else if (radAngle[link] > (MinMax[link - 1].Y * Math.PI / 180))
-                            radAngle[link] = MinMax[link - 1].Y * Math.PI / 180;
-                    }
+                     */
+                    // adjust angle based on joint limits
+                    if (radAngle[link] < (MinMax[link - 1].X * Math.PI / 180))
+                        radAngle[link] = MinMax[link - 1].X * Math.PI / 180;
+                    else if (radAngle[link] > (MinMax[link - 1].Y * Math.PI / 180))
+                        radAngle[link] = MinMax[link - 1].Y * Math.PI / 180;
+                    if (double.IsNaN(radAngle[link]))
+                        radAngle[link] = 0;
+                    //}
+                        
                     // backward recurssion through joints for CCD
-                    if (link-- < 2) link = N - 1;
+                    if (link-- < 2) link = N;
                 }
                 // set previous error value for next loop
                 Ep = Ec;
@@ -226,13 +292,31 @@ namespace Kinematics
             }
             // set position of end effector
             Ph = frame[N, 3];
-
+            // set end effector orientation
+            Rh[0] = frame[N, 0];
+            Rh[1] = frame[N, 1];
+            Rh[2] = frame[N, 2];
+            // calculate orientation error
+            Eo = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                if (Sigma[i])
+                {
+                    Eo += Math.Pow((Vector3D.DotProduct(Rd[i], Rh[i]) - 1), 2);
+                }
+            }
             // function to be minimized
-            func = Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph));
+            func = Eo + Math.Pow(Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph)), 2);
             // declare gradient vector elements for each joint
             for (int i = 0; i < N-1; i++)
             {
-                grad[i] = Vector3D.DotProduct(Vector3D.Multiply(2, frame[i, 2]), (Vector3D.CrossProduct(Vector3D.Subtract(Pd, Ph), Pih[i])));
+                Vector3D gradO = new Vector3D();
+                for (int j = 0; j < 3; j++ )
+                {
+                    if (Sigma[j])
+                        gradO = Vector3D.Add(gradO, (Vector3D.DotProduct(Rd[j], Rh[j]) - 1) * Vector3D.CrossProduct(Rh[j], Rd[j]));
+                }
+                grad[i] = Vector3D.DotProduct(Vector3D.Multiply(2, frame[i, 2]), Vector3D.Add((Vector3D.CrossProduct(Vector3D.Subtract(Pd, Ph), Pih[i])), gradO));
             }
         }
 
