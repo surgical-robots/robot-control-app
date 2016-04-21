@@ -19,6 +19,12 @@ using System.Diagnostics;
 using Emgu.CV;
 using Emgu.CV.Structure;
 
+
+using Emgu.CV.UI;
+
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace TelSurge
 {
     public partial class TelSurgeMain : Form
@@ -420,20 +426,53 @@ namespace TelSurge
                 lbl_Connections.Text = "Connections: None";
             }
         }
-        private int calculatePanTiltDuration(int location, int offset, bool isX) //in ms
+        private int calculatePanTiltDuration(int location, int ff, bool isX) //in ms
         {
             //calculate origin with respect to the capture image box
             Point origin = new Point(Convert.ToInt32(CaptureImageBox.Width / 2), Convert.ToInt32(CaptureImageBox.Height / 2));
+            double calcDuration = 0;
             if (isX)
             {
-                MessageBox.Show((((location - origin.X) / CaptureImageBox.Width) * 100).ToString());
-                return offset * (location - origin.X);
+                calcDuration = location - origin.X;
+                calcDuration /= CaptureImageBox.Width;
             }
             else
             {
-                MessageBox.Show((origin.Y - location).ToString());
-                return offset * (origin.Y - location);
+                calcDuration = origin.Y - location;
+                calcDuration /= CaptureImageBox.Height;
             }
+            calcDuration *= 100;
+            return Convert.ToInt32(ff * calcDuration);
+        }
+        private void moveCamera()
+        {
+            //Move PTZ camera to center on click location
+            int speedX = 10;
+            int speedY = 10;
+            //Get duration of pan (X)
+            int panTime = calculatePanTiltDuration(videoClickPoint.X, (int)numericUpDown1.Value, true);
+            bool turnRight = panTime > 0;
+            panTime = Math.Abs(panTime);
+
+            //Get duration of tilt (Y)
+            int tiltTime = calculatePanTiltDuration(videoClickPoint.Y, (int)numericUpDown2.Value, false);
+            bool turnUp = tiltTime > 0;
+            tiltTime = Math.Abs(tiltTime);
+
+            //move camera
+            Stopwatch movePTZWatch = new Stopwatch();
+            movePTZWatch.Start();
+            sendCmdToCamera((turnRight ? "right" : "left") + "&" + speedX + "&" + speedY); //send start moving
+            while (movePTZWatch.ElapsedMilliseconds < panTime) { };
+            //Send multiple "STOP" because some do not register
+            for (int i = 0; i < 5; i++)
+                sendCmdToCamera("ptzstop&3&3"); //send stop command
+            movePTZWatch.Restart();
+            sendCmdToCamera((turnUp ? "up" : "down") + "&" + speedX + "&" + speedY); //send start moving
+            while (movePTZWatch.ElapsedMilliseconds < tiltTime) { };
+            for (int i = 0; i < 5; i++)
+                sendCmdToCamera("ptzstop&3&3"); //send stop command
+            movePTZWatch.Stop();
         }
         //Old Methods        
         /*
@@ -564,31 +603,12 @@ namespace TelSurge
             {
                 if (e.Location.Equals(videoClickPoint) && tmpPoints.Count.Equals(0))
                 {
-                    //Move PTZ camera to center on click location
-                    //Get duration of pan (X)
-                    int panTime = calculatePanTiltDuration(videoClickPoint.X, 0, true);
-                    bool turnRight = panTime > 0;
-                    panTime = Math.Abs(panTime);
-
-                    //Get duration of tilt (Y)
-                    int tiltTime = calculatePanTiltDuration(videoClickPoint.Y, 0, false);
-                    bool turnUp = tiltTime > 0;
-                    tiltTime = Math.Abs(tiltTime);
-
-                    ////move camera
-                    //Stopwatch movePTZWatch = new Stopwatch();
-                    //movePTZWatch.Start();
-                    //sendCmdToCamera((turnRight ? "right" : "left")+"&3&3"); //send start moving
-                    //while (movePTZWatch.ElapsedMilliseconds < panTime) { };
-                    //sendCmdToCamera("ptzstop&3&3"); //send stop command
-                    //movePTZWatch.Restart();
-                    //sendCmdToCamera((turnUp ? "up" : "down")+"&3&3"); //send start moving
-                    //while (movePTZWatch.ElapsedMilliseconds < tiltTime) { };
-                    //sendCmdToCamera("ptzstop&3&3"); //send stop command
-                    //movePTZWatch.Stop();
+                    Thread moveCamThread = new Thread(new ThreadStart(moveCamera));
+                    moveCamThread.IsBackground = true;
+                    moveCamThread.Start();
                 }
             }
-            else if (isDrawing)
+            if (isDrawing)
             {
                 try
                 {
