@@ -9,7 +9,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <plugins:PluginBase.PluginContent>
-    <StackPanel>
+        <StackPanel>
+
 
             <UniformGrid Columns="3">
                 <TextBlock Text="Available COM Ports"/>
@@ -20,53 +21,44 @@
 
             <Button Content="{Binding ButtonText}" Command="{Binding ConnectCommand}"/>
 
-        <UniformGrid Columns="2" Height="144">
             <UniformGrid Columns="2">
-                <TextBlock Text="Motor 1 Angle: "/>
-                <TextBlock Text="{Binding DataContext.Slider1Value}"/>
-            </UniformGrid>
-            <Slider Minimum="-180" Maximum="180" Value="{Binding DataContext.Slider1Value, Mode=TwoWay}" />
+                <UniformGrid Columns="2">
+                    <TextBlock Text="Theta 1: "/>
+                    <TextBlock Text="{Binding Theta1Value}"/>
+                </UniformGrid>
+                <Slider Minimum="-45" Maximum="45" Value="{Binding Theta1Value, Mode=TwoWay}" />
 
-            <UniformGrid Columns="2">
-                <TextBlock Text="Motor 2 Angle: "/>
-                <TextBlock Text="{Binding DataContext.Slider2Value}"/>
-            </UniformGrid>
-            <Slider Minimum="-180" Maximum="180" Value="{Binding DataContext.Slider2Value, Mode=TwoWay}" />
+                <UniformGrid Columns="2">
+                    <TextBlock Text="Theta 2: "/>
+                    <TextBlock Text="{Binding Theta2Value}"/>
+                </UniformGrid>
+                <Slider Minimum="-135" Maximum="135" Value="{Binding Theta2Value, Mode=TwoWay}" />
 
-            <UniformGrid Columns="2">
-                <TextBlock Text="Motor 3 Angle: "/>
-                <TextBlock Text="{Binding DataContext.Slider3Value}"/>
-            </UniformGrid>
-            <Slider Minimum="-180" Maximum="180" Value="{Binding DataContext.Slider3Value, Mode=TwoWay}" />
-            <UniformGrid Columns="2">
-                <TextBlock Text="Acceleration"/>
-                <TextBlock Text="{Binding DataContext.Slider4Value}"/>
-            </UniformGrid>
-            <Slider Minimum="1" Maximum="255" Value="{Binding DataContext.Slider4Value, Mode=TwoWay}" />
-             <!--<UniformGrid Columns="2">
-                <TextBlock Text="Torque Limit"/>
-                <TextBlock Text="{Binding DataContext.Slider5Value}"/>
-            </UniformGrid>
-            <Slider Minimum="1" Maximum="100" Value="{Binding DataContext.Slider5Value, Mode=TwoWay}" />-->
-            <UniformGrid Columns="2">
-                <TextBlock Text="Torque Enable Motor 1"/>
-                <CheckBox  IsChecked="{Binding Torque1}"/>
-            </UniformGrid>
-            <StackPanel/>
-            <UniformGrid Columns="2">
-                <TextBlock Text="Torque Enable Motor 2"/>
-                <CheckBox  IsChecked="{Binding Torque2}"/>
-            </UniformGrid>
-            <StackPanel/>
-            <UniformGrid Columns="2">
-                <TextBlock Text="Torque Enable Motor 3"/>
-                <CheckBox  IsChecked="{Binding Torque3}"/>
+                <UniformGrid Columns="2">
+                    <TextBlock Text="Theta 3: "/>
+                    <TextBlock Text="{Binding Theta3Value}"/>
+                </UniformGrid>
+                <Slider Minimum="-720" Maximum="720" Value="{Binding Theta3Value, Mode=TwoWay}" />
+
+                <UniformGrid Columns="2">
+                    <TextBlock Text="Torque Enable Motor 1"/>
+                    <CheckBox  IsChecked="{Binding Torque1}"/>
+                </UniformGrid>
+                <StackPanel/>
+                <UniformGrid Columns="2">
+                    <TextBlock Text="Torque Enable Motor 2"/>
+                    <CheckBox  IsChecked="{Binding Torque2}"/>
+                </UniformGrid>
+                <StackPanel/>
+                <UniformGrid Columns="2">
+                    <TextBlock Text="Torque Enable Motor 3"/>
+                    <CheckBox  IsChecked="{Binding Torque3}"/>
+                </UniformGrid>
+
             </UniformGrid>
 
-        </UniformGrid>
+            <TextBlock Text="{Binding ErrorText}"/>
 
-        <TextBlock Text="{Binding DataContext.ErrorText}"/>
-
-    </StackPanel>
+        </StackPanel>
     </plugins:PluginBase.PluginContent>
 </plugins:PluginBase>

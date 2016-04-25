@@ -15,21 +15,15 @@
                 <ComboBox ItemsSource="{Binding KinematicTypes}" SelectedItem="{Binding SelectedKinematic}" DisplayMemberPath="Name" />
             </UniformGrid>
             
-            <UniformGrid Columns="4">
-                <TextBlock Text="Invert XL Input" />
-                <CheckBox IsChecked="{Binding InvertXL}" />
-                <TextBlock Text="Invert XR Input" />
-                <CheckBox IsChecked="{Binding InvertXR}" />
+            <UniformGrid Columns="2">
+                <TextBlock Text="Invert X Input" />
+                <CheckBox IsChecked="{Binding InvertX}" />
                 
-                <TextBlock Text="Invert YL Input" />
-                <CheckBox IsChecked="{Binding InvertYL}" />
-                <TextBlock Text="Invert YR Input" />
-                <CheckBox IsChecked="{Binding InvertYR}" />
+                <TextBlock Text="Invert Y Input" />
+                <CheckBox IsChecked="{Binding InvertY}" />
 
-                <TextBlock Text="Invert ZL Input" />
-                <CheckBox IsChecked="{Binding InvertZL}" />
-                <TextBlock Text="Invert ZR Input" />
-                <CheckBox IsChecked="{Binding InvertZR}" />
+                <TextBlock Text="Invert Z Input" />
+                <CheckBox IsChecked="{Binding InvertZ}" />
             </UniformGrid>
 
         </StackPanel>
