@@ -450,12 +450,12 @@ namespace TelSurge
             int speedX = 10;
             int speedY = 10;
             //Get duration of pan (X)
-            int panTime = calculatePanTiltDuration(videoClickPoint.X, (int)numericUpDown1.Value, true);
+            int panTime = calculatePanTiltDuration(videoClickPoint.X, 23, true);
             bool turnRight = panTime > 0;
             panTime = Math.Abs(panTime);
 
             //Get duration of tilt (Y)
-            int tiltTime = calculatePanTiltDuration(videoClickPoint.Y, (int)numericUpDown2.Value, false);
+            int tiltTime = calculatePanTiltDuration(videoClickPoint.Y, 23, false);
             bool turnUp = tiltTime > 0;
             tiltTime = Math.Abs(tiltTime);
 
@@ -1242,48 +1242,6 @@ namespace TelSurge
                 }
                 s.Close();
                 btn_ReqControl.Enabled = true;
-            }
-            catch (Exception ex)
-            {
-                ShowError(ex.Message, ex.ToString());
-            }
-        }
-
-        private void btn_laser_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                // Create a request using a URL that can receive a post. 
-                WebRequest request = WebRequest.Create("https://api.particle.io/v1/devices/3c002d000c47343432313031/led?access_token=623b6d6ba0fcd4715c7c60d80f802e522f32903b");
-                // Set the Method property of the request to POST.
-                request.Method = "POST";
-                // Create POST data and convert it to a byte array.
-                string postData = "LED";
-                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-                // Set the ContentLength property of the WebRequest.
-                request.ContentLength = byteArray.Length;
-                // Get the request stream.
-                Stream dataStream = request.GetRequestStream();
-                // Write the data to the request stream.
-                dataStream.Write(byteArray, 0, byteArray.Length);
-                // Close the Stream object.
-                dataStream.Close();
-                // Get the response.
-                WebResponse response = request.GetResponse();
-                // Display the status.
-                //MessageBox.Show(((HttpWebResponse)response).StatusDescription);
-                // Get the stream containing content returned by the server.
-                dataStream = response.GetResponseStream();
-                // Open the stream using a StreamReader for easy access.
-                StreamReader reader = new StreamReader(dataStream);
-                // Read the content.
-                string responseFromServer = reader.ReadToEnd();
-                // Display the content.
-                //MessageBox.Show(responseFromServer);
-                // Clean up the streams.
-                reader.Close();
-                dataStream.Close();
-                response.Close();
             }
             catch (Exception ex)
             {
