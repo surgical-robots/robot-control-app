@@ -297,6 +297,9 @@
     <Compile Include="Views\Plugins\HapticWorkspace.xaml.cs">
       <DependentUpon>HapticWorkspace.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\IKSolver.xaml.cs">
+      <DependentUpon>IKSolver.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\InsertionSlider.xaml.cs">
       <DependentUpon>InsertionSlider.xaml</DependentUpon>
     </Compile>
@@ -468,6 +471,10 @@
     <Page Include="Views\Plugins\HapticWorkspace.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\IKSolver.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\InsertionSlider.xaml">
       <SubType>Designer</SubType>
