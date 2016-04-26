@@ -46,6 +46,7 @@ namespace TelSurge
                 }
 
                 comboBox1.DataSource = availablePorts;
+                comboBox1.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -100,16 +101,18 @@ namespace TelSurge
         {
             try
             {
+                connectedPort = new SerialPort((string)comboBox1.SelectedValue);
                 _main.User.ConnectExternalButtons(connectedPort, connected, numOfButtons[connectedPort.PortName]);
+                connected = !connected;
                 if (connected)
-                {
-                    btn_Connect.Text = "Connect";
-                }
-                else
                 {
                     btn_Connect.Text = "Disconnect";
                 }
-                connected = !connected;
+                else
+                {
+                    btn_Connect.Text = "Connect";
+                }
+                
             }
             catch (Exception ex)
             {

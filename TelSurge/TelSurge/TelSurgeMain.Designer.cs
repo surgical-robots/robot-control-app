@@ -259,7 +259,7 @@
             this.trb_forceStrength.Enabled = false;
             this.trb_forceStrength.Location = new System.Drawing.Point(34, 519);
             this.trb_forceStrength.Name = "trb_forceStrength";
-            this.trb_forceStrength.Size = new System.Drawing.Size(380, 40);
+            this.trb_forceStrength.Size = new System.Drawing.Size(380, 45);
             this.trb_forceStrength.TabIndex = 9;
             // 
             // tb_ipAddress

@@ -142,6 +142,18 @@ namespace TelSurge
 
             lbButtons1.Text = "Buttons : " + currentPosition.ButtonsLeft;
             lbInk1.Text = "InkWell : " + currentPosition.InkwellLeft.ToString();
+            bool pedPress = false;
+            for (int i = 0; i < User.NumExternalButtons; i++)
+            {
+                if (currentPosition.ExtraButtons[i])
+                {
+                    lbl_ExBtns.Text = "Ex. Buttons :" + (i + 1).ToString();
+                    pedPress = true;
+                    break;
+                }
+            }
+            if (!pedPress)
+                lbl_ExBtns.Text = "Ex. Buttons : 0";
 
             lbX2Value.Text = "X : " + currentPosition.RightX.ToString();
             lbY2Value.Text = "Y : " + currentPosition.RightY.ToString();

@@ -135,8 +135,11 @@ namespace TelSurge
             //add any external buttons
             if (extButtonsConnected)
             {
+                if (externalButtons.Length == 0)
+                    externalButtons = new bool[NumExternalButtons];
                 if (extButtonsPort.BytesToRead >= NumExternalButtons)
                 {
+                    //externalButtons = new bool[NumExternalButtons];
                     int intReturnASCII = 0;
                     string returnMessage = "";
 
@@ -148,14 +151,16 @@ namespace TelSurge
 
                     if (returnMessage != "")
                     {
-                        if (externalButtons == new bool[0])
-                            externalButtons = new bool[NumExternalButtons];
+                        //if (externalButtons == new bool[0])
+                        
                         for (int i = 0; i < NumExternalButtons; i++)
                         {
                             externalButtons[i] = Convert.ToBoolean(Char.GetNumericValue(returnMessage[i]));
                         }
                     }
+                    extButtonsPort.DiscardInBuffer();
                 }
+                currentPosition.ExtraButtons = externalButtons;
             }
 
             return currentPosition;
