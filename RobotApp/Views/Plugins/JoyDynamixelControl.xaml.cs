@@ -11,7 +11,7 @@ namespace RobotApp.Views.Plugins
     /// <summary>
     /// Interaction logic for DynamixelSlider.xaml
     /// </summary>
-    public partial class DynamixelControl : PluginBase
+    public partial class JoyDynamixelControl : PluginBase
     {
         // Control table address (for DXL Pro)
         public const int P_TORQUE_ENABLE = 562;
@@ -25,6 +25,11 @@ namespace RobotApp.Views.Plugins
         public const int P_LED_RED = 563;
         public const int P_LED_GREEN = 564;
         public const int P_LED_BLUE = 565;
+
+        public double RollMove = 127;
+        public double PitchMove = 127;
+        public double YawMove = 127;
+
         public int PortNumber = 0;
 
 
@@ -42,25 +47,90 @@ namespace RobotApp.Views.Plugins
 
         Timer errorTimer = new Timer(5000);
 
+        Timer joystickTimer = new Timer(100);
+
         public override void PostLoadSetup()
         {
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll"].UniqueID, (message) =>
+            {
+                RollMove = message.Value;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Pitch"].UniqueID, (message) =>
+            {
+                PitchMove = message.Value;
+            });
+
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Yaw"].UniqueID, (message) =>
             {
-                Slider4Value = message.Value;
+                YawMove = message.Value;
             });
+
             base.PostLoadSetup();
         }
 
-        public DynamixelControl()
+        public JoyDynamixelControl()
         {
             this.DataContext = this;
-            this.TypeName = "Dynamixel Control";
+            this.TypeName = "Joystick Dynamixel Control";
             InitializeComponent();
+
             errorTimer.Elapsed += ErrorTimer_Elapsed;
             errorTimer.Start();
+
+            joystickTimer.Elapsed += JoystickTimer_Elapsed;
+            joystickTimer.Start();
+
             string[] ports = SerialPort.GetPortNames();
             PortList = new List<string>(ports);
 
+            Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
+            Inputs.Add("Pitch", new ViewModel.InputSignalViewModel("Pitch", this.InstanceName));
+            Inputs.Add("Yaw", new ViewModel.InputSignalViewModel("Yaw", this.InstanceName));
+            PostLoadSetup();
+        }
+
+        private void JoystickTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (RollMove > 135 || RollMove < 120)
+            {
+                double RollIncrement = (RollMove - 127) / 127;
+                Slider1Value = Slider1Value + RollIncrement;
+                if (Slider1Value > 45)
+                {
+                    Slider1Value = 45;
+                }
+                else if (Slider1Value < -45)
+                {
+                    Slider1Value = -45;
+                }
+            }
+            else if (PitchMove > 135 || PitchMove < 120)
+            {
+                double PitchIncrement = (PitchMove - 127) / 127;
+                Slider2Value = Slider2Value + PitchIncrement;
+                if (Slider2Value > 127)
+                {
+                    Slider2Value = 127;
+                }
+                else if (Slider2Value < 40)
+                {
+                    Slider2Value = 40;
+                }
+            }
+            else if (YawMove > 135 || YawMove < 115)
+            {
+                double YawIncrement = (YawMove - 127) / 100;
+                Slider4Value = Slider4Value + YawIncrement;
+                if (Slider4Value > 180)
+                {
+                    Slider4Value = 180;
+                }
+                else if (Slider4Value < -180)
+                {
+                    Slider4Value = -180;
+                }
+            }
         }
 
         private void ErrorTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -202,7 +272,7 @@ namespace RobotApp.Views.Plugins
                             dynamixel.dxl2_write_dword(index, P_GOAL_POSITION_L, 0);
                             dynamixel.dxl2_write_dword(1, P_GOAL_ACCEL_L, 1);
                             dynamixel.dxl2_write_dword(2, P_GOAL_ACCEL_L, 1);
-                            dynamixel.dxl2_write_dword(3, P_GOAL_ACCEL_L, 10);
+                            dynamixel.dxl2_write_dword(3, P_GOAL_ACCEL_L, 1);
                             dynamixel.dxl2_write_byte(index, P_LED_BLUE, 255);
                             CommStatus = dynamixel.dxl_get_comm_result();
                             if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -443,7 +513,7 @@ namespace RobotApp.Views.Plugins
                     CommStatus = dynamixel.dxl_get_comm_result();
                     if (CommStatus != dynamixel.COMM_RXSUCCESS)
                     {
-                        ErrorText = "Failed to send Motor2 setpoint!";
+                        ErrorText = "Failed to send Motor3 setpoint!";
                     }
                 }
             }
@@ -486,18 +556,18 @@ namespace RobotApp.Views.Plugins
             int motor2Setpoint = (int)Math.Round((Theta3*180/Math.PI) * 151875 / 180);
             int motor3Setpoint;
 
-            if (Slider4Value > 70)
-            {
-                 motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) - 180) * 151875 / 180);
-            }
-            else if (Slider4Value < -290)
-            {
-                motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI)+540) * 151875 / 180);
-            }
-            else
-            {
+            //if (Slider4Value > 70)
+            //{
+            //     motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) - 180) * 151875 / 180);
+            //}
+            //else if (Slider4Value < -290)
+            //{
+            //    motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI)+540) * 151875 / 180);
+            //}
+            //else
+            //{
                  motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
-            }
+            //}
             
             dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)motor1Setpoint);
             dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)motor2Setpoint);
