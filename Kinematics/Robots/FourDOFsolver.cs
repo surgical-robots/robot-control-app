@@ -7,7 +7,7 @@
             this.LinkTable = new double[4, 3] { {   0,      0, 0 }, 
                                                 {  90,      0, 0 }, 
                                                 { -90,  68.58, 0 }, 
-                                                {   0, 96.393, 0 } };
+                                                {  90, 96.393, 0 } };
             this.N = 4;
             this.Sigma = new bool[3] { false, false, false };
             this.MinMax = new System.Windows.Point[N];
@@ -19,6 +19,8 @@
             this.OutputWorkspace = true;
             this.InvertForces = new bool[3] { false, false, true };
             this.OutputStrings = new string[6] { "Upper Bevel", "Lower Bevel", "Elbow", "Workspace FX", "Workspace FY", "Workspace FZ" };
+            this.IK_POS_THRESH = 1;
+            this.BETA = 10;
         }
     }
 }

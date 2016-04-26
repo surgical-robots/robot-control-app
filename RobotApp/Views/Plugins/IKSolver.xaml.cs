@@ -29,50 +29,47 @@ namespace RobotApp.Views.Plugins
             }
         }
 
-        public bool InvertXL { get; set; }
-        public bool InvertYL { get; set; }
-        public bool InvertZL { get; set; }
-        public bool InvertXR { get; set; }
-        public bool InvertYR { get; set; }
-        public bool InvertZR { get; set; }
+        public bool InvertX { get; set; }
+        public bool InvertY { get; set; }
+        public bool InvertZ { get; set; }
 
-        private double xL, yL, zL, xR, yR, zR;
+        private double x, y, z, roll, pitch, yaw;
 
         public override void PostLoadSetup()
         {
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["XL"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["X"].UniqueID, (message) =>
             {
-                xL = message.Value;
+                x = message.Value;
                 UpdateOutput();
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["YL"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Y"].UniqueID, (message) =>
             {
-                yL = message.Value;
+                y = message.Value;
                 UpdateOutput();
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["ZL"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Z"].UniqueID, (message) =>
             {
-                zL = message.Value;
+                z = message.Value;
                 UpdateOutput();
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["XR"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll"].UniqueID, (message) =>
             {
-                xR = message.Value;
+                roll = message.Value;
                 UpdateOutput();
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["YR"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Pitch"].UniqueID, (message) =>
             {
-                yR = message.Value;
+                pitch = message.Value;
                 UpdateOutput();
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["ZR"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Yaw"].UniqueID, (message) =>
             {
-                zR = message.Value;
+                yaw = message.Value;
                 UpdateOutput();
             });
 
@@ -100,15 +97,12 @@ namespace RobotApp.Views.Plugins
 
             KinematicTypes = new ObservableCollection<Type>(ListOfKinematicModels);
 
-            Inputs.Add("XL", new ViewModel.InputSignalViewModel("XL", this.InstanceName));
-            Inputs.Add("YL", new ViewModel.InputSignalViewModel("YL", this.InstanceName));
-            Inputs.Add("ZL", new ViewModel.InputSignalViewModel("ZL", this.InstanceName));
-            Inputs.Add("ZL", new ViewModel.InputSignalViewModel("ZL", this.InstanceName));
-            Inputs.Add("ZL", new ViewModel.InputSignalViewModel("ZL", this.InstanceName));
-            Inputs.Add("ZL", new ViewModel.InputSignalViewModel("ZL", this.InstanceName));
-            Inputs.Add("XR", new ViewModel.InputSignalViewModel("XR", this.InstanceName));
-            Inputs.Add("YR", new ViewModel.InputSignalViewModel("YR", this.InstanceName));
-            Inputs.Add("ZR", new ViewModel.InputSignalViewModel("ZR", this.InstanceName));
+            Inputs.Add("X", new ViewModel.InputSignalViewModel("X", this.InstanceName));
+            Inputs.Add("Y", new ViewModel.InputSignalViewModel("Y", this.InstanceName));
+            Inputs.Add("Z", new ViewModel.InputSignalViewModel("Z", this.InstanceName));
+            Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
+            Inputs.Add("Pitch", new ViewModel.InputSignalViewModel("Pitch", this.InstanceName));
+            Inputs.Add("Yaw", new ViewModel.InputSignalViewModel("Yaw", this.InstanceName));
 
             InitializeComponent();
 
@@ -120,15 +114,15 @@ namespace RobotApp.Views.Plugins
             // Only update the output if we've set our kinematic model
             if (model == null)
                 return;
-            Point3D pointL = new Point3D();
-            pointL.X = InvertXL ? -xL : xL;
-            pointL.Y = InvertYL ? -yL : yL;
-            pointL.Z = InvertZL ? -zL : zL;
-            Point3D pointR = new Point3D();
-            pointR.X = InvertXR ? -xR : xR;
-            pointR.Y = InvertYR ? -yR : yR;
-            pointR.Z = InvertZR ? -zR : zR;
-            double[] angles = model.GetJointAngles(pointL, pointR);
+            Point3D point = new Point3D();
+            point.X = InvertX ? -x : x;
+            point.Y = InvertY ? -y : y;
+            point.Z = InvertZ ? -z : z;
+            Point3D orient = new Point3D();
+            orient.X = roll;
+            orient.Y = pitch;
+            orient.Z = yaw;
+            double[] angles = model.GetJointAngles(point, orient);
 
             for (int i = 0; i < angles.Length; i++)
             {
