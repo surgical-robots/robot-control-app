@@ -2,6 +2,7 @@
 using System.IO.Ports;
 using System.Collections.Generic;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using System.Timers;
 
 using ROBOTIS;
@@ -29,8 +30,7 @@ namespace RobotApp.Views.Plugins
 
         public SerialPort connectPort;
         public bool connected = false;
-
-
+        
         int CommStatus;
 
         // Default settings
@@ -39,10 +39,37 @@ namespace RobotApp.Views.Plugins
 
         Timer errorTimer = new Timer(5000);
 
+        public override void PostLoadSetup()
+        {
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Theta1"].UniqueID, (message) =>
+            {
+                Theta1Value = message.Value;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Theta2"].UniqueID, (message) =>
+            {
+                Theta2Value = message.Value;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Theta3"].UniqueID, (message) =>
+            {
+                Theta3Value = -message.Value;
+            });
+
+            base.PostLoadSetup();
+        }
+
         public DynamixelSlider()
         {
             this.DataContext = this;
             this.TypeName = "Dynamixel Slider";
+
+            Inputs.Add("Theta1", new ViewModel.InputSignalViewModel("Theta 1", this.InstanceName));
+            Inputs.Add("Theta2", new ViewModel.InputSignalViewModel("Theta 2", this.InstanceName));
+            Inputs.Add("Theta3", new ViewModel.InputSignalViewModel("Theta 3", this.InstanceName));
+
+            PostLoadSetup();
+
             InitializeComponent();
             errorTimer.Elapsed += ErrorTimer_Elapsed;
             errorTimer.Start();
@@ -187,7 +214,7 @@ namespace RobotApp.Views.Plugins
                                 ErrorText = "Failed to enable torque!";
                             }
                             dynamixel.dxl2_write_dword(index, P_GOAL_POSITION_L, 0);
-                            dynamixel.dxl2_write_dword(index, P_GOAL_ACCEL_L, 127); 
+                            dynamixel.dxl2_write_dword(index, P_GOAL_ACCEL_L, 10); 
                             dynamixel.dxl2_write_byte(index, P_LED_BLUE, 255);
                             CommStatus = dynamixel.dxl_get_comm_result();
                             if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -195,11 +222,9 @@ namespace RobotApp.Views.Plugins
                                 ErrorText = "Failed to connect to Dynamixel Pro";
                                 ButtonText = "Connect to Dynamixel Pro";
                             }
-                            Slider1Value = 0;
-                            Slider2Value = 0;
-                            Slider3Value = 0;
-                            Slider4Value = 127;
-
+                            Theta1Value = 0;
+                            Theta2Value = 0;
+                            Theta3Value = 0;
                         }
                     },
                     () => true));
@@ -267,36 +292,36 @@ namespace RobotApp.Views.Plugins
         }
 
         /// <summary>
-        /// The <see cref="Slider1Value" /> property's name.
+        /// The <see cref="Theta1Value" /> property's name.
         /// </summary>
-        public const string Slider1ValuePropertyName = "Slider1Value";
+        public const string Theta1ValuePropertyName = "Theta1Value";
 
-        private double slider1Value = 0;
+        private double theta1Value = 0;
 
         /// <summary>
         /// Sets and gets the Slider1Value property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public double Slider1Value
+        public double Theta1Value
         {
             get
             {
-                return slider1Value;
+                return theta1Value;
             }
 
             set
             {
-                if (slider1Value == value)
+                if (theta1Value == value)
                 {
                     return;
                 }
 
-                slider1Value = (value);
-                RaisePropertyChanged(Slider1ValuePropertyName);
+                theta1Value = (value);
+                RaisePropertyChanged(Theta1ValuePropertyName);
 
                 if (connected)
                 {
-                    int intVal = (int)Math.Round(slider1Value * 251000 / 180);
+                    int intVal = (int)Math.Round(theta1Value * 251000 / 180);
                     dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)intVal);
                     CommStatus = dynamixel.dxl_get_comm_result();
                     if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -308,36 +333,36 @@ namespace RobotApp.Views.Plugins
         }
 
         /// <summary>
-        /// The <see cref="Slider2Value" /> property's name.
+        /// The <see cref="Theta2Value" /> property's name.
         /// </summary>
-        public const string Slider2ValuePropertyName = "Slider2Value";
+        public const string Theta2ValuePropertyName = "Theta2Value";
 
-        private double slider2Value = 0;
+        private double theta2Value = 0;
 
         /// <summary>
         /// Sets and gets the Slider1Value property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public double Slider2Value
+        public double Theta2Value
         {
             get
             {
-                return slider2Value;
+                return theta2Value;
             }
 
             set
             {
-                if (slider2Value == value)
+                if (theta2Value == value)
                 {
                     return;
                 }
 
-                slider2Value = (value);
-                RaisePropertyChanged(Slider2ValuePropertyName);
+                theta2Value = (value);
+                RaisePropertyChanged(Theta2ValuePropertyName);
 
                 if (connected)
                 {
-                    int intVal = (int)Math.Round(slider2Value*151875/180);
+                    int intVal = (int)Math.Round(theta2Value * 151875 / 180);
                     dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)intVal);
                     CommStatus = dynamixel.dxl_get_comm_result();
                     if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -349,36 +374,36 @@ namespace RobotApp.Views.Plugins
         }
 
         /// <summary>
-        /// The <see cref="Slider3Value" /> property's name.
+        /// The <see cref="Theta3Value" /> property's name.
         /// </summary>
-        public const string Slider3ValuePropertyName = "Slider3Value";
+        public const string Theta3ValuePropertyName = "Theta3Value";
 
-        private double slider3Value = 0;
+        private double theta3Value = 0;
 
         /// <summary>
         /// Sets and gets the Slider1Value property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public double Slider3Value
+        public double Theta3Value
         {
             get
             {
-                return slider3Value;
+                return theta3Value;
             }
 
             set
             {
-                if (slider3Value == value)
+                if (theta3Value == value)
                 {
                     return;
                 }
 
-                slider3Value = (value);
-                RaisePropertyChanged(Slider3ValuePropertyName);
+                theta3Value = (value);
+                RaisePropertyChanged(Theta3ValuePropertyName);
 
                 if (connected)
                 {
-                    int intVal = (int)Math.Round(slider3Value*151875/180);
+                    int intVal = (int)Math.Round(theta3Value * 151875 / 180);
                     dynamixel.dxl2_write_dword(3, P_GOAL_POSITION_L, (UInt32)intVal);
                     CommStatus = dynamixel.dxl_get_comm_result();
                     if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -388,89 +413,6 @@ namespace RobotApp.Views.Plugins
                 }
             }
         }
-
-        /// <summary>
-        /// The <see cref="Slider4Value" /> property's name.
-        /// </summary>
-        public const string Slider4ValuePropertyName = "Slider4Value";
-
-        private int slider4Value = 0;
-
-        /// <summary>
-        /// Sets and gets the Slider4Value property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public int Slider4Value
-        {
-            get
-            {
-                return slider4Value;
-            }
-
-            set
-            {
-                if (slider4Value == value)
-                {
-                    return;
-                }
-
-                slider4Value = value;
-                RaisePropertyChanged(Slider4ValuePropertyName);
-                for (byte index = 1; index <= 3; index++)
-                {
-                    if (connected)
-                    {
-                   //     int intVal = (int)Math.Round(slider4Value);
-                        dynamixel.dxl2_write_dword(index, P_GOAL_ACCEL_L, (UInt32)slider4Value);
-                    }
-                }
-            }
-        }
-
-
-        ///// <summary>
-        ///// The <see cref="Slider5Value" /> property's name.
-        ///// </summary>
-        //public const string Slider5ValuePropertyName = "Slider5Value";
-
-        //private int slider5Value = 0;
-
-        ///// <summary>
-        ///// Sets and gets the Slider5Value property.
-        ///// Changes to that property's value raise the PropertyChanged event. 
-        ///// </summary>
-        //public int Slider5Value
-        //{
-        //    get
-        //    {
-        //        return slider5Value;
-        //    }
-
-        //    set
-        //    {
-        //        if (slider5Value == value)
-        //        {
-        //            return;
-        //        }
-
-        //        slider5Value = value;
-        //        RaisePropertyChanged(Slider5ValuePropertyName);
-        //        if (connected)
-        //        {
-        //            int int1Val = (int)Math.Round(slider5Value * 9.3);
-        //            int int2Val = (int)Math.Round(slider5Value * 13.95);
-        //            dynamixel.dxl2_write_dword(1, P_GOAL_TORQUE_L, (UInt32)int1Val);
-        //            dynamixel.dxl2_write_dword(2, P_GOAL_TORQUE_L, (UInt32)int2Val);
-        //            dynamixel.dxl2_write_dword(3, P_GOAL_TORQUE_L, (UInt32)int2Val);
-        //            CommStatus = dynamixel.dxl_get_comm_result();
-        //            if (CommStatus != dynamixel.COMM_RXSUCCESS)
-        //            {
-        //                ErrorText = "Failed to Change Torque limit";
-        //            }
-        //        }
-        //    }
-        //}
-        
 
         /// <summary>
         /// The <see cref="Torque1" /> property's name.
