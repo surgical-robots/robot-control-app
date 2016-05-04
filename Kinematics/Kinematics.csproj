@@ -63,9 +63,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KinematicModels\TwoArmCoupledShoulder.cs" />
     <Compile Include="Robots\FourDOFsolver.cs" />
-    <Compile Include="Robots\GrossPos.cs" />
     <Compile Include="Robots\LouBot.cs" />
     <Compile Include="Robots\LouBotWithCamera.cs" />
+    <Compile Include="Robots\MarkBot.cs" />
     <Compile Include="Robots\TomBot.cs" />
     <Compile Include="Robots\TomShortArm.cs" />
     <Compile Include="Robots\TwoArmLouBot.cs" />

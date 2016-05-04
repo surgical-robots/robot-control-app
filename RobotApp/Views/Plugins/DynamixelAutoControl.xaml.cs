@@ -11,28 +11,28 @@ namespace RobotApp.Views.Plugins
     /// <summary>
     /// Interaction logic for DynamixelSlider.xaml
     /// </summary>
-    public partial class DynamixelControl : PluginBase
+    public partial class DynamixelAutoControl : PluginBase
     {
         // Control table address (for DXL Pro)
-        public const int P_TORQUE_ENABLE = 562;
-        public const int P_GOAL_POSITION_L = 596;
-        public const int P_PRESENT_POSITION_L = 611;
-        public const int P_GOAL_VELOCITY_L = 600;
-        public const int P_PRESENT_VELOCITY_L = 615;
-        public const int P_MOVING = 610;
-        public const int P_GOAL_ACCEL_L = 606;
-        public const int P_GOAL_TORQUE_L = 30;
-        public const int P_LED_RED = 563;
-        public const int P_LED_GREEN = 564;
-        public const int P_LED_BLUE = 565;
-        public int PortNumber = 0;
+        private const int P_TORQUE_ENABLE = 562;
+        private const int P_GOAL_POSITION_L = 596;
+        private const int P_PRESENT_POSITION_L = 611;
+        private const int P_GOAL_VELOCITY_L = 600;
+        private const int P_PRESENT_VELOCITY_L = 615;
+        private const int P_MOVING = 610;
+        private const int P_GOAL_ACCEL_L = 606;
+        private const int P_GOAL_TORQUE_L = 30;
+        private const int P_LED_RED = 563;
+        private const int P_LED_GREEN = 564;
+        private const int P_LED_BLUE = 565;
+        private int PortNumber = 0;
 
+        private SerialPort connectPort;
+        private bool connected = false;
 
-
-
-        public SerialPort connectPort;
-        public bool connected = false;
-
+        private double yawDir = 0;
+        private double tiltDir = 0;
+        private double Tilt = 0;
 
         int CommStatus;
 
@@ -41,17 +41,46 @@ namespace RobotApp.Views.Plugins
         public const int DEFAULT_BAUD = 57600;
 
         Timer errorTimer = new Timer(5000);
+        Timer setpointTimer = new Timer(100);
 
-        public DynamixelControl()
+        public override void PostLoadSetup()
+        {
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["TiltDir"].UniqueID, (message) =>
+            {
+                tiltDir = message.Value;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["YawDir"].UniqueID, (message) =>
+            {
+                yawDir = message.Value;
+            });
+
+            base.PostLoadSetup();
+        }
+
+        public DynamixelAutoControl()
         {
             this.DataContext = this;
             this.TypeName = "Dynamixel Control";
+
+            Inputs.Add("TiltDir", new ViewModel.InputSignalViewModel("Tilt Direction", this.InstanceName));
+            Inputs.Add("YawDir", new ViewModel.InputSignalViewModel("Yaw Direction", this.InstanceName));
+
             InitializeComponent();
+            PostLoadSetup();
+
             errorTimer.Elapsed += ErrorTimer_Elapsed;
             errorTimer.Start();
+            setpointTimer.Elapsed += SetpointTimer_Elapsed;
+            setpointTimer.Start();
+
             string[] ports = SerialPort.GetPortNames();
             PortList = new List<string>(ports);
+        }
 
+        private void SetpointTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            UpdateSetpoints();
         }
 
         private void ErrorTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -119,13 +148,11 @@ namespace RobotApp.Views.Plugins
                 if (selectedPort != null)
                 {
                     PortNumber = Convert.ToInt32(selectedPort.Remove(0, 3));
-
                 }
                 else
                 {
                     PortNumber = 0;
                 }
-
             }
         }
 
@@ -184,7 +211,14 @@ namespace RobotApp.Views.Plugins
                         }
                         for (byte index = 1; index <= 3; index++)
                         {
-                            dynamixel.dxl2_write_byte(index, P_TORQUE_ENABLE, 1);
+                            try
+                            {
+                                dynamixel.dxl2_write_byte(index, P_TORQUE_ENABLE, 1);
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
                             CommStatus = dynamixel.dxl_get_comm_result();
                             if (CommStatus != dynamixel.COMM_RXSUCCESS)
                             {
@@ -204,7 +238,6 @@ namespace RobotApp.Views.Plugins
                             Slider1Value = 0;
                             Slider2Value = 127;
                             Slider4Value = 0;
-
                         }
                     },
                     () => true));
@@ -299,19 +332,19 @@ namespace RobotApp.Views.Plugins
                 slider1Value = (value);
                 RaisePropertyChanged(Slider1ValuePropertyName);
 
-                if (connected)
-                {
-                    //int intVal = (int)Math.Round(slider1Value * 251000 / 180);
+                //if (connected)
+                //{
+                //    //int intVal = (int)Math.Round(slider1Value * 251000 / 180);
 
-                    UpdateSetpoints();
+                //    //UpdateSetpoints();
 
-                    //dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)intVal);
-                    CommStatus = dynamixel.dxl_get_comm_result();
-                    if (CommStatus != dynamixel.COMM_RXSUCCESS)
-                    {
-                        ErrorText = "Failed to send Motor1 setpoint!";
-                    }
-                }
+                //    //dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)intVal);
+                //    CommStatus = dynamixel.dxl_get_comm_result();
+                //    if (CommStatus != dynamixel.COMM_RXSUCCESS)
+                //    {
+                //        ErrorText = "Failed to send Motor1 setpoint!";
+                //    }
+                //}
             }
         }
 
@@ -343,59 +376,20 @@ namespace RobotApp.Views.Plugins
                 slider2Value = (value);
                 RaisePropertyChanged(Slider2ValuePropertyName);
 
-                if (connected)
-                {
-                    //int intVal = (int)Math.Round(slider2Value * 151875 / 180);
-                    //dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)intVal);
-                    UpdateSetpoints();
+                //if (connected)
+                //{
+                //    //int intVal = (int)Math.Round(slider2Value * 151875 / 180);
+                //    //dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)intVal);
+                //    //UpdateSetpoints();
 
-                    CommStatus = dynamixel.dxl_get_comm_result();
-                    if (CommStatus != dynamixel.COMM_RXSUCCESS)
-                    {
-                        ErrorText = "Failed to send Motor2 setpoint!";
-                    }
-                }
+                //    CommStatus = dynamixel.dxl_get_comm_result();
+                //    if (CommStatus != dynamixel.COMM_RXSUCCESS)
+                //    {
+                //        ErrorText = "Failed to send Motor2 setpoint!";
+                //    }
+                //}
             }
         }
-
-
-        ///// <summary>
-        ///// The <see cref="Slider3Value" /> property's name.
-        ///// </summary>
-        //public const string Slider3ValuePropertyName = "Slider3Value";
-
-        //private int slider3Value = 1;
-
-        ///// <summary>
-        ///// Sets and gets the Slider3Value property.
-        ///// Changes to that property's value raise the PropertyChanged event. 
-        ///// </summary>
-        //public int Slider3Value
-        //{
-        //    get
-        //    {
-        //        return slider3Value;
-        //    }
-
-        //    set
-        //    {
-        //        if (slider3Value == value)
-        //        {
-        //            return;
-        //        }
-
-        //        slider3Value = value;
-        //        RaisePropertyChanged(Slider3ValuePropertyName);
-        //        for (byte index = 1; index <= 3; index++)
-        //        {
-        //            if (connected)
-        //            {
-        //                //     int intVal = (int)Math.Round(slider3Value);
-        //                dynamixel.dxl2_write_dword(index, P_GOAL_ACCEL_L, (UInt32)slider3Value);
-        //            }
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// The <see cref="Slider4Value" /> property's name.
@@ -425,26 +419,47 @@ namespace RobotApp.Views.Plugins
                 slider4Value = value;
                 RaisePropertyChanged(Slider4ValuePropertyName);
 
-                if (connected)
-                {
-                    //int intVal = (int)Math.Round(slider2Value * 151875 / 180);
-                    //dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)intVal);
-                    UpdateSetpoints();
+                //if (connected)
+                //{
+                //    //int intVal = (int)Math.Round(slider2Value * 151875 / 180);
+                //    //dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)intVal);
+                //    //UpdateSetpoints();
 
-                    CommStatus = dynamixel.dxl_get_comm_result();
-                    if (CommStatus != dynamixel.COMM_RXSUCCESS)
-                    {
-                        ErrorText = "Failed to send Motor2 setpoint!";
-                    }
-                }
+                //    CommStatus = dynamixel.dxl_get_comm_result();
+                //    if (CommStatus != dynamixel.COMM_RXSUCCESS)
+                //    {
+                //        ErrorText = "Failed to send Motor2 setpoint!";
+                //    }
+                //}
             }
         }
 
         private void UpdateSetpoints()
         {
+            if (yawDir == 1 && Slider4Value < 180)
+                Slider4Value += 2;
+            else if (yawDir == -1 && Slider4Value > -180)
+                Slider4Value -= 2;
+
+            double yaw = (Slider4Value * (Math.PI / 180));
+
+            if (tiltDir == 1 && Tilt < 45)
+                Tilt += 1;
+            else if (tiltDir == -1 && Tilt > -45)
+                Tilt -= 1;
+
+            Slider1Value = Tilt * Math.Sin(yaw);
+            if (Slider1Value > 45) Slider1Value = 45;
+            else if (Slider1Value < -45) Slider1Value = -45;
+            Slider2Value = 90 + Tilt * Math.Cos(yaw);
+            if (Slider2Value > 127) Slider2Value = 127;
+            else if (Slider2Value < 40) Slider2Value = 40;
+
+            if (Slider2Value == 90)
+                Slider2Value = 90.1;
+
             double roll = (Slider1Value * (Math.PI / 180));
             double pitch = (Slider2Value * (Math.PI / 180));
-            double yaw = (Slider4Value * (Math.PI / 180));
 
             double x = Math.Sin(pitch) * Math.Cos(roll);
             double y = Math.Sin(pitch) * Math.Sin(roll);
@@ -465,9 +480,19 @@ namespace RobotApp.Views.Plugins
             double cTheta31 = Math.Sqrt(1 - Math.Pow(cTheta3, 2));
             double Theta3 = Math.Atan2(cTheta31, cTheta3);
 
+            if (Theta3 > (135 * Math.PI / 180))
+                Theta3 = (135 * Math.PI / 180);
+            else if (Theta3 < -(135 * Math.PI / 180))
+                Theta3 = -(135 * Math.PI / 180);
+
             double cTheta1 = -(Math.Cos(alpha35) * Math.Sin(alpha13) * y - Math.Sin(Theta3) * Math.Sin(alpha35) * x + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * y) / (Math.Pow(Math.Cos(Theta3) , 2) * Math.Pow(Math.Cos(alpha13) , 2) * Math.Pow(Math.Sin(alpha35) , 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35) , 2) * Math.Pow(Math.Sin(alpha13) , 2) + Math.Pow(Math.Sin(Theta3) , 2) * Math.Pow(Math.Sin(alpha35) , 2));
             double sTheta1 = (Math.Cos(alpha35) * Math.Sin(alpha13) * x + Math.Sin(Theta3) * Math.Sin(alpha35) * y + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * x) / (Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(alpha13), 2) + Math.Pow(Math.Sin(Theta3), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double Theta1 = Math.Atan2(sTheta1, cTheta1);
+
+            if (Theta1 > (90 * Math.PI / 180))
+                Theta1 = (90 * Math.PI / 180);
+            else if (Theta1 < -(90 * Math.PI / 180))
+                Theta1 = -(90 * Math.PI / 180);
 
             double cTheta5 = -(Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * yx - Math.Cos(Theta1) * Math.Cos(Theta3) * xx + Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * xx - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * yx + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * yx) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double sTheta5 = -(Math.Cos(Theta1) * Math.Cos(Theta3) * yx + Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * xx - Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * yx - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * xx + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * xx) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
@@ -475,9 +500,12 @@ namespace RobotApp.Views.Plugins
 
             int motor1Setpoint = -(int)Math.Round((((Theta1*180/Math.PI)-90) * 251000 / 180));
             int motor2Setpoint = (int)Math.Round((Theta3*180/Math.PI) * 151875 / 180);
-            int motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
-            
-            
+            int motor3Setpoint;
+            if (yaw > 0)
+                motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) - 180) * 151875 / 180);
+            else
+                motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
+
             dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)motor1Setpoint);
             dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)motor2Setpoint);
             dynamixel.dxl2_write_dword(3, P_GOAL_POSITION_L, (UInt32)motor3Setpoint);

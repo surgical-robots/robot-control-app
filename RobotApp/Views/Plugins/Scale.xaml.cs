@@ -79,6 +79,7 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("Z-Right", new ViewModel.InputSignalViewModel("Z-Right", this.InstanceName));
 
             InitializeComponent();
+            ScaleLevelIndex = 4;
 
             PostLoadSetup();
         }
