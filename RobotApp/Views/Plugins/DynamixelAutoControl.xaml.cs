@@ -443,9 +443,9 @@ namespace RobotApp.Views.Plugins
 
             double yaw = (Slider4Value * (Math.PI / 180));
 
-            if (tiltDir == 1 && Tilt < 45)
+            if (tiltDir == -1 && Tilt < 45)
                 Tilt += 1;
-            else if (tiltDir == -1 && Tilt > -45)
+            else if (tiltDir == 1 && Tilt > -45)
                 Tilt -= 1;
 
             Slider1Value = Tilt * Math.Sin(yaw);
@@ -501,10 +501,16 @@ namespace RobotApp.Views.Plugins
             int motor1Setpoint = -(int)Math.Round((((Theta1*180/Math.PI)-90) * 251000 / 180));
             int motor2Setpoint = (int)Math.Round((Theta3*180/Math.PI) * 151875 / 180);
             int motor3Setpoint;
-            if (yaw > 0)
-                motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) - 180) * 151875 / 180);
-            else
+            //if (yaw > 0)
+            //    motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
+            //else
                 motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
+
+            if (motor3Setpoint < -151875)
+                motor3Setpoint += 151875*2;
+            else if (motor3Setpoint > 151875)
+                motor3Setpoint -= 151875*2;
+
 
             dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)motor1Setpoint);
             dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)motor2Setpoint);
