@@ -38,7 +38,7 @@
                     <TextBlock Text="Yaw: "/>
                     <TextBlock Text="{Binding DataContext.Slider4Value}"/>
                 </UniformGrid>
-                <Slider Minimum="-180" Maximum="180" Value="{Binding DataContext.Slider4Value, Mode=TwoWay}" />
+                <Slider Minimum="{Binding YawMinimum}" Maximum="{Binding YawMaximum}" Value="{Binding DataContext.Slider4Value, Mode=TwoWay}" />
                 
                 <!--<UniformGrid Columns="2">
                     <TextBlock Text="Acceleration"/>
