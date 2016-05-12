@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotControl", "RobotControl\RobotControl.csproj", "{D6319095-4A9F-409C-8D46-2E77A6C49D29}"
 EndProject
@@ -12,6 +12,7 @@ Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Documentation", "Documentat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotApp", "RobotApp\RobotApp.csproj", "{7A26EE99-0175-4D5B-B3FF-BA6492C4B83F}"
 	ProjectSection(ProjectDependencies) = postProject
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65} = {DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}
 		{4E98BCE1-36B4-4D54-B79C-4E3A98DAEC86} = {4E98BCE1-36B4-4D54-B79C-4E3A98DAEC86}
 	EndProjectSection
 EndProject
@@ -22,6 +23,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelSurge", "TelSurge\TelSurge\TelSurge.csproj", "{4E98BCE1-36B4-4D54-B79C-4E3A98DAEC86}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialPortPacketTransport", "SerialPortPacketTransport\SerialPortPacketTransport.vcxproj", "{0250B2DE-2B71-44FF-95B4-1F72672BAA2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "remoteApiNETWrapper", "remoteApiNETWrapper-master\remoteApiNETWrapper.csproj", "{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -216,6 +219,30 @@ Global
 		{0250B2DE-2B71-44FF-95B4-1F72672BAA2E}.Release|Win32.ActiveCfg = Release|Win32
 		{0250B2DE-2B71-44FF-95B4-1F72672BAA2E}.Release|Win32.Build.0 = Release|Win32
 		{0250B2DE-2B71-44FF-95B4-1F72672BAA2E}.Release|x64.ActiveCfg = Release|Win32
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugMono|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugMono|Any CPU.Build.0 = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugMono|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugMono|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugMono|Win32.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugMono|x64.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugWin32|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugWin32|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugWin32|Win32.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.DebugWin32|x64.ActiveCfg = Debug|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Release|Win32.ActiveCfg = Release|Any CPU
+		{DF9BF2BC-87A1-4A15-88B2-98BAA68ABA65}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

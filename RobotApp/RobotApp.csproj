@@ -369,6 +369,9 @@
     <Compile Include="Views\Plugins\VirtualRobotWindow.xaml.cs">
       <DependentUpon>VirtualRobotWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\VREPconnect.xaml.cs">
+      <DependentUpon>VREPconnect.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\WriteControllerFile.xaml.cs">
       <DependentUpon>WriteControllerFile.xaml</DependentUpon>
     </Compile>
@@ -572,6 +575,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Plugins\VREPconnect.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Plugins\WriteControllerFile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -669,6 +676,10 @@
     <ProjectReference Include="..\Kinematics\Kinematics.csproj">
       <Project>{e7f48141-a2f7-4bc4-9098-1bab46b0c659}</Project>
       <Name>Kinematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\remoteApiNETWrapper-master\remoteApiNETWrapper.csproj">
+      <Project>{df9bf2bc-87a1-4a15-88b2-98baa68aba65}</Project>
+      <Name>remoteApiNETWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\RobotControl\RobotControl.csproj">
       <Project>{d6319095-4a9f-409c-8d46-2e77a6c49d29}</Project>
