@@ -120,7 +120,7 @@ namespace RobotApp.Views.Plugins
             }
             else if (YawMove > 135 || YawMove < 115)
             {
-                double YawIncrement = (YawMove - 127) / 100;
+                double YawIncrement = (YawMove - 127) / 60;
                 Slider4Value = Slider4Value + YawIncrement;
                 if (Slider4Value > 180)
                 {
