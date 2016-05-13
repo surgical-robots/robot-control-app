@@ -1,4 +1,4 @@
-﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.JoyDynamixelControl"
+﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.Joy2AxisDynamixelControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -39,12 +39,6 @@
                     <TextBlock Text="{Binding DataContext.Slider4Value}"/>
                 </UniformGrid>
                 <Slider Minimum="{Binding YawMinimum}" Maximum="{Binding YawMaximum}" Value="{Binding DataContext.Slider4Value, Mode=TwoWay}" />
-                
-                <!--<UniformGrid Columns="2">
-                    <TextBlock Text="Acceleration"/>
-                    <TextBlock Text="{Binding DataContext.Slider3Value}"/>
-                </UniformGrid>
-                <Slider Minimum="1" Maximum="255" Value="{Binding DataContext.Slider3Value, Mode=TwoWay}" />-->
 
                 <UniformGrid Columns="2">
                     <TextBlock Text="Torque Enable Motor 1"/>

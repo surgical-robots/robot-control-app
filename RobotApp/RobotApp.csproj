@@ -306,6 +306,9 @@
     <Compile Include="Views\Plugins\InsertionSlider.xaml.cs">
       <DependentUpon>InsertionSlider.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\Joy2AxisDynamixelControl.xaml.cs">
+      <DependentUpon>Joy2AxisDynamixelControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\JoyDynamixelControl.xaml.cs">
       <DependentUpon>JoyDynamixelControl.xaml</DependentUpon>
     </Compile>
@@ -495,6 +498,10 @@
     <Page Include="Views\Plugins\InsertionSlider.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\Joy2AxisDynamixelControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\JoyDynamixelControl.xaml">
       <Generator>MSBuild:Compile</Generator>
