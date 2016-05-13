@@ -458,9 +458,9 @@ namespace RobotApp.Views.Plugins
         private void UpdateSetpoints()
         {
             //Check direction and increment yaw
-            if (yawDir == 1 && Slider4Value < 180)
+            if (yawDir == 1 && Slider4Value < YawMaximum)
                 Slider4Value += 2;
-            else if (yawDir == -1 && Slider4Value > -180)
+            else if (yawDir == -1 && Slider4Value > YawMinimum)
                 Slider4Value -= 2;
 
             double yaw = (Slider4Value * (Math.PI / 180));
