@@ -30,6 +30,8 @@ namespace RobotApp.Views.Plugins
         private SerialPort connectPort;
         private bool connected = false;
 
+        public int oldmotor3Setpoint = 0;
+
         private double yawDir = 0;
         private double tiltDir = 0;
         private double Tilt = 0;
@@ -62,7 +64,7 @@ namespace RobotApp.Views.Plugins
         public DynamixelAutoControl()
         {
             this.DataContext = this;
-            this.TypeName = "Dynamixel Control";
+            this.TypeName = "Automatic Dynamixel Control";
 
             Inputs.Add("TiltDir", new ViewModel.InputSignalViewModel("Tilt Direction", this.InstanceName));
             Inputs.Add("YawDir", new ViewModel.InputSignalViewModel("Yaw Direction", this.InstanceName));
@@ -552,6 +554,16 @@ namespace RobotApp.Views.Plugins
             else if (motor3Setpoint > 151875)
                 motor3Setpoint -= 151875*2;
 
+            //If motor 3 setpoint is 180 degrees from the last point (flipping around) then it holds it's old position.
+            int SetDif = 0;
+            if (oldmotor3Setpoint != motor3Setpoint)
+            {
+                SetDif = Math.Abs(oldmotor3Setpoint - motor3Setpoint);
+                if (SetDif > 150000)
+                    motor3Setpoint = oldmotor3Setpoint;
+                else
+                    oldmotor3Setpoint = motor3Setpoint;
+            }
 
             dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)motor1Setpoint);
             dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)motor2Setpoint);

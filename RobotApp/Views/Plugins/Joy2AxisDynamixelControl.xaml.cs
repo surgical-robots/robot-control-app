@@ -11,7 +11,7 @@ namespace RobotApp.Views.Plugins
     /// <summary>
     /// Interaction logic for DynamixelSlider.xaml
     /// </summary>
-    public partial class DynamixelControl : PluginBase
+    public partial class Joy2AxisDynamixelControl : PluginBase
     {
         // Control table address (for DXL Pro)
         public const int P_TORQUE_ENABLE = 562;
@@ -25,15 +25,19 @@ namespace RobotApp.Views.Plugins
         public const int P_LED_RED = 563;
         public const int P_LED_GREEN = 564;
         public const int P_LED_BLUE = 565;
+
+        public double TiltMove = 127;
+        public double YawMove = 127;
+
         public int PortNumber = 0;
         public int oldmotor3Setpoint = 0;
 
-
-
+        private double yawDir = 0;
+        private double tiltDir = 0;
+        private double Tilt = 0;
 
         public SerialPort connectPort;
         public bool connected = false;
-
 
         int CommStatus;
 
@@ -43,16 +47,67 @@ namespace RobotApp.Views.Plugins
 
         Timer errorTimer = new Timer(5000);
 
-        public DynamixelControl()
+        Timer joystickTimer = new Timer(100);
+
+        public override void PostLoadSetup()
+        {
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll"].UniqueID, (message) =>
+            {
+                YawMove = message.Value;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Pitch"].UniqueID, (message) =>
+            {
+                TiltMove = message.Value;
+            });
+
+            base.PostLoadSetup();
+        }
+
+        public Joy2AxisDynamixelControl()
         {
             this.DataContext = this;
-            this.TypeName = "Dynamixel Control";
+            this.TypeName = "2 Axis Joystick Dynamixel Control";
             InitializeComponent();
-            errorTimer.Elapsed += ErrorTimer_Elapsed;           //constructor, starts timers, initializes ports and everything
+
+            errorTimer.Elapsed += ErrorTimer_Elapsed;
             errorTimer.Start();
+
+            joystickTimer.Elapsed += JoystickTimer_Elapsed;
+            joystickTimer.Start();
+
             string[] ports = SerialPort.GetPortNames();
             PortList = new List<string>(ports);
 
+            Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
+            Inputs.Add("Pitch", new ViewModel.InputSignalViewModel("Pitch", this.InstanceName));
+            PostLoadSetup();
+        }
+
+        private void JoystickTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (TiltMove > 140 || TiltMove < 115)
+            {
+                double TiltIncrement = (TiltMove - 127) / 127;
+                if (TiltIncrement > 0)
+                    tiltDir = 1;
+                else if (TiltIncrement < 0)
+                    tiltDir = -1;
+            }
+            else if (YawMove > 140 || YawMove < 115)
+            {
+                double YawIncrement = (YawMove - 127) / 127;
+                if (YawIncrement > 0)
+                    yawDir = 1;
+                else if (YawIncrement < 0)
+                    yawDir = -1;
+            }
+            else
+            { 
+                tiltDir = 0;
+                yawDir = 0;
+            }
+            UpdateSetpoints();
         }
 
         private void ErrorTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -194,7 +249,7 @@ namespace RobotApp.Views.Plugins
                             dynamixel.dxl2_write_dword(index, P_GOAL_POSITION_L, 0);
                             dynamixel.dxl2_write_dword(1, P_GOAL_ACCEL_L, 1);
                             dynamixel.dxl2_write_dword(2, P_GOAL_ACCEL_L, 1);
-                            dynamixel.dxl2_write_dword(3, P_GOAL_ACCEL_L, 10);
+                            dynamixel.dxl2_write_dword(3, P_GOAL_ACCEL_L, 1);
                             dynamixel.dxl2_write_byte(index, P_LED_BLUE, 255);
                             CommStatus = dynamixel.dxl_get_comm_result();
                             if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -302,7 +357,8 @@ namespace RobotApp.Views.Plugins
 
                 if (connected)
                 {
-                    UpdateSetpoints();
+
+                    //UpdateSetpoints();
 
                     CommStatus = dynamixel.dxl_get_comm_result();
                     if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -343,7 +399,9 @@ namespace RobotApp.Views.Plugins
 
                 if (connected)
                 {
-                    UpdateSetpoints();
+                    //int intVal = (int)Math.Round(slider2Value * 151875 / 180);
+                    //dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)intVal);
+                    //UpdateSetpoints();
 
                     CommStatus = dynamixel.dxl_get_comm_result();
                     if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -384,7 +442,9 @@ namespace RobotApp.Views.Plugins
 
                 if (connected)
                 {
-                    UpdateSetpoints();
+                    //int intVal = (int)Math.Round(slider2Value * 151875 / 180);
+                    //dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)intVal);
+                    //UpdateSetpoints();
 
                     CommStatus = dynamixel.dxl_get_comm_result();
                     if (CommStatus != dynamixel.COMM_RXSUCCESS)
@@ -457,10 +517,36 @@ namespace RobotApp.Views.Plugins
 
         private void UpdateSetpoints()
         {
+            //Check direction and increment yaw
+            if (yawDir == 1 && Slider4Value < YawMaximum)
+                Slider4Value += 2;
+            else if (yawDir == -1 && Slider4Value > YawMinimum)
+                Slider4Value -= 2;
+
+            double yaw = (Slider4Value * (Math.PI / 180));
+
+            //Check tilt direction
+            if (tiltDir == -1 && Tilt < 45)
+                Tilt += 1;
+            else if (tiltDir == 1 && Tilt > -45)
+                Tilt -= 1;
+
+            //Calculate what combo of pitch and yaw will give you the desired tilt
+            Slider1Value = Tilt * Math.Sin(yaw);
+            if (Slider1Value > 45) Slider1Value = 45;
+            else if (Slider1Value < -45) Slider1Value = -45;
+            Slider2Value = 90 + Tilt * Math.Cos(yaw);
+            if (Slider2Value > 127) Slider2Value = 127;
+            else if (Slider2Value < 40) Slider2Value = 40;
+
+            //Hack math blows up at 90
+            if (Slider2Value == 90)
+                Slider2Value = 90.1;
+
             //global frame position
             double roll = (Slider1Value * (Math.PI / 180));
-            double pitch = (Slider2Value * (Math.PI / 180));        
-            double yaw = (Slider4Value * (Math.PI / 180));         
+            double pitch = (Slider2Value * (Math.PI / 180));
+           // double yaw = (Slider4Value * (Math.PI / 180));
 
             //Euler Z-Y-Z Rotation matrix 
             double x = Math.Sin(pitch) * Math.Cos(roll);
@@ -485,7 +571,7 @@ namespace RobotApp.Views.Plugins
             double Theta3 = Math.Atan2(cTheta31, cTheta3);
 
             //Solve for 1st Motor angle
-            double cTheta1 = -(Math.Cos(alpha35) * Math.Sin(alpha13) * y - Math.Sin(Theta3) * Math.Sin(alpha35) * x + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * y) / (Math.Pow(Math.Cos(Theta3) , 2) * Math.Pow(Math.Cos(alpha13) , 2) * Math.Pow(Math.Sin(alpha35) , 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35) , 2) * Math.Pow(Math.Sin(alpha13) , 2) + Math.Pow(Math.Sin(Theta3) , 2) * Math.Pow(Math.Sin(alpha35) , 2));
+            double cTheta1 = -(Math.Cos(alpha35) * Math.Sin(alpha13) * y - Math.Sin(Theta3) * Math.Sin(alpha35) * x + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * y) / (Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(alpha13), 2) + Math.Pow(Math.Sin(Theta3), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double sTheta1 = (Math.Cos(alpha35) * Math.Sin(alpha13) * x + Math.Sin(Theta3) * Math.Sin(alpha35) * y + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * x) / (Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(alpha13), 2) + Math.Pow(Math.Sin(Theta3), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double Theta1 = Math.Atan2(sTheta1, cTheta1);
 
@@ -507,8 +593,8 @@ namespace RobotApp.Views.Plugins
             double Theta5 = Math.Atan2(cTheta5, sTheta5);
 
             //convert to motor setpoints
-            int motor1Setpoint = -(int)Math.Round((((Theta1*180/Math.PI)-90) * 251000 / 180));
-            int motor2Setpoint = (int)Math.Round((Theta3*180/Math.PI) * 151875 / 180);
+            int motor1Setpoint = -(int)Math.Round((((Theta1 * 180 / Math.PI) - 90) * 251000 / 180));
+            int motor2Setpoint = (int)Math.Round((Theta3 * 180 / Math.PI) * 151875 / 180);
             int motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
 
             //correction if math sends it to a position out of range

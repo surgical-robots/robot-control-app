@@ -11,82 +11,83 @@ namespace RobotApp.Views.Plugins
     /// </summary>
     public partial class PrintData : PluginBase
     {
-        public double motorOneCurrent = 0;
-        public double motorTwoCurrent = 0;
-        public double motorThreeCurrent = 0;
-        public double motorFourCurrent = 0;
-        public double motorOnePosition = 0;
-        public double motorTwoPosition = 0;
-        public double motorThreePosition = 0;
-        public double motorFourPosition = 0;
-        public bool printing = false;
-        public string path = System.IO.Directory.GetCurrentDirectory();
-        public Stopwatch dataTimer = new Stopwatch();
+        private double input1 = 0;
+        private double input2 = 0;
+        private double input3 = 0;
+        private double input4 = 0;
+        private double input5 = 0;
+        private double input6 = 0;
+        private double input7 = 0;
+        private double input8 = 0;
+
+        private bool printing = false;
+        private string path = System.IO.Directory.GetCurrentDirectory();
+        private Stopwatch dataTimer = new Stopwatch();
         System.Windows.Forms.Timer writeTimer = new System.Windows.Forms.Timer();
-        public long millisTime;
+        private long millisTime;
 
         public override void PostLoadSetup()
         {
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Motor1Current"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input1"].UniqueID, (message) =>
             {
-                if ((motorOneCurrent != message.Value))
+                if ((input1 != message.Value))
                 {
-                    motorOneCurrent = message.Value;
+                    input1 = message.Value;
                 }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Motor1Position"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input2"].UniqueID, (message) =>
             {
-                if(motorOnePosition != message.Value)
+                if (input2 != message.Value)
                 {
-                    motorOnePosition = message.Value;
+                    input2 = message.Value;
                 }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Motor2Current"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input3"].UniqueID, (message) =>
             {
-                if(motorTwoCurrent != message.Value)
+                if (input3 != message.Value)
                 {
-                    motorTwoCurrent = message.Value;
+                    input3 = message.Value;
                 }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Motor2Position"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input4"].UniqueID, (message) =>
             {
-                if(motorTwoPosition != message.Value)
+                if (input4 != message.Value)
                 {
-                    motorTwoPosition = message.Value;
+                    input4 = message.Value;
                 }
             });
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Motor3Current"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input5"].UniqueID, (message) =>
             {
-                if(motorThreeCurrent != message.Value)
+                if (input5 != message.Value)
                 {
-                    motorThreeCurrent = message.Value;
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Motor3Position"].UniqueID, (message) =>
-            {
-                if(motorThreePosition != message.Value)
-                {
-                    motorThreePosition = message.Value;
+                    input5 = message.Value;
                 }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Motor4Current"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input6"].UniqueID, (message) =>
             {
-                if(motorFourCurrent != message.Value)
+                if (input6 != message.Value)
                 {
-                    motorFourCurrent = message.Value;
+                    input6 = message.Value;
                 }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Motor4Position"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input7"].UniqueID, (message) =>
             {
-                if(motorFourPosition != message.Value)
+                if (input7 != message.Value)
                 {
-                    motorFourPosition = message.Value;
+                    input7 = message.Value;
+                }
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input8"].UniqueID, (message) =>
+            {
+                if (input8 != message.Value)
+                {
+                    input8 = message.Value;
                 }
             });
 
@@ -95,19 +96,19 @@ namespace RobotApp.Views.Plugins
 
         public PrintData()
         {
-            Inputs.Add("Motor1Current", new ViewModel.InputSignalViewModel("Motor1Current", this.InstanceName));
-            Inputs.Add("Motor1Position", new ViewModel.InputSignalViewModel("Motor1Position", this.InstanceName));
-            Inputs.Add("Motor2Current", new ViewModel.InputSignalViewModel("Motor2Current", this.InstanceName));
-            Inputs.Add("Motor2Position", new ViewModel.InputSignalViewModel("Motor2Position", this.InstanceName));
-            Inputs.Add("Motor3Current", new ViewModel.InputSignalViewModel("Motor3Current", this.InstanceName));
-            Inputs.Add("Motor3Position", new ViewModel.InputSignalViewModel("Motor3Position", this.InstanceName));
-            Inputs.Add("Motor4Current", new ViewModel.InputSignalViewModel("Motor4Current", this.InstanceName));
-            Inputs.Add("Motor4Position", new ViewModel.InputSignalViewModel("Motor4Position", this.InstanceName));
+            Inputs.Add("Input1", new ViewModel.InputSignalViewModel("Input 1", this.InstanceName));
+            Inputs.Add("Input2", new ViewModel.InputSignalViewModel("Input 2", this.InstanceName));
+            Inputs.Add("Input3", new ViewModel.InputSignalViewModel("Input 3", this.InstanceName));
+            Inputs.Add("Input4", new ViewModel.InputSignalViewModel("Input 4", this.InstanceName));
+            Inputs.Add("Input5", new ViewModel.InputSignalViewModel("Input 5", this.InstanceName));
+            Inputs.Add("Input6", new ViewModel.InputSignalViewModel("Input 6", this.InstanceName));
+            Inputs.Add("Input7", new ViewModel.InputSignalViewModel("Input 7", this.InstanceName));
+            Inputs.Add("Input8", new ViewModel.InputSignalViewModel("Input 8", this.InstanceName));
 
             this.TypeName = "Print Data";
             InitializeComponent();
 
-            writeTimer.Interval = 10;
+            writeTimer.Interval = 50;
             writeTimer.Tick += writeTimer_Tick;
 
             PostLoadSetup();
@@ -122,7 +123,7 @@ namespace RobotApp.Views.Plugins
         public void PrintFile()
         {
             string fullPath = path + "\\Data\\" + OutputFileName;
-            if(printing == true)
+            if (printing == true)
             {
                 if (!File.Exists(fullPath))
                 {
@@ -133,100 +134,6 @@ namespace RobotApp.Views.Plugins
                         sw.Write("\t");
                         DateTime millisTime = DateTime.Now;
                         sw.WriteLine(millisTime);
-                        if((motor1Print == true) && (motor2Print == true))
-                        {
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.Write(motor1Name);
-                        }
-                        else if ((motor1Print == true) && (motor2Print == false))
-                        {
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.WriteLine(motor1Name);
-                        }
-                        if ((motor2Print == true) && (motor3Print == true))
-                        {
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.Write(motor2Name);
-                        }
-                        else if ((motor2Print == true) && (motor3Print == false))
-                        {
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.WriteLine(motor2Name);
-                        }
-                        if ((motor3Print == true) && (motor4Print == true))
-                        {
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.Write(motor3Name);
-                        }
-                        else if ((motor3Print == true) && (motor4Print == false))
-                        {
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.WriteLine(motor3Name);
-                        }
-                        if (motor4Print == true)
-                        {
-                            sw.Write("\t");
-                            sw.Write("\t");
-                            sw.WriteLine(motor4Name);
-                        }
-                        sw.Write("Elapsed Time (ms)");
-                        if ((motor1Print == true) && (motor2Print == true))
-                        {
-                            sw.Write("\t");
-                            sw.Write("Position");
-                            sw.Write("\t");
-                            sw.Write("Current");
-                        }
-                        else if ((motor1Print == true) && (motor2Print == false))
-                        {
-                            sw.Write("\t");
-                            sw.Write("Position");
-                            sw.Write("\t");
-                            sw.WriteLine("Current");
-                        }
-                        if ((motor2Print == true) && (motor3Print == true))
-                        {
-                            sw.Write("\t");
-                            sw.Write("Position");
-                            sw.Write("\t");
-                            sw.Write("Current");
-                        }
-                        else if ((motor2Print == true) && (motor3Print == false))
-                        {
-                            sw.Write("\t");
-                            sw.Write("Position");
-                            sw.Write("\t");
-                            sw.WriteLine("Current");
-                        }
-                        if ((motor3Print == true) && (motor4Print == true))
-                        {
-                            sw.Write("\t");
-                            sw.Write("Position");
-                            sw.Write("\t");
-                            sw.Write("Current");
-                        }
-                        else if ((motor3Print == true) && (motor4Print == false))
-                        {
-                            sw.Write("\t");
-                            sw.Write("Position");
-                            sw.Write("\t");
-                            sw.WriteLine("Current");
-                        }
-                        if (motor4Print == true)
-                        {
-                            sw.Write("\t");
-                            sw.Write("Position");
-                            sw.Write("\t");
-                            sw.WriteLine("Current");
-                        }
                     }
                 }
                 using (StreamWriter sw = File.AppendText(fullPath))
@@ -235,65 +142,24 @@ namespace RobotApp.Views.Plugins
                     sw.Write(millisTime);
                     sw.Write("\t");
                     sw.Write("\t");
-                    if ((motor1Print == true) && (motor2Print == true))
-                    {
-                        sw.Write("\t");
-                        sw.Write(motorOnePosition);
-                        sw.Write("\t");
-                        sw.Write("\t");
-                        sw.Write(motorOneCurrent);
-                    }
-                    else if ((motor1Print == true) && (motor2Print == false))
-                    {
-                        sw.Write("\t");
-                        sw.Write(motorOnePosition);
-                        sw.Write("\t");
-                        sw.Write("\t");
-                        sw.WriteLine(motorOneCurrent);
-                    }
-                    if ((motor2Print == true) && (motor3Print == true))
-                    {
-                        sw.Write("\t");
-                        sw.Write(motorTwoPosition);
-                        sw.Write("\t");
-                        sw.Write("\t");
-                        sw.Write(motorTwoCurrent);
-                    }
-                    else if ((motor2Print == true) && (motor3Print == false))
-                    {
-                        sw.Write("\t");
-                        sw.Write(motorTwoPosition);
-                        sw.Write("\t");
-                        sw.Write("\t");
-                        sw.WriteLine(motorTwoCurrent);
-                    }
-                    if ((motor3Print == true) && (motor4Print == true))
-                    {
-                        sw.Write("\t");
-                        sw.Write(motorThreePosition);
-                        sw.Write("\t");
-                        sw.Write("\t");
-                        sw.Write(motorThreeCurrent);
-                    }
-                    else if ((motor3Print == true) && (motor4Print == false))
-                    {
-                        sw.Write("\t");
-                        sw.Write(motorThreePosition);
-                        sw.Write("\t");
-                        sw.Write("\t");
-                        sw.WriteLine(motorThreeCurrent);
-                    }
-                    if (motor4Print == true)
-                    {
-                        sw.Write("\t");
-                        sw.Write(motorFourPosition);
-                        sw.Write("\t");
-                        sw.Write("\t");
-                        sw.WriteLine(motorFourCurrent);
-                    }
+                    sw.Write(input1);
+                    sw.Write("\t");
+                    sw.Write(input2);
+                    sw.Write("\t");
+                    sw.Write(input3);
+                    sw.Write("\t");
+                    sw.Write(input4);
+                    sw.Write("\t");
+                    sw.Write(input5);
+                    sw.Write("\t");
+                    sw.Write(input6);
+                    sw.Write("\t");
+                    sw.Write(input7);
+                    sw.Write("\t");
+                    sw.WriteLine(input8);
                 }
-             }
-       }
+            }
+        }
 
         /// <summary>
         /// The <see cref="OutputFileName" /> property's name.
@@ -325,246 +191,6 @@ namespace RobotApp.Views.Plugins
                 string fullPath = path + outputFileName;
                 if (File.Exists(fullPath))
                     ButtonText = OutputFileName + " Already Exists. Click to Overwrite";
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="Motor1Name" /> property's name.
-        /// </summary>
-        public const string Motor1NamePropertyName = "Motor1Name";
-
-        private string motor1Name = "Motor One";
-
-        /// <summary>
-        /// Sets and gets the Motor1Name property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public string Motor1Name
-        {
-            get
-            {
-                return motor1Name;
-            }
-
-            set
-            {
-                if (motor1Name == value)
-                {
-                    return;
-                }
-
-                motor1Name = value;
-                RaisePropertyChanged(Motor1NamePropertyName);
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="Motor1Print" /> property's name.
-        /// </summary>
-        public const string Motor1PrintPropertyName = "Motor1Print";
-
-        private bool motor1Print = false;
-
-        /// <summary>
-        /// Sets and gets the Motor1Print property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public bool Motor1Print
-        {
-            get
-            {
-                return motor1Print;
-            }
-
-            set
-            {
-                if (motor1Print == value)
-                {
-                    return;
-                }
-
-                motor1Print = value;
-                RaisePropertyChanged(Motor1PrintPropertyName);
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="Motor2Name" /> property's name.
-        /// </summary>
-        public const string Motor2NamePropertyName = "Motor2Name";
-
-        private string motor2Name = "Motor Two";
-
-        /// <summary>
-        /// Sets and gets the Motor2Name property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public string Motor2Name
-        {
-            get
-            {
-                return motor2Name;
-            }
-
-            set
-            {
-                if (motor2Name == value)
-                {
-                    return;
-                }
-
-                motor2Name = value;
-                RaisePropertyChanged(Motor2NamePropertyName);
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="Motor2Print" /> property's name.
-        /// </summary>
-        public const string Motor2PrintPropertyName = "Motor2Print";
-
-        private bool motor2Print = false;
-
-        /// <summary>
-        /// Sets and gets the Motor2Print property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public bool Motor2Print
-        {
-            get
-            {
-                return motor2Print;
-            }
-
-            set
-            {
-                if (motor2Print == value)
-                {
-                    return;
-                }
-
-                motor2Print = value;
-                RaisePropertyChanged(Motor2PrintPropertyName);
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="Motor3Name" /> property's name.
-        /// </summary>
-        public const string Motor3NamePropertyName = "Motor3Name";
-
-        private string motor3Name = "Motor Three";
-
-        /// <summary>
-        /// Sets and gets the Motor3Name property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public string Motor3Name
-        {
-            get
-            {
-                return motor3Name;
-            }
-
-            set
-            {
-                if (motor3Name == value)
-                {
-                    return;
-                }
-
-                motor3Name = value;
-                RaisePropertyChanged(Motor3NamePropertyName);
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="Motor3Print" /> property's name.
-        /// </summary>
-        public const string Motor3PrintPropertyName = "Motor3Print";
-
-        private bool motor3Print = false;
-
-        /// <summary>
-        /// Sets and gets the Motor3Print property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public bool Motor3Print
-        {
-            get
-            {
-                return motor3Print;
-            }
-
-            set
-            {
-                if (motor3Print == value)
-                {
-                    return;
-                }
-
-                motor3Print = value;
-                RaisePropertyChanged(Motor3PrintPropertyName);
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="Motor4Name" /> property's name.
-        /// </summary>
-        public const string Motor4NamePropertyName = "Motor4Name";
-
-        private string motor4Name = "Motor Four";
-
-        /// <summary>
-        /// Sets and gets the Motor4Name property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public string Motor4Name
-        {
-            get
-            {
-                return motor4Name;
-            }
-
-            set
-            {
-                if (motor4Name == value)
-                {
-                    return;
-                }
-
-                motor4Name = value;
-                RaisePropertyChanged(Motor4NamePropertyName);
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="Motor4Print" /> property's name.
-        /// </summary>
-        public const string Motor4PrintPropertyName = "Motor4Print";
-
-        private bool motor4Print = false;
-
-        /// <summary>
-        /// Sets and gets the Motor4Print property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public bool Motor4Print
-        {
-            get
-            {
-                return motor4Print;
-            }
-
-            set
-            {
-                if (motor4Print == value)
-                {
-                    return;
-                }
-
-                motor4Print = value;
-                RaisePropertyChanged(Motor4PrintPropertyName);
             }
         }
 
@@ -611,21 +237,21 @@ namespace RobotApp.Views.Plugins
                     ?? (printCommand = new RelayCommand(
                     () =>
                     {
-                     if(printing == false)
-                     {
-                         printing = true;
-                         ButtonText = "Stop Printing Motor Data";
-                         dataTimer.Restart();
-                         writeTimer.Start();
-                     }
-                     else
-                     {
-                         printing = false;
-                         ButtonText = "Continue Printing Motor Data";
-                         dataTimer.Stop();
-                         writeTimer.Stop();
-                     }
-   
+                        if (printing == false)
+                        {
+                            printing = true;
+                            ButtonText = "Stop Printing Motor Data";
+                            dataTimer.Restart();
+                            writeTimer.Start();
+                        }
+                        else
+                        {
+                            printing = false;
+                            ButtonText = "Continue Printing Motor Data";
+                            dataTimer.Stop();
+                            writeTimer.Stop();
+                        }
+
                     }));
             }
         }
