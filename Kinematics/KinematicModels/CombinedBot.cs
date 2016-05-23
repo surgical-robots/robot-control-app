@@ -106,7 +106,7 @@ namespace Kinematics
             double[] minAngle = new double[3];
             double[] maxAngle = new double[3];
             double[] dummyAngle = { 0, 0, 0 };
-            bool[] angleLimited = { false, false, false };
+            bool angleLimited = false;
 
             minAngle[0] = Theta1Min * Math.PI / 180;
             minAngle[1] = Theta2Min * Math.PI / 180;
@@ -130,7 +130,7 @@ namespace Kinematics
                 pyL = pyL * Lratio;
                 pzL = pzL * Lratio;
                 L12 = Lmax;
-                angleLimited[2] = true;
+                //angleLimited = true;
                 kineAngle[2] = 0;
             }
             else if (L12 < Lmin)
@@ -140,7 +140,7 @@ namespace Kinematics
                 pyL = pyL * Lratio;
                 pzL = pzL * Lratio;
                 L12 = Lmin;
-                angleLimited[2] = true;
+                //angleLimited = true;
                 kineAngle[2] = maxAngle[2];
             }
             else
@@ -153,7 +153,7 @@ namespace Kinematics
             if (argument2 > 1)
             {
                 argument2 = 1;
-                angleLimited[1] = true;
+                angleLimited = true;
             }
             kineAngle[1] = Math.Atan2(argument2, Math.Sqrt(1 - Math.Pow(argument2, 2)));
             //if (kineAngle[1] < minAngle[1])
@@ -187,12 +187,12 @@ namespace Kinematics
                 if (kineAngle[i] < minAngle[i])
                 {
                     kineAngle[i] = minAngle[i];
-                    angleLimited[i] = true;
+                    angleLimited = true;
                 }
                 else if (kineAngle[i] > maxAngle[i])
                 {
                     kineAngle[i] = maxAngle[i];
-                    angleLimited[i] = true;
+                    angleLimited = true;
                 }
             }
 
@@ -209,7 +209,7 @@ namespace Kinematics
             double kineY = LengthUpperArm * Math.Sin(kineAngle[1]) + LengthForearm * Math.Sin(kineAngle[1]) * Math.Cos(kineAngle[2]);
             double kineX = LengthUpperArm * Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]) + LengthForearm * (Math.Cos(kineAngle[0]) * Math.Sin(kineAngle[2]) + Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]) * Math.Cos(kineAngle[2]));
 
-            if(!angleLimited[0] && !angleLimited[1])
+            if(!angleLimited)
             {
                 oldPointL.X = kineX;
                 oldPointL.Y = kineY;
@@ -259,7 +259,7 @@ namespace Kinematics
             if (argument2 > 1)
             {
                 argument2 = 1;
-                angleLimited[1] = true;
+                angleLimited = true;
             }
             kineAngle[1] = Math.Atan2(argument2, Math.Sqrt(1 - Math.Pow(argument2, 2)));
 
@@ -275,12 +275,12 @@ namespace Kinematics
                 if (kineAngle[i] < minAngle[i])
                 {
                     kineAngle[i] = minAngle[i];
-                    angleLimited[i] = true;
+                    angleLimited = true;
                 }
                 else if (kineAngle[i] > maxAngle[i])
                 {
                     kineAngle[i] = maxAngle[i];
-                    angleLimited[i] = true;
+                    angleLimited = true;
                 }
             }
 
@@ -297,7 +297,7 @@ namespace Kinematics
             kineY = LengthUpperArm * Math.Sin(kineAngle[1]) + LengthForearm * Math.Sin(kineAngle[1]) * Math.Cos(kineAngle[2]);
             kineX = LengthUpperArm * Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]) + LengthForearm * (Math.Cos(kineAngle[0]) * Math.Sin(kineAngle[2]) + Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]) * Math.Cos(kineAngle[2]));
 
-            if (!angleLimited[0] && !angleLimited[1] && !angleLimited[2])
+            if (!angleLimited)
             {
                 oldPointR.X = kineX;
                 oldPointR.Y = kineY;

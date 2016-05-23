@@ -31,6 +31,7 @@ namespace RobotApp.Views.Plugins
         public double YawMove = 127;
 
         public int PortNumber = 0;
+        public int oldmotor3Setpoint = 0;
 
 
 
@@ -437,45 +438,6 @@ namespace RobotApp.Views.Plugins
             }
         }
 
-
-        ///// <summary>
-        ///// The <see cref="Slider3Value" /> property's name.
-        ///// </summary>
-        //public const string Slider3ValuePropertyName = "Slider3Value";
-
-        //private int slider3Value = 1;
-
-        ///// <summary>
-        ///// Sets and gets the Slider3Value property.
-        ///// Changes to that property's value raise the PropertyChanged event. 
-        ///// </summary>
-        //public int Slider3Value
-        //{
-        //    get
-        //    {
-        //        return slider3Value;
-        //    }
-
-        //    set
-        //    {
-        //        if (slider3Value == value)
-        //        {
-        //            return;
-        //        }
-
-        //        slider3Value = value;
-        //        RaisePropertyChanged(Slider3ValuePropertyName);
-        //        for (byte index = 1; index <= 3; index++)
-        //        {
-        //            if (connected)
-        //            {
-        //                //     int intVal = (int)Math.Round(slider3Value);
-        //                dynamixel.dxl2_write_dword(index, P_GOAL_ACCEL_L, (UInt32)slider3Value);
-        //            }
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// The <see cref="Slider4Value" /> property's name.
         /// </summary>
@@ -519,12 +481,114 @@ namespace RobotApp.Views.Plugins
             }
         }
 
+        /// <summary>
+        /// The <see cref="YawMinimum" /> property's name.
+        /// </summary>
+        public const string YawMinimumPropertyName = "YawMinimum";
+
+        private double yawMinimum = -180;
+
+        /// <summary>
+        /// Sets and gets the YawMinimum property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public double YawMinimum
+        {
+            get
+            {
+                return yawMinimum;
+            }
+
+            set
+            {
+                if (yawMinimum == value)
+                {
+                    return;
+                }
+
+                yawMinimum = value;
+                RaisePropertyChanged(YawMinimumPropertyName);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="YawMaximum" /> property's name.
+        /// </summary>
+        public const string YawMaximumPropertyName = "YawMaximum";
+
+        private double yawMaximum = 180;
+
+        /// <summary>
+        /// Sets and gets the YawMaximum property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public double YawMaximum
+        {
+            get
+            {
+                return yawMaximum;
+            }
+
+            set
+            {
+                if (yawMaximum == value)
+                {
+                    return;
+                }
+
+                yawMaximum = value;
+                RaisePropertyChanged(YawMaximumPropertyName);
+            }
+        }
+
         private void UpdateSetpoints()
         {
+            //double roll = (Slider1Value * (Math.PI / 180));
+            //double pitch = (Slider2Value * (Math.PI / 180));
+            //double yaw = (Slider4Value * (Math.PI / 180));
+
+            //double x = Math.Sin(pitch) * Math.Cos(roll);
+            //double y = Math.Sin(pitch) * Math.Sin(roll);
+            //double z = Math.Cos(pitch);
+
+            //double xx = Math.Cos(roll) * Math.Cos(pitch) * Math.Cos(yaw) - Math.Sin(roll) * Math.Sin(yaw);
+            //double xy = Math.Sin(roll) * Math.Cos(pitch) * Math.Cos(yaw) + Math.Cos(roll) * Math.Sin(yaw);
+            //double xz = -Math.Sin(pitch) * Math.Cos(yaw);
+
+            //double yx = -Math.Cos(roll) * Math.Cos(pitch) * Math.Sin(yaw) - Math.Sin(roll) * Math.Cos(yaw);
+            //double yy = -Math.Sin(roll) * Math.Cos(pitch) * Math.Sin(yaw) + Math.Cos(roll) * Math.Cos(yaw);
+            //double yz = Math.Sin(pitch) * Math.Sin(yaw);
+
+            //double alpha13 = 75 * (Math.PI / 180);
+            //double alpha35 = 52 * (Math.PI / 180);
+
+            //double cTheta3 = -(z - Math.Cos(alpha13) * Math.Cos(alpha35)) / (Math.Sin(alpha13) * Math.Sin(alpha35));
+            //double cTheta31 = Math.Sqrt(1 - Math.Pow(cTheta3, 2));
+            //double Theta3 = Math.Atan2(cTheta31, cTheta3);
+
+            //double cTheta1 = -(Math.Cos(alpha35) * Math.Sin(alpha13) * y - Math.Sin(Theta3) * Math.Sin(alpha35) * x + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * y) / (Math.Pow(Math.Cos(Theta3) , 2) * Math.Pow(Math.Cos(alpha13) , 2) * Math.Pow(Math.Sin(alpha35) , 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35) , 2) * Math.Pow(Math.Sin(alpha13) , 2) + Math.Pow(Math.Sin(Theta3) , 2) * Math.Pow(Math.Sin(alpha35) , 2));
+            //double sTheta1 = (Math.Cos(alpha35) * Math.Sin(alpha13) * x + Math.Sin(Theta3) * Math.Sin(alpha35) * y + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * x) / (Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(alpha13), 2) + Math.Pow(Math.Sin(Theta3), 2) * Math.Pow(Math.Sin(alpha35), 2));
+            //double Theta1 = Math.Atan2(sTheta1, cTheta1);
+
+            //double cTheta5 = -(Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * yx - Math.Cos(Theta1) * Math.Cos(Theta3) * xx + Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * xx - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * yx + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * yx) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
+            //double sTheta5 = -(Math.Cos(Theta1) * Math.Cos(Theta3) * yx + Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * xx - Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * yx - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * xx + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * xx) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
+            //double Theta5 = Math.Atan2(cTheta5, sTheta5);
+
+            //int motor1Setpoint = -(int)Math.Round((((Theta1*180/Math.PI)-90) * 251000 / 180));
+            //int motor2Setpoint = (int)Math.Round((Theta3*180/Math.PI) * 151875 / 180);
+            //int motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
+
+
+            //dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)motor1Setpoint);
+            //dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)motor2Setpoint);
+            //dynamixel.dxl2_write_dword(3, P_GOAL_POSITION_L, (UInt32)motor3Setpoint);
+
+            //global frame position
             double roll = (Slider1Value * (Math.PI / 180));
             double pitch = (Slider2Value * (Math.PI / 180));
             double yaw = (Slider4Value * (Math.PI / 180));
 
+            //Euler Z-Y-Z Rotation matrix 
             double x = Math.Sin(pitch) * Math.Cos(roll);
             double y = Math.Sin(pitch) * Math.Sin(roll);
             double z = Math.Cos(pitch);
@@ -537,38 +601,60 @@ namespace RobotApp.Views.Plugins
             double yy = -Math.Sin(roll) * Math.Cos(pitch) * Math.Sin(yaw) + Math.Cos(roll) * Math.Cos(yaw);
             double yz = Math.Sin(pitch) * Math.Sin(yaw);
 
+            //angles between motor axes
             double alpha13 = 75 * (Math.PI / 180);
             double alpha35 = 52 * (Math.PI / 180);
 
+            //Solve for 2nd Motor angle
             double cTheta3 = -(z - Math.Cos(alpha13) * Math.Cos(alpha35)) / (Math.Sin(alpha13) * Math.Sin(alpha35));
             double cTheta31 = Math.Sqrt(1 - Math.Pow(cTheta3, 2));
             double Theta3 = Math.Atan2(cTheta31, cTheta3);
 
-            double cTheta1 = -(Math.Cos(alpha35) * Math.Sin(alpha13) * y - Math.Sin(Theta3) * Math.Sin(alpha35) * x + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * y) / (Math.Pow(Math.Cos(Theta3) , 2) * Math.Pow(Math.Cos(alpha13) , 2) * Math.Pow(Math.Sin(alpha35) , 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35) , 2) * Math.Pow(Math.Sin(alpha13) , 2) + Math.Pow(Math.Sin(Theta3) , 2) * Math.Pow(Math.Sin(alpha35) , 2));
+            //Solve for 1st Motor angle
+            double cTheta1 = -(Math.Cos(alpha35) * Math.Sin(alpha13) * y - Math.Sin(Theta3) * Math.Sin(alpha35) * x + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * y) / (Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(alpha13), 2) + Math.Pow(Math.Sin(Theta3), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double sTheta1 = (Math.Cos(alpha35) * Math.Sin(alpha13) * x + Math.Sin(Theta3) * Math.Sin(alpha35) * y + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * x) / (Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(alpha13), 2) + Math.Pow(Math.Sin(Theta3), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double Theta1 = Math.Atan2(sTheta1, cTheta1);
 
+            //Solve for yaw=0, This allows correction for the 3rd motors max and min position, so it can reach a full 360 degree range
+            double yawFactor = 0;
+            double xx0 = Math.Cos(roll) * Math.Cos(pitch) * Math.Cos(yawFactor) - Math.Sin(roll) * Math.Sin(yawFactor);
+            double yx0 = -Math.Cos(roll) * Math.Cos(pitch) * Math.Sin(yawFactor) - Math.Sin(roll) * Math.Cos(yawFactor);
+            double cTheta50 = -(Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * yx0 - Math.Cos(Theta1) * Math.Cos(Theta3) * xx0 + Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * xx0 - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * yx0 + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * yx0) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
+            double sTheta50 = -(Math.Cos(Theta1) * Math.Cos(Theta3) * yx0 + Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * xx0 - Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * yx0 - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * xx0 + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * xx0) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
+            double Theta50 = Math.Atan2(cTheta50, sTheta50);
+
+            double yawOffset = (Theta50 * 180 / Math.PI) + 180;
+            YawMinimum = -180 + yawOffset + 1;
+            YawMaximum = 180 + yawOffset - 1;
+
+            //Solve for 3rd Motor angle
             double cTheta5 = -(Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * yx - Math.Cos(Theta1) * Math.Cos(Theta3) * xx + Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * xx - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * yx + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * yx) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double sTheta5 = -(Math.Cos(Theta1) * Math.Cos(Theta3) * yx + Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * xx - Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * yx - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * xx + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * xx) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double Theta5 = Math.Atan2(cTheta5, sTheta5);
 
-            int motor1Setpoint = -(int)Math.Round((((Theta1*180/Math.PI)-90) * 251000 / 180));
-            int motor2Setpoint = (int)Math.Round((Theta3*180/Math.PI) * 151875 / 180);
-            int motor3Setpoint;
+            //convert to motor setpoints
+            int motor1Setpoint = -(int)Math.Round((((Theta1 * 180 / Math.PI) - 90) * 251000 / 180));
+            int motor2Setpoint = (int)Math.Round((Theta3 * 180 / Math.PI) * 151875 / 180);
+            int motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
 
-            //if (Slider4Value > 70)
-            //{
-            //     motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) - 180) * 151875 / 180);
-            //}
-            //else if (Slider4Value < -290)
-            //{
-            //    motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI)+540) * 151875 / 180);
-            //}
-            //else
-            //{
-                 motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
-            //}
-            
+            //correction if math sends it to a position out of range
+            if (motor3Setpoint < -151875)
+                motor3Setpoint += 151875 * 2;
+            else if (motor3Setpoint > 151875)
+                motor3Setpoint -= 151875 * 2;
+
+            //If motor 3 setpoint is 180 degrees from the last point (flipping around) then it holds it's old position.
+            int SetDif = 0;
+            if (oldmotor3Setpoint != motor3Setpoint)
+            {
+                SetDif = Math.Abs(oldmotor3Setpoint - motor3Setpoint);
+                if (SetDif > 150000)
+                    motor3Setpoint = oldmotor3Setpoint;
+                else
+                    oldmotor3Setpoint = motor3Setpoint;
+            }
+
+            //Write
             dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)motor1Setpoint);
             dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)motor2Setpoint);
             dynamixel.dxl2_write_dword(3, P_GOAL_POSITION_L, (UInt32)motor3Setpoint);
