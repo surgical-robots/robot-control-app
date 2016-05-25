@@ -13,10 +13,10 @@
         <StackPanel>
 
             <UniformGrid Columns="3">
-                <TextBlock Text="Available COM Ports"/>
+                <TextBlock Text="Available Network Addresses"/>
                 <ComboBox Name="PathFileBox" ItemsSource="{Binding AddressList}" SelectedItem="{Binding SelectedAddress}" />
                 <mui:ModernButton IconData="{StaticResource SearchIconData}" 
-                                  Content="Refresh COMs" Command="{Binding DetectCOMsCommand}" HorizontalAlignment="Left" />
+                                  Content="Refresh Addresses" Command="{Binding DetectCOMsCommand}" HorizontalAlignment="Left" />
             </UniformGrid>
             
             <Button Content="{Binding ConnectText}" Command="{Binding ConnectCommand}" />

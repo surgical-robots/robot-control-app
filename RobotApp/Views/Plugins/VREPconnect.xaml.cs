@@ -23,7 +23,7 @@ namespace RobotApp.Views.Plugins
         private bool listen = false;
 
         private int clientID = 0;
-        private double[] angles = new double[3];
+        private double[] angles;
         private int[] joints;
         private string[] names;
         private int jointCount;
@@ -31,26 +31,97 @@ namespace RobotApp.Views.Plugins
 
         public override void PostLoadSetup()
         {
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint1"].UniqueID, (message) =>
+            if(jointCount > 0)
             {
-                angles[0] = message.Value;
-                if (connected)
-                    UpdateSimulation();
-            });
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint1"].UniqueID, (message) =>
+                {
+                    angles[0] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 1)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint2"].UniqueID, (message) =>
+                {
+                    angles[1] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 2)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint3"].UniqueID, (message) =>
+                {
+                    angles[2] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 3)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint4"].UniqueID, (message) =>
+                {
+                    angles[3] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 4)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint5"].UniqueID, (message) =>
+                {
+                    angles[4] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 5)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint6"].UniqueID, (message) =>
+                {
+                    angles[5] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 6)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint7"].UniqueID, (message) =>
+                {
+                    angles[6] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 7)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint8"].UniqueID, (message) =>
+                {
+                    angles[7] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 8)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint9"].UniqueID, (message) =>
+                {
+                    angles[8] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 9)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint10"].UniqueID, (message) =>
+                {
+                    angles[6] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint2"].UniqueID, (message) =>
-            {
-                angles[1] = message.Value;
-                if (connected)
-                    UpdateSimulation();
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint3"].UniqueID, (message) =>
-            {
-                angles[2] = message.Value;
-                if (connected)
-                    UpdateSimulation();
-            });
 
             base.PostLoadSetup();
         }
@@ -61,10 +132,6 @@ namespace RobotApp.Views.Plugins
             InitializeComponent();
 
             AddressList = new List<string>();
-
-            Inputs.Add("Joint1", new ViewModel.InputSignalViewModel("Joint 1", this.InstanceName));
-            Inputs.Add("Joint2", new ViewModel.InputSignalViewModel("Joint 2", this.InstanceName));
-            Inputs.Add("Joint3", new ViewModel.InputSignalViewModel("Joint 3", this.InstanceName));
 
             Outputs.Add("Button1", new OutputSignalViewModel("Button 1"));
             Outputs.Add("Button2", new OutputSignalViewModel("Button 2"));
@@ -78,7 +145,7 @@ namespace RobotApp.Views.Plugins
                 AddressList.Add(ip.ToString());
             }
 
-            PostLoadSetup();
+            //PostLoadSetup();
         }
 
         private RelayCommand<string> detectCOMsCommand;
@@ -128,6 +195,8 @@ namespace RobotApp.Views.Plugins
                             //string[] stringData = new string[500];
                             unsafe
                             {
+                                string str = Environment.SystemDirectory;
+                                
                                 int handlesCount;
                                 int* handles;
                                 int intDataCount, floatDataCount, stringDataCount;
@@ -140,15 +209,25 @@ namespace RobotApp.Views.Plugins
                                 errorCode = VREPWrapper.simxGetObjectGroupData(clientID, sim_object.joint_type, 0, &handlesCount, &handles, &intDataCount, &intData,
                                                                                 &floatDataCount, &floatData, &stringDataCount, &stringData, simx_opmode.oneshot_wait);
                                 jointCount = handlesCount;
-                                joints = new int[jointCount];
-                                for (int i = 0; i < jointCount; i++)
-                                    joints[i] = handles[i];
 
-                                nameCount = stringDataCount;
-                                names = new string[nameCount];
-                                names[0] = new string(stringData);
-                                //for (int i = 0; i < nameCount; i++)
-                                //    names[i] = stringData[i].ToString();
+                                if(jointCount != 0)
+                                {
+                                    joints = new int[jointCount];
+                                    for (int i = 0; i < jointCount; i++)
+                                        joints[i] = handles[i];
+
+                                    for (int i = 0; i < jointCount; i++)
+                                        Inputs.Add("Joint" + (i + 1), new ViewModel.InputSignalViewModel("Joint " + (i + 1), this.InstanceName));
+
+                                    angles = new double[jointCount];
+                                    PostLoadSetup();
+
+                                    nameCount = stringDataCount;
+                                    names = new string[nameCount];
+                                    names[0] = new string(stringData);
+                                    //for (int i = 0; i < nameCount; i++)
+                                    //    names[i] = stringData[i].ToString();
+                                }
                             }
                             ConnectText = "Connected to V-REP... Click to disconnect";
                             connected = true;
@@ -156,6 +235,11 @@ namespace RobotApp.Views.Plugins
                         else
                         {
                             errorCode = VREPWrapper.simxStopSimulation(clientID, simx_opmode.oneshot_wait);
+                            for (int i = 0; i < jointCount; i++)
+                            {
+                                Messenger.Default.Unregister<Messages.Signal>(this, Inputs["Joint" + (i + 1)].UniqueID);
+                                Inputs.Remove("Joint" + (i + 1));
+                            }
 //                            VREPWrapper.simxFinish(-1);
                             ConnectText = "Connect to V-REP";
                             connected = false;
@@ -167,9 +251,9 @@ namespace RobotApp.Views.Plugins
         public void UpdateSimulation()
         {
             simx_error errorCode;
-            for(int i = 0; i<3; i++)
+            for(int i = 0; i < jointCount; i++)
             {
-                errorCode = VREPWrapper.simxSetJointTargetPosition(clientID, joints[i], Convert.ToSingle(angles[i]), simx_opmode.streaming);
+                errorCode = VREPWrapper.simxSetJointTargetPosition(clientID, joints[i], Convert.ToSingle(angles[i] * Math.PI / 180), simx_opmode.streaming);
 //                errorCode = simx_error.noerror;
             }
         }
