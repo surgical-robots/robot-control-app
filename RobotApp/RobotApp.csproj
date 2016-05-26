@@ -159,6 +159,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
     <Reference Include="Xceed.Wpf.AvalonDock">
       <HintPath>..\packages\Xceed.Wpf.AvalonDock.2.7.15309.11180\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
