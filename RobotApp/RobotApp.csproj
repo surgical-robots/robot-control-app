@@ -145,17 +145,6 @@
     <Reference Include="TelSurge">
       <HintPath>..\TelSurge\TelSurge\bin\Debug\TelSurge.exe</HintPath>
     </Reference>
-    <Reference Include="Treehopper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3f7cb3ceb8869f2f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Downloads\treehopper-3c0eca849773a1deb22e5704f93589bf4363b087\NET\API\Treehopper\obj\Debug\Treehopper.dll</HintPath>
-    </Reference>
-    <Reference Include="Treehopper.Libraries">
-      <HintPath>..\..\..\..\..\Downloads\treehopper-3c0eca849773a1deb22e5704f93589bf4363b087\NET\API\Treehopper.Libraries\obj\Debug\Treehopper.Libraries.dll</HintPath>
-    </Reference>
-    <Reference Include="Treehopper.WPF, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Downloads\treehopper-3c0eca849773a1deb22e5704f93589bf4363b087\NET\API\Treehopper.WPF\obj\Debug\Treehopper.WPF.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -677,10 +666,6 @@
     <ProjectReference Include="..\Kinematics\Kinematics.csproj">
       <Project>{e7f48141-a2f7-4bc4-9098-1bab46b0c659}</Project>
       <Name>Kinematics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\remoteApiNETWrapper-master\remoteApiNETWrapper.csproj">
-      <Project>{df9bf2bc-87a1-4a15-88b2-98baa68aba65}</Project>
-      <Name>remoteApiNETWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\RobotControl\RobotControl.csproj">
       <Project>{d6319095-4a9f-409c-8d46-2e77a6c49d29}</Project>
