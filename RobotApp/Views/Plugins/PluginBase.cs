@@ -15,6 +15,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
+using FirstFloor.ModernUI.Windows.Controls;
+using GalaSoft.MvvmLight.Command;
 
 namespace RobotApp.Views.Plugins
 {
@@ -39,6 +41,10 @@ namespace RobotApp.Views.Plugins
         public StackPanel MainArea { get; set; }
 
         private StackPanel pluginArea = null;
+
+        private bool displayInfo = false;
+
+        public TextBlock InfoTextBlock;
 
         public static DependencyProperty PluginContentProperty = DependencyProperty.Register("PluginContent", typeof(StackPanel), typeof(PluginBase));
 
@@ -88,19 +94,39 @@ namespace RobotApp.Views.Plugins
             title.SetBinding(TextBlock.TextProperty, "DisplayTitle");
             title.Style = (Style)Application.Current.Resources["Title"];
 
+            ModernButton infoButton = new ModernButton();
+            var streamGeometry = StreamGeometry.Parse("F1 M 38,19C 48.4934,19 57,27.5066 57,38C 57,48.4934 48.4934,57 38,57C 27.5066,57 19,48.4934 19,38C 19,27.5066 27.5066,19 38,19 Z M 33.25,33.25L 33.25,36.4167L 36.4166,36.4167L 36.4166,47.5L 33.25,47.5L 33.25,50.6667L 44.3333,50.6667L 44.3333,47.5L 41.1666,47.5L 41.1666,36.4167L 41.1666,33.25L 33.25,33.25 Z M 38.7917,25.3333C 37.48,25.3333 36.4167,26.3967 36.4167,27.7083C 36.4167,29.02 37.48,30.0833 38.7917,30.0833C 40.1033,30.0833 41.1667,29.02 41.1667,27.7083C 41.1667,26.3967 40.1033,25.3333 38.7917,25.3333 Z ");
+            infoButton.IconData = streamGeometry;
+            infoButton.Command = ToggleInfoCommand;
+
+            InfoTextBlock = new TextBlock();
+            //InfoTextBlock.SetBinding(TextBox.TextProperty, "InfoString");
+//            InfoTextBlock.Text = "Info...";
+            InfoTextBlock.Visibility = Visibility.Collapsed;
+            InfoTextBlock.TextWrapping = TextWrapping.Wrap;
+            Binding infoBinding = new Binding();
+            infoBinding.Path = new PropertyPath("InfoString");
+            BindingOperations.SetBinding(InfoTextBlock, TextBlock.TextProperty, infoBinding);
+
+            UniformGrid grid1 = new UniformGrid();
+            grid1.Columns = 2;
+            grid1.Children.Add(title);
+            grid1.Children.Add(infoButton);
+
             // Instance name GUI stuff
-            UniformGrid grid = new UniformGrid();
+            UniformGrid grid2 = new UniformGrid();
             TextBlock InstanceNameLabel = new TextBlock();
             InstanceNameLabel.Text = "Instance Name";
             TextBox InstanceNameBox = new TextBox();
             Binding binding = new Binding();
             binding.Path = new PropertyPath("InstanceName");
             InstanceNameBox.SetBinding(TextBox.TextProperty, binding);
-            grid.Columns = 2;
-            grid.Children.Add(InstanceNameLabel);
-            grid.Children.Add(InstanceNameBox);
-            MainArea.Children.Add(title);
-            MainArea.Children.Add(grid);
+            grid2.Columns = 2;
+            grid2.Children.Add(InstanceNameLabel);
+            grid2.Children.Add(InstanceNameBox);
+            MainArea.Children.Add(grid1);
+            MainArea.Children.Add(InfoTextBlock);
+            MainArea.Children.Add(grid2);
             
             this.Initialized += PluginBase_Initialized;
         }
@@ -168,6 +194,64 @@ namespace RobotApp.Views.Plugins
         /// </summary>
         public string DisplayTitle { get { return TypeName + " Configuration";  } }
 
+        private RelayCommand<string> toggleInfoCommand;
+
+        /// <summary>
+        /// Gets the DetectCOMsCommand.
+        /// </summary>
+        public RelayCommand<string> ToggleInfoCommand
+        {
+            get
+            {
+                return toggleInfoCommand
+                    ?? (toggleInfoCommand = new RelayCommand<string>(
+                    p =>
+                    {
+                        displayInfo = !displayInfo;
+                        if(displayInfo)
+                            InfoTextBlock.Visibility = Visibility.Visible;
+                        else
+                            InfoTextBlock.Visibility = Visibility.Collapsed;
+                    }));
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="PluginInfo" /> property's name.
+        /// </summary>
+        public const string PluginInfoPropertyName = "PluginInfo";
+
+        private string pluginInfo = "";
+
+        /// <summary>
+        /// Sets and gets the PluginInfo property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string PluginInfo
+        {
+            get
+            {
+                return pluginInfo;
+            }
+
+            set
+            {
+                if (pluginInfo == value)
+                {
+                    return;
+                }
+
+                pluginInfo = value;
+                RaisePropertyChanged(PluginInfoPropertyName);
+                RaisePropertyChanged(InfoString);
+            }
+        }
+
+        /// <summary>
+        /// Returns "[TypeName] Configuration" -- which is used in the title block.
+        /// </summary>
+        public string InfoString { get { return TypeName + " Information:\n\n" + PluginInfo; } }
+        
         /// <summary>
         /// The <see cref="InstanceName" /> property's name.
         /// </summary>

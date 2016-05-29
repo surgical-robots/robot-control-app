@@ -125,6 +125,7 @@ namespace RobotApp.Views.Plugins
         public Clutch()
         {
             this.TypeName = "Clutch";
+            this.PluginInfo = "Allows user to clutch in and out of a 3D workspace. When INPUT:Clutch > 0.5, the clutch is enabled and disables the outputs. The input positions are offset to adjust the clutch-in position = clutch-out position.\n\nINPUTS: X, Y, Z, Pitch, Yaw, Roll, Clutch\nOUTPUTS: X, Y, Z, Pitch, Yaw, Roll\n";
             InitializeComponent();
             clutchIsEnabled = false;
 
