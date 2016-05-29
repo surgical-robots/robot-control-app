@@ -5,6 +5,9 @@
 #include <HL\hl.h>
 #include <gl\GL.h>
 #include <stdint.h>
+#include <math.h>
+#define _USE_MATH_DEFINES
+
 using namespace std;
 
 struct GetUpdateCallbackData
@@ -12,6 +15,7 @@ struct GetUpdateCallbackData
 	HHD Handle;
 	HDdouble Position[3];
 	HDdouble GimbalAngles[3];
+	HDdouble Transform[16];
 	HDint Buttons;
 	HDboolean InkwellSwitch;
 	HDdouble Setpoint[3];
@@ -25,6 +29,7 @@ public:
 	void Start();
 	void Stop();
 	void Update();
+	void UpdateTransform();
 	void UpdateSetpoint();
 	void LoadObj(string ObjectPath);
 	~NativeDevice();

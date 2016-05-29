@@ -325,15 +325,25 @@ namespace Kinematics
             Rd[2].Z = Math.Cos(Orientation.Y);
             */
             //      X-Y-Z Fixed Angles
-            Rd[0].X = Math.Cos(Orientation.X) * Math.Cos(Orientation.Y);
-            Rd[0].Y = Math.Sin(Orientation.X) * Math.Cos(Orientation.Y);
+            //Rd[0].X = Math.Cos(Orientation.X) * Math.Cos(Orientation.Y);
+            //Rd[0].Y = Math.Sin(Orientation.X) * Math.Cos(Orientation.Y);
+            //Rd[0].Z = -Math.Sin(Orientation.Y);
+            //Rd[1].X = Math.Cos(Orientation.X) * Math.Sin(Orientation.Y) * Math.Sin(Orientation.Z) - Math.Sin(Orientation.X) * Math.Cos(Orientation.Z);
+            //Rd[1].Y = Math.Sin(Orientation.X) * Math.Sin(Orientation.Y) * Math.Sin(Orientation.Z) + Math.Cos(Orientation.X) * Math.Cos(Orientation.Z);
+            //Rd[1].Z = Math.Cos(Orientation.Y) * Math.Sin(Orientation.Z);
+            //Rd[2].X = Math.Cos(Orientation.X) * Math.Sin(Orientation.Y) * Math.Cos(Orientation.Z) + Math.Sin(Orientation.X) * Math.Sin(Orientation.Z);
+            //Rd[2].Y = Math.Sin(Orientation.X) * Math.Sin(Orientation.Y) * Math.Cos(Orientation.Z) - Math.Cos(Orientation.X) * Math.Sin(Orientation.Z);
+            //Rd[2].Z = Math.Cos(Orientation.Y) * Math.Cos(Orientation.Z);
+
+            Rd[0].X = Math.Cos(Orientation.Y) * Math.Cos(Orientation.Z);
+            Rd[0].Y = Math.Sin(Orientation.Z) * Math.Cos(Orientation.Y);
             Rd[0].Z = -Math.Sin(Orientation.Y);
-            Rd[1].X = Math.Cos(Orientation.X) * Math.Sin(Orientation.Y) * Math.Sin(Orientation.Z) - Math.Sin(Orientation.X) * Math.Cos(Orientation.Z);
+            Rd[1].X = Math.Cos(Orientation.Z) * Math.Sin(Orientation.Y) * Math.Sin(Orientation.X) - Math.Sin(Orientation.Z) * Math.Cos(Orientation.X);
             Rd[1].Y = Math.Sin(Orientation.X) * Math.Sin(Orientation.Y) * Math.Sin(Orientation.Z) + Math.Cos(Orientation.X) * Math.Cos(Orientation.Z);
-            Rd[1].Z = Math.Cos(Orientation.Y) * Math.Sin(Orientation.Z);
+            Rd[1].Z = Math.Cos(Orientation.Y) * Math.Sin(Orientation.X);
             Rd[2].X = Math.Cos(Orientation.X) * Math.Sin(Orientation.Y) * Math.Cos(Orientation.Z) + Math.Sin(Orientation.X) * Math.Sin(Orientation.Z);
-            Rd[2].Y = Math.Sin(Orientation.X) * Math.Sin(Orientation.Y) * Math.Cos(Orientation.Z) - Math.Cos(Orientation.X) * Math.Sin(Orientation.Z);
-            Rd[2].Z = Math.Cos(Orientation.Y) * Math.Cos(Orientation.Z);
+            Rd[2].Y = Math.Sin(Orientation.Z) * Math.Sin(Orientation.Y) * Math.Cos(Orientation.X) - Math.Cos(Orientation.Z) * Math.Sin(Orientation.X);
+            Rd[2].Z = Math.Cos(Orientation.Y) * Math.Cos(Orientation.X);
 
             Rh = new Vector3D[3];
             // declare 3D array for each joint frame axis (xi, yi, zi, Pi)

@@ -317,9 +317,6 @@
     <Compile Include="Views\Plugins\PerformanceEvaluator.xaml.cs">
       <DependentUpon>PerformanceEvaluator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Plugins\MotorClutch.xaml.cs">
-      <DependentUpon>MotorClutch.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Plugins\NetworkGeomagicTouchFiles\ConnectedUser.cs" />
     <Compile Include="Views\Plugins\NetworkGeomagicTouchFiles\ListenerSocket.cs" />
     <Compile Include="Views\Plugins\NetworkGeomagicTouchFiles\MTObservableCollection.cs" />
@@ -520,10 +517,6 @@
     <Page Include="Views\Plugins\PerformanceEvaluator.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Plugins\MotorClutch.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Plugins\PathPusher.xaml">
       <SubType>Designer</SubType>

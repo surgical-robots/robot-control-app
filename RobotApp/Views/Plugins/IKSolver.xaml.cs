@@ -78,7 +78,7 @@ namespace RobotApp.Views.Plugins
 
         public IKSolver()
         {
-            TypeName = "Kinematics";
+            TypeName = "IK Solver";
 
             Kinematic dummyVariable;
 
@@ -100,9 +100,9 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("X", new ViewModel.InputSignalViewModel("X", this.InstanceName));
             Inputs.Add("Y", new ViewModel.InputSignalViewModel("Y", this.InstanceName));
             Inputs.Add("Z", new ViewModel.InputSignalViewModel("Z", this.InstanceName));
-            Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
             Inputs.Add("Pitch", new ViewModel.InputSignalViewModel("Pitch", this.InstanceName));
             Inputs.Add("Yaw", new ViewModel.InputSignalViewModel("Yaw", this.InstanceName));
+            Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
 
             InitializeComponent();
 

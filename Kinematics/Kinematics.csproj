@@ -66,6 +66,7 @@
     <Compile Include="Robots\LouBot.cs" />
     <Compile Include="Robots\LouBotWithCamera.cs" />
     <Compile Include="Robots\MarkBot.cs" />
+    <Compile Include="Robots\SevenDOFsolver.cs" />
     <Compile Include="Robots\TomBot.cs" />
     <Compile Include="Robots\TomShortArm.cs" />
     <Compile Include="Robots\TwoArmLouBot.cs" />

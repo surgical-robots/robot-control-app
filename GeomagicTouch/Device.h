@@ -14,6 +14,7 @@ namespace GeomagicTouch {
 		void Start();
 		void Stop();
 		void Update();
+		void UpdateTransform();
 		void LoadObj(String^ ObjectPath);
 		property double X { double get(); }
 		property double Y { double get(); }

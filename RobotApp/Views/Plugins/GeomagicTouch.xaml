@@ -11,24 +11,16 @@
     <plugins:PluginBase.PluginContent>
         <StackPanel>
             <UniformGrid Columns="2">
-                <!--<UniformGrid.Resources>
-                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                </UniformGrid.Resources>-->
                 <ComboBox Name="DeviceNamesBox" ItemsSource="{Binding DeviceNames}" SelectedItem="{Binding SelectedDeviceName}" />
                     <Button Content="{Binding ConnectButtonText}" Command="{Binding ConnectCommand}" CommandParameter="{Binding ElementName=DeviceNamesBox, Path=SelectedItem}" />
-                <TextBlock Text="Update Period (milliseconds):" />
+                <TextBlock Text="Update Period (milliseconds) :" HorizontalAlignment="Right"/>
                 <TextBox  Text="{Binding UpdatePeriod}" />
+                <TextBlock Text="Angle Type :" HorizontalAlignment="Right"/>
+                <ComboBox SelectedIndex="{Binding AngleType}">
+                    <ComboBoxItem>Pitch, Roll, Yaw</ComboBoxItem>
+                    <ComboBoxItem>Gimbal Angles</ComboBoxItem>
+                </ComboBox>
+
             </UniformGrid>
             <Button Content="Start" Command="{Binding StartCommand}" />
         </StackPanel>

@@ -108,6 +108,7 @@ HDCallbackCode HDCALLBACK NativeDevice::GetUpdateCallback(void *pUserData)
 	}
 	hdGetDoublev(HD_CURRENT_POSITION, Data->Position);
 	hdGetDoublev(HD_CURRENT_GIMBAL_ANGLES, Data->GimbalAngles);
+	hdGetDoublev(HD_CURRENT_TRANSFORM, Data->Transform);
 	hdGetBooleanv(HD_CURRENT_INKWELL_SWITCH, &Data->InkwellSwitch);
 	hdGetIntegerv(HD_CURRENT_BUTTONS, &Data->Buttons);
 
@@ -164,6 +165,58 @@ void NativeDevice::Update()
 	Theta1 = CallbackDataObject->GimbalAngles[0];
 	Theta2 = CallbackDataObject->GimbalAngles[1];
 	Theta3 = CallbackDataObject->GimbalAngles[2];
+	Button1 = CallbackDataObject->Buttons & HD_DEVICE_BUTTON_1;
+	Button2 = CallbackDataObject->Buttons & HD_DEVICE_BUTTON_2;
+	Button3 = CallbackDataObject->Buttons & HD_DEVICE_BUTTON_3;
+	Button4 = CallbackDataObject->Buttons & HD_DEVICE_BUTTON_4;
+	InkwellSwitch = CallbackDataObject->InkwellSwitch;
+}
+
+void NativeDevice::UpdateTransform()
+{
+	if (!deviceInitialized) return;
+	if (!servoLoopRegistered) return;
+	HDdouble theta1, theta2, chi1, chi2, phi1, phi2;
+	X = CallbackDataObject->Transform[12];
+	Y = CallbackDataObject->Transform[13];
+	Z = CallbackDataObject->Transform[14];
+
+	//if (abs(CallbackDataObject->Transform[2]) != 1)
+	//{
+	//	theta1 = -asin(CallbackDataObject->Transform[2]);
+	//	theta2 = M_PI - theta1;
+	//	chi1 = atan2(CallbackDataObject->Transform[6] / cos(theta1), CallbackDataObject->Transform[10] / cos(theta1));
+	//	chi2 = atan2(CallbackDataObject->Transform[6] / cos(theta2), CallbackDataObject->Transform[10] / cos(theta2));
+	//	phi1 = atan2(CallbackDataObject->Transform[1] / cos(theta1), CallbackDataObject->Transform[0] / cos(theta1));
+	//	phi2 = atan2(CallbackDataObject->Transform[1] / cos(theta2), CallbackDataObject->Transform[0] / cos(theta2));
+
+	//	Theta1 = theta1;
+	//	Theta2 = chi1;
+	//	Theta3 = phi1;
+	//}
+	//else
+	//{
+	//	Theta3 = 0;
+	//	if (CallbackDataObject->Transform[2] == -1)
+	//	{
+	//		Theta1 = M_PI_2;
+	//		Theta2 = atan2(CallbackDataObject->Transform[4], CallbackDataObject->Transform[8]);
+	//	}
+	//	else
+	//	{
+	//		Theta1 = -M_PI_2;
+	//		Theta2 = atan2(-CallbackDataObject->Transform[4], -CallbackDataObject->Transform[8]);
+	//	}
+	//}
+
+	//Theta1 = atan2(CallbackDataObject->Transform[6], CallbackDataObject->Transform[10]);
+	//Theta2 = atan2(-CallbackDataObject->Transform[2], sqrt(pow(CallbackDataObject->Transform[6], 2) + pow(CallbackDataObject->Transform[10], 2)));
+	//Theta3 = atan2(CallbackDataObject->Transform[1], CallbackDataObject->Transform[0]);
+
+	Theta1 = atan2(CallbackDataObject->Transform[9], CallbackDataObject->Transform[10]);
+	Theta2 = atan2(-CallbackDataObject->Transform[8], sqrt(pow(CallbackDataObject->Transform[0], 2) + pow(CallbackDataObject->Transform[4], 2)));
+	Theta3 = atan2(sin(Theta1)*CallbackDataObject->Transform[2] - cos(Theta1)*CallbackDataObject->Transform[1], cos(Theta1)*CallbackDataObject->Transform[5] - sin(Theta1)*CallbackDataObject->Transform[6]);
+
 	Button1 = CallbackDataObject->Buttons & HD_DEVICE_BUTTON_1;
 	Button2 = CallbackDataObject->Buttons & HD_DEVICE_BUTTON_2;
 	Button3 = CallbackDataObject->Buttons & HD_DEVICE_BUTTON_3;

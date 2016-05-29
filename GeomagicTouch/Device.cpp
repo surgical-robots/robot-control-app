@@ -227,4 +227,73 @@ namespace GeomagicTouch {
 
 	}
 
+	void Device::UpdateTransform()
+	{
+		device->UpdateTransform();
+		if (device->X != x)
+		{
+			x = device->X;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("X"));
+		}
+
+		if (device->Y != y)
+		{
+			y = device->Y;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Y"));
+		}
+
+		if (device->Z != z)
+		{
+			z = device->Z;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Z"));
+		}
+
+		if (device->InkwellSwitch == isInInkwell)
+		{
+			isInInkwell = !device->InkwellSwitch;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("IsInInkwell"));
+		}
+
+		if (device->Theta1 != theta1)
+		{
+			theta1 = device->Theta1;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Theta1"));
+		}
+
+		if (device->Theta2 != theta2)
+		{
+			theta2 = device->Theta2;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Theta2"));
+		}
+
+		if (device->Theta3 != theta3)
+		{
+			theta3 = device->Theta3;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Theta3"));
+		}
+
+		if (device->Button1 != button1)
+		{
+			button1 = device->Button1;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Button1"));
+		}
+
+		if (device->Button2 != button2)
+		{
+			button2 = device->Button2;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Button2"));
+		}
+
+		if (device->Button3 != button3)
+		{
+			button3 = device->Button3;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Button3"));
+		}
+
+		if (device->Button4 != button4)
+		{
+			button4 = device->Button4;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Button4"));
+		}
+	}
 }
