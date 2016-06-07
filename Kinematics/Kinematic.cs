@@ -15,6 +15,8 @@ namespace Kinematics
             ShoulderThreeDOF
         }
 
+        public bool[] InvertXYZ = { false, false, false };
+
         /// <summary>
         /// Gets a list of joint angles from a three-dimensional position
         /// </summary>

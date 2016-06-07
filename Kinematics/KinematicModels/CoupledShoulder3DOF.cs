@@ -77,6 +77,7 @@ namespace Kinematics
             double[] maxAngle = new double[3];
             double[] dummyAngle = { 0, 0, 0 };
             bool angleLimited = false;
+            bool[] jointLimit = {false, false, false};
 
             minAngle[0] = Theta1Min * Math.PI / 180;
             minAngle[1] = Theta2Min * Math.PI / 180;
@@ -118,6 +119,7 @@ namespace Kinematics
             {
                 argument2 = 1;
                 angleLimited = true;
+                jointLimit[1] = true;
             }
             kineAngle[1] = Math.Atan2(argument2, Math.Sqrt(1 - Math.Pow(argument2, 2)));
 
@@ -134,16 +136,21 @@ namespace Kinematics
                 {
                     kineAngle[i] = minAngle[i];
                     angleLimited = true;
+                    jointLimit[i] = true;
                 }
                 else if (kineAngle[i] > maxAngle[i])
                 {
                     kineAngle[i] = maxAngle[i];
                     angleLimited = true;
+                    jointLimit[i] = true;
                 }
             }
 
-            radianAngle[0] = kineAngle[0] + kineAngle[1];
-            radianAngle[1] = kineAngle[0] - kineAngle[1];
+            //radianAngle[0] = kineAngle[0] + kineAngle[1];
+            //radianAngle[1] = kineAngle[0] - kineAngle[1];
+            //radianAngle[2] = kineAngle[2];
+            radianAngle[0] = kineAngle[0];
+            radianAngle[1] = kineAngle[1];
             radianAngle[2] = kineAngle[2];
 
             angles[0] = radianAngle[0] * 180 / Math.PI;
@@ -155,17 +162,33 @@ namespace Kinematics
             double kineY = LengthUpperArm * Math.Sin(kineAngle[1]) + LengthForearm * Math.Sin(kineAngle[1]) * Math.Cos(kineAngle[2]);
             double kineX = LengthUpperArm * Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]) + LengthForearm * (Math.Cos(kineAngle[0]) * Math.Sin(kineAngle[2]) + Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]) * Math.Cos(kineAngle[2]));
 
+            double barrierSpring = 0.5;
+
+            Point3D elbowPos = new Point3D();
+            elbowPos.X = LengthUpperArm * Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]);
+            elbowPos.Y = LengthUpperArm * Math.Sin(kineAngle[1]);
+            elbowPos.Z = LengthUpperArm * Math.Cos(kineAngle[0]) * Math.Cos(kineAngle[1]);
+            double Lfore = Math.Sqrt(Math.Pow(elbowPos.X - Position.X, 2) + Math.Pow(elbowPos.Y - Position.Y, 2) + Math.Pow(elbowPos.Z - Position.Z, 2));
+            Lratio = LengthForearm / Lfore;
+
             if(!angleLimited)
             {
                 oldPoint.X = kineX;
                 oldPoint.Y = kineY;
                 oldPoint.Z = kineZ;
             }
-
-            double barrierSpring = 0.5;
+            else if(Lratio > 1 && jointLimit[0])
+            {
+                oldPoint.X = (Position.X - elbowPos.X) * Lratio + elbowPos.X;
+                oldPoint.Y = (Position.Y - elbowPos.Y) * Lratio + elbowPos.Y;
+                oldPoint.Z = (Position.Z - elbowPos.Z) * Lratio + elbowPos.Z;
+            }
 
             angles[3] = (oldPoint.X - Position.X) * barrierSpring;
-            angles[4] = (oldPoint.Y - Position.Y) * -barrierSpring;
+            if(InvertXYZ[1])
+                angles[4] = (oldPoint.Y - Position.Y) * -barrierSpring;
+            else
+                angles[4] = (oldPoint.Y - Position.Y) * barrierSpring;
             angles[5] = (oldPoint.Z - Position.Z) * -barrierSpring;
 
             for (int i = 3; i < 6; i++)

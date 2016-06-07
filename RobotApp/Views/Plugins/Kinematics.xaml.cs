@@ -27,10 +27,64 @@ namespace RobotApp.Views.Plugins
             }
         }
 
-        public bool InvertX { get; set; }
-        public bool InvertY { get; set; }
-        public bool InvertZ { get; set; }
-        public int ArmSide { get; set; }
+        public const string InvertXPropertyName = "InvertX";
+        private bool invertX;
+        public bool InvertX 
+        { 
+            get
+            {
+                return invertX;
+            }
+            set
+            {
+                if (invertX == value)
+                    return;
+                invertX = value;
+
+                if (model != null)
+                    model.InvertXYZ[0] = invertX;
+                RaisePropertyChanged(InvertXPropertyName);
+            } 
+        }
+        public const string InvertYPropertyName = "InvertY";
+        private bool invertY;
+        public bool InvertY
+        { 
+            get
+            {
+                return invertY;
+            }
+            set 
+            {
+                if (invertY == value)
+                    return;
+                invertY = value;
+
+                if(model != null)
+                    model.InvertXYZ[1] = invertY;
+                RaisePropertyChanged(InvertYPropertyName);
+            } 
+        }
+        public const string InvertZPropertyName = "InvertZ";
+        private bool invertZ;
+        public bool InvertZ
+        { 
+            get
+            {
+                return invertZ;
+            }
+            set 
+            {
+                if (invertZ == value)
+                    return;
+                invertZ = value;
+
+                if(model != null)
+                    model.InvertXYZ[2] = invertZ;
+                RaisePropertyChanged(InvertZPropertyName);
+            } 
+        }
+public int ArmSide { get; set; }
 
         private double x, y, z;
 
@@ -115,7 +169,7 @@ namespace RobotApp.Views.Plugins
 
         public void LoadModel()
         {
-            model = (Kinematic)Activator.CreateInstance(selectedKinematic);
+            model = (Kinematic)Activator.CreateInstance(selectedKinematic);            
             foreach(string output in model.OutputNames)
             {
                 if(!Outputs.ContainsKey(output))
