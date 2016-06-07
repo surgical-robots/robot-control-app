@@ -1,5 +1,6 @@
 ﻿using Kinematics;
 using System;
+using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
 using GalaSoft.MvvmLight.Messaging;
@@ -80,8 +81,6 @@ namespace RobotApp.Views.Plugins
         {
             TypeName = "IK Solver";
 
-            Kinematic dummyVariable;
-
             var ListOfKinematicModels = (from lAssembly in AppDomain.CurrentDomain.GetAssemblies()
                                          from lType in lAssembly.GetTypes()
                                          where typeof(Kinematic).IsAssignableFrom(lType)
@@ -97,6 +96,44 @@ namespace RobotApp.Views.Plugins
 
             KinematicTypes = new ObservableCollection<Type>(ListOfKinematicModels);
 
+            // get directory where robot models are located
+            string currentDir = Directory.GetCurrentDirectory();
+            DirectoryInfo dirInfo = Directory.GetParent(currentDir);
+            dirInfo = Directory.GetParent(dirInfo.FullName);
+            dirInfo = Directory.GetParent(dirInfo.FullName);
+            FileInfo[] robotInfoList;
+            ObservableCollection<string> robotNames;
+            // get names and trim of the file extension
+            string robotDir = dirInfo.FullName + "\\Kinematics\\Robots\\IKSolver";
+            robotInfoList = new DirectoryInfo(robotDir).GetFiles("*.cs");
+            robotNames = new ObservableCollection<string>();
+            foreach (var robotName in robotInfoList)
+            {
+                robotNames.Add(robotName.Name.TrimEnd('.', 'c', 's'));
+            }
+            // remove kinematic models from list
+            ObservableCollection<Type> dummyTypes = new ObservableCollection<Type>(ListOfKinematicModels);
+            string dummyName;
+            bool isRobot = false;
+            foreach (var kineType in dummyTypes)
+            {
+                dummyName = kineType.FullName;
+                dummyName = dummyName.Remove(0, 11);
+                if (dummyName[0] == ('R') && dummyName.Contains('.'))
+                    dummyName = dummyName.Remove(0, 7);
+                foreach (var robotName in robotNames)
+                {
+                    if (dummyName == robotName)
+                    {
+                        isRobot = true;
+                        break;
+                    }
+                }
+                if (!isRobot)
+                    KinematicTypes.Remove(kineType);
+                isRobot = false;
+            }
+            
             Inputs.Add("X", new ViewModel.InputSignalViewModel("X", this.InstanceName));
             Inputs.Add("Y", new ViewModel.InputSignalViewModel("Y", this.InstanceName));
             Inputs.Add("Z", new ViewModel.InputSignalViewModel("Z", this.InstanceName));

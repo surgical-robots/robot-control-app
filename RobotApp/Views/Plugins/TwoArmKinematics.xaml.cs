@@ -1,8 +1,11 @@
 ﻿using Kinematics;
 using System;
+using System.Windows.Media;
+using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Command;
 
 namespace RobotApp.Views.Plugins
 {
@@ -83,8 +86,6 @@ namespace RobotApp.Views.Plugins
         {
             TypeName = "Kinematics";
 
-            Kinematic dummyVariable;
-
             var ListOfKinematicModels = (from lAssembly in AppDomain.CurrentDomain.GetAssemblies()
                                          from lType in lAssembly.GetTypes()
                                          where typeof(Kinematic).IsAssignableFrom(lType)
@@ -100,6 +101,44 @@ namespace RobotApp.Views.Plugins
 
             KinematicTypes = new ObservableCollection<Type>(ListOfKinematicModels);
 
+            // get directory where robot models are located
+            string currentDir = Directory.GetCurrentDirectory();
+            DirectoryInfo dirInfo = Directory.GetParent(currentDir);
+            dirInfo = Directory.GetParent(dirInfo.FullName);
+            dirInfo = Directory.GetParent(dirInfo.FullName);
+            FileInfo[] robotInfoList;
+            ObservableCollection<string> robotNames;
+            // get names and trim of the file extension
+            string robotDir = dirInfo.FullName + "\\Kinematics\\Robots\\TwoArm";
+            robotInfoList = new DirectoryInfo(robotDir).GetFiles("*.cs");
+            robotNames = new ObservableCollection<string>();
+            foreach (var robotName in robotInfoList)
+            {
+                robotNames.Add(robotName.Name.TrimEnd('.', 'c', 's'));
+            }
+            // remove kinematic models from list
+            ObservableCollection<Type> dummyTypes = new ObservableCollection<Type>(ListOfKinematicModels);
+            string dummyName;
+            bool isRobot = false;
+            foreach (var kineType in dummyTypes)
+            {
+                dummyName = kineType.FullName;
+                dummyName = dummyName.Remove(0, 11);
+                if (dummyName[0] == ('R') && dummyName.Contains('.'))
+                    dummyName = dummyName.Remove(0, 7);
+                foreach (var robotName in robotNames)
+                {
+                    if (dummyName == robotName)
+                    {
+                        isRobot = true;
+                        break;
+                    }
+                }
+                if (!isRobot)
+                    KinematicTypes.Remove(kineType);
+                isRobot = false;
+            }
+
             Inputs.Add("XL", new ViewModel.InputSignalViewModel("XL", this.InstanceName));
             Inputs.Add("YL", new ViewModel.InputSignalViewModel("YL", this.InstanceName));
             Inputs.Add("ZL", new ViewModel.InputSignalViewModel("ZL", this.InstanceName));
@@ -108,7 +147,7 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("ZR", new ViewModel.InputSignalViewModel("ZR", this.InstanceName));
 
             InitializeComponent();
-
+            HapticsButton.Visibility = System.Windows.Visibility.Hidden;
             PostLoadSetup();
         }
 
@@ -146,6 +185,102 @@ namespace RobotApp.Views.Plugins
                 if (!Outputs.ContainsKey(output))
                     Outputs.Add(output, new ViewModel.OutputSignalViewModel(output));
             }
+            Outputs.Add("EnableHaptics", new ViewModel.OutputSignalViewModel("Enable Haptics"));
+            Outputs["EnableHaptics"].Value = 0;
+            HapticsButton.Visibility = System.Windows.Visibility.Visible;
+        }
+        
+        private RelayCommand enableHapticsCommand;
+
+        /// <summary>
+        /// Gets the StartCommand.
+        /// </summary>
+        public RelayCommand EnableHapticsCommand
+        {
+            get
+            {
+                return enableHapticsCommand
+                    ?? (enableHapticsCommand = new RelayCommand(
+                    () =>
+                    {
+                        if (Outputs["EnableHaptics"].Value == 0)
+                        {
+                            Outputs["EnableHaptics"].Value = 1;
+                            HapticsText = "Haptic feedback enabled. Click to disable...";
+                        }
+                        else
+                        {
+                            Outputs["EnableHaptics"].Value = 0;
+                            HapticsText = "Haptic feedback disabled. Click to enable...";
+                        }
+
+                    }));
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="HapticsText" /> property's name.
+        /// </summary>
+        public const string HapticsTextPropertyName = "HapticsText";
+
+        private string hapticsText = "Click to enable haptic feedback";
+
+        /// <summary>
+        /// Sets and gets the HapticText property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string HapticsText
+        {
+            get
+            {
+                return hapticsText;
+            }
+
+            set
+            {
+                if (hapticsText == value)
+                {
+                    return;
+                }
+
+                hapticsText = value;
+                RaisePropertyChanged(HapticsTextPropertyName);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="HapticColor" /> property's name.
+        /// </summary>
+        public const string HapticColorPropertyName = "HapticColor";
+
+        private Brush hapticColor = new SolidColorBrush(Color.FromRgb(50, 50, 50));
+
+        /// <summary>
+        /// Sets and gets the HapticColor property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public Brush HapticColor
+        {
+            get
+            {
+                return hapticColor;
+            }
+
+            set
+            {
+                if (hapticColor == value)
+                {
+                    return;
+                }
+
+                hapticColor = value;
+                RaisePropertyChanged(HapticColorPropertyName);
+            }
+        }
+
+        byte map(double value, double from1, double to1, double from2, double to2)
+        {
+            return Convert.ToByte(from2 + (value - from1) * (to2 - from2) / (to1 - from1));
         }
     }
 }
