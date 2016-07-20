@@ -160,7 +160,10 @@ namespace RobotApp.Views.Plugins
                 if(!Outputs.ContainsKey(output))
                 Outputs.Add(output, new ViewModel.OutputSignalViewModel(output));
             }
-            Outputs.Add("EnableHaptics", new ViewModel.OutputSignalViewModel("Enable Haptics"));
+            if (!Outputs.ContainsKey("EnableHaptics"))
+            {
+                Outputs.Add("EnableHaptics", new ViewModel.OutputSignalViewModel("Enable Haptics"));
+            }
             Outputs["EnableHaptics"].Value = 0;
             HapticsButton.Visibility = System.Windows.Visibility.Visible;
         }

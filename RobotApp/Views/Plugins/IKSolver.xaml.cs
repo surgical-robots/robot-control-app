@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace RobotApp.Views.Plugins
@@ -13,7 +14,7 @@ namespace RobotApp.Views.Plugins
     public partial class IKSolver : PluginBase
     {
         public ObservableCollection<Type> KinematicTypes { get; set; }
-
+        public Thread solverThread;
         private Kinematic model;
 
         private Type selectedKinematic;
@@ -35,43 +36,104 @@ namespace RobotApp.Views.Plugins
         public bool InvertZ { get; set; }
 
         private double x, y, z, roll, pitch, yaw;
+        private double ix, iy, iz, iroll, ipitch, iyaw;
 
         public override void PostLoadSetup()
         {
             Messenger.Default.Register<Messages.Signal>(this, Inputs["X"].UniqueID, (message) =>
             {
                 x = message.Value;
-                UpdateOutput();
+                if (!solverThread.IsAlive && model != null)
+                {
+                    ix = x;
+                    iy = y;
+                    iz = z;
+                    ipitch = pitch;
+                    iroll = roll;
+                    iyaw = yaw;
+                    solverThread = new Thread(new ThreadStart(UpdateOutput));
+                    solverThread.Start();
+                }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Y"].UniqueID, (message) =>
             {
                 y = message.Value;
-                UpdateOutput();
+                if (!solverThread.IsAlive && model != null)
+                {
+                    ix = x;
+                    iy = y;
+                    iz = z;
+                    ipitch = pitch;
+                    iroll = roll;
+                    iyaw = yaw;
+                    solverThread = new Thread(new ThreadStart(UpdateOutput));
+                    solverThread.Start();
+                }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Z"].UniqueID, (message) =>
             {
                 z = message.Value;
-                UpdateOutput();
+                if (!solverThread.IsAlive && model != null)
+                {
+                    ix = x;
+                    iy = y;
+                    iz = z;
+                    ipitch = pitch;
+                    iroll = roll;
+                    iyaw = yaw;
+                    solverThread = new Thread(new ThreadStart(UpdateOutput));
+                    solverThread.Start();
+                }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll"].UniqueID, (message) =>
             {
                 roll = message.Value;
-                UpdateOutput();
+                if (!solverThread.IsAlive && model != null)
+                {
+                    ix = x;
+                    iy = y;
+                    iz = z;
+                    ipitch = pitch;
+                    iroll = roll;
+                    iyaw = yaw;
+                    solverThread = new Thread(new ThreadStart(UpdateOutput));
+                    solverThread.Start();
+                }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Pitch"].UniqueID, (message) =>
             {
                 pitch = message.Value;
-                UpdateOutput();
+                if (!solverThread.IsAlive && model != null)
+                {
+                    ix = x;
+                    iy = y;
+                    iz = z;
+                    ipitch = pitch;
+                    iroll = roll;
+                    iyaw = yaw;
+                    solverThread = new Thread(new ThreadStart(UpdateOutput));
+                    solverThread.Start();
+                }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Yaw"].UniqueID, (message) =>
             {
                 yaw = message.Value;
-                UpdateOutput();
+                if (!solverThread.IsAlive && model != null)
+                {
+                    ix = x;
+                    iy = y;
+                    iz = z;
+                    ipitch = pitch;
+                    iroll = roll;
+                    iyaw = yaw;
+                    solverThread = new Thread(new ThreadStart(UpdateOutput));
+                    solverThread.Start();
+                }
             });
 
             base.PostLoadSetup();
@@ -142,6 +204,7 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
 
             InitializeComponent();
+            solverThread = new Thread(new ThreadStart(UpdateOutput));
 
             PostLoadSetup();
         }
@@ -152,13 +215,13 @@ namespace RobotApp.Views.Plugins
             if (model == null)
                 return;
             Point3D point = new Point3D();
-            point.X = InvertX ? -x : x;
-            point.Y = InvertY ? -y : y;
-            point.Z = InvertZ ? -z : z;
+            point.X = InvertX ? -ix : ix;
+            point.Y = InvertY ? -iy : iy;
+            point.Z = InvertZ ? -iz : iz;
             Point3D orient = new Point3D();
-            orient.X = roll;
-            orient.Y = pitch;
-            orient.Z = yaw;
+            orient.X = iroll;
+            orient.Y = ipitch;
+            orient.Z = iyaw;
             double[] angles = model.GetJointAngles(point, orient);
 
             for (int i = 0; i < angles.Length; i++)

@@ -145,6 +145,9 @@ namespace Kinematics
             radianAngle[0] = kineAngle[0] + kineAngle[1];
             radianAngle[1] = kineAngle[0] - kineAngle[1];
             radianAngle[2] = kineAngle[2];
+            //radianAngle[0] = kineAngle[0];
+            //radianAngle[1] = kineAngle[1];
+            //radianAngle[2] = kineAngle[2];
 
             angles[0] = radianAngle[0] * 180 / Math.PI;
             angles[1] = radianAngle[1] * 180 / Math.PI;

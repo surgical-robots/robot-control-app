@@ -4,7 +4,7 @@
     {
         public SevenDOFsolver()
         {
-            this.LinkTable = new double[7, 3] { {   0,      0,      0 }, 
+            this.DHparameters = new double[7, 3] { {   0,      0,      0 }, 
                                                 {  90,      0,  139.2 },
                                                 {  90,      0,      0 },
                                                 {  90,      0,  291.3 }, 
