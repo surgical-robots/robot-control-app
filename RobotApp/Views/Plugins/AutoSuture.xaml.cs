@@ -2,7 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System.Threading;
-using path_generation;
+//using path_generation;
 
 namespace RobotApp.Views.Plugins
 {
@@ -70,14 +70,14 @@ namespace RobotApp.Views.Plugins
 
         private void StepTimer_Tick(object sender, EventArgs e)
         {
-            point p;
-            trajectory obj = new trajectory(0, 0, 130);
-            p = obj.end_effector(t);
-            t = t + t_incr;
+            //point p;
+            //trajectory obj = new trajectory(0, 0, 130);
+            //p = obj.end_effector(t);
+            //t = t + t_incr;
             //Console.WriteLine("{0}\t{1}\t{2}", p.pos.x, p.pos.y, p.pos.z);
-            Outputs["X"].Value = p.pos.x;
-            Outputs["Y"].Value = p.pos.y;
-            Outputs["Z"].Value = p.pos.z;
+            //Outputs["X"].Value = p.pos.x;
+            //Outputs["Y"].Value = p.pos.y;
+            //Outputs["Z"].Value = p.pos.z;
             if (t > 2 * Math.PI)
                 stepTimer.Stop();
         }
