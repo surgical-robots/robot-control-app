@@ -682,6 +682,10 @@
       <Project>{0250b2de-2b71-44ff-95b4-1f72672baa2e}</Project>
       <Name>SerialPortPacketTransport</Name>
     </ProjectReference>
+    <ProjectReference Include="E:\path-generation\path-generation\path-generation.csproj">
+      <Project>{59c4e61f-e753-4efc-8757-0d4e00deb1d9}</Project>
+      <Name>path-generation</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
