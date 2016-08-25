@@ -251,6 +251,9 @@
     <Compile Include="Views\ControllerListItemView.xaml.cs">
       <DependentUpon>ControllerListItemView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\AutoSuture.xaml.cs">
+      <DependentUpon>AutoSuture.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\ButtonInterface.xaml.cs">
       <DependentUpon>ButtonInterface.xaml</DependentUpon>
     </Compile>
@@ -271,6 +274,9 @@
     </Compile>
     <Compile Include="Views\Plugins\EnableDisablePluginView.xaml.cs">
       <DependentUpon>EnableDisablePluginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugins\ForwardKinematics.xaml.cs">
+      <DependentUpon>ForwardKinematics.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Plugins\GeomagicTouch.xaml.cs">
       <DependentUpon>GeomagicTouch.xaml</DependentUpon>
@@ -426,6 +432,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Plugins\AutoSuture.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Plugins\ButtonInterface.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -453,6 +463,10 @@
     <Page Include="Views\Plugins\EnableDisablePluginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\ForwardKinematics.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\GeomagicTouch.xaml">
       <SubType>Designer</SubType>
@@ -667,6 +681,10 @@
     <ProjectReference Include="..\SerialPortPacketTransport\SerialPortPacketTransport.vcxproj">
       <Project>{0250b2de-2b71-44ff-95b4-1f72672baa2e}</Project>
       <Name>SerialPortPacketTransport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\path-generation\path-generation.csproj">
+      <Project>{59c4e61f-e753-4efc-8757-0d4e00deb1d9}</Project>
+      <Name>path-generation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
