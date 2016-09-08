@@ -78,6 +78,8 @@ namespace TelSurge
         public TelSurgeMain()
         {
             InitializeComponent();
+            currentPosition = new OmniPosition(0, 0, 0, 0, 0, 0);
+
             try
             {
                 OutputPosition = new OmniPosition();
@@ -287,12 +289,12 @@ namespace TelSurge
         }
         private void showOmniPositions()
         {
-            currentPosition = new OmniPosition(0, 0, 0, 0, 0, 0);
-            double[] pos1 = { 0, 0, 0, 0, 0, 0, 0, 0 };
-            double[] pos2 = { 0, 0, 0, 0, 0, 0, 0, 0 };
-
             if (!cb_noOmnisAttached.Checked)
             {
+                currentPosition = new OmniPosition(0, 0, 0, 0, 0, 0);
+                double[] pos1 = { 0, 0, 0, 0, 0, 0, 0, 0 };
+                double[] pos2 = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
                 try
                 {
                     IntPtr ptr = getpos1();
@@ -554,6 +556,22 @@ namespace TelSurge
                 return true;
             }
             return false;
+        }
+        public void setPosition(double LX, double LY, double LZ, double RX, double RY, double RZ)
+        {
+            if (cb_noOmnisAttached.Checked)
+            {
+                if (btn_ReqControl.Enabled == false && !isInControl)
+                    btn_ReqControl.Enabled = true;
+
+                currentPosition.LeftX = LX;
+                currentPosition.LeftY = LY;
+                currentPosition.LeftZ = LZ;
+
+                currentPosition.RightX = RX;
+                currentPosition.RightY = RY;
+                currentPosition.RightZ = RZ;
+            }
         }
         private void forceOmniPosition(object objPosition)
         {
