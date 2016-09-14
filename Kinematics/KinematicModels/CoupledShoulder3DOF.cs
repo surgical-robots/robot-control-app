@@ -86,6 +86,7 @@ namespace Kinematics
             maxAngle[2] = Theta3Max * Math.PI / 180;
 
             double Lmax = LengthUpperArm + LengthForearm;
+            double Lmin = Math.Sqrt(Math.Pow(LengthUpperArm, 2) + Math.Pow(LengthForearm, 2) - 2 * LengthUpperArm * LengthForearm * Math.Cos(Math.PI - maxAngle[2]));
             double L12 = Math.Sqrt(Math.Pow(px, 2) + Math.Pow(py, 2) + Math.Pow(pz, 2));
             double Lratio = Lmax / L12;
 
@@ -96,6 +97,15 @@ namespace Kinematics
                 pz = pz * Lratio;
                 L12 = Lmax;
                 kineAngle[2] = 0;
+            }
+            else if (L12 < Lmin)
+            {
+                Lratio = Lmin / L12;
+                px = px * Lratio;
+                py = py * Lratio;
+                pz = pz * Lratio;
+                L12 = Lmin;
+                kineAngle[2] = maxAngle[2];
             }
             else
             {
@@ -135,6 +145,9 @@ namespace Kinematics
             radianAngle[0] = kineAngle[0] + kineAngle[1];
             radianAngle[1] = kineAngle[0] - kineAngle[1];
             radianAngle[2] = kineAngle[2];
+            //radianAngle[0] = kineAngle[0];
+            //radianAngle[1] = kineAngle[1];
+            //radianAngle[2] = kineAngle[2];
 
             angles[0] = radianAngle[0] * 180 / Math.PI;
             angles[1] = radianAngle[1] * 180 / Math.PI;

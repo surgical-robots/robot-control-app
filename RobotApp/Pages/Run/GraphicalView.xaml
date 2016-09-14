@@ -7,6 +7,8 @@
              xmlns:h="http://helix-toolkit.org/wpf"
              xmlns:plugins="clr-namespace:RobotApp.Views.Plugins"
              xmlns:HelixToolkit="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf"
+             xmlns:emgu="clr-namespace:Emgu.CV.UI;assembly=Emgu.CV.UI"
+             xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Style="{StaticResource ContentRoot}">
@@ -15,7 +17,7 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0" ShowGridLines="False">
@@ -35,10 +37,9 @@
                 </h:HelixViewport3D>
 
                 <StackPanel Grid.Row="1">
-                    <TextBlock Text="Grasper 1"/>
-                    <ProgressBar Minimum="0" Maximum="500" Value="{Binding GrasperForceL}"/>
-                    <TextBlock Text="Grasper 2"/>
-                    <ProgressBar Minimum="0" Maximum="500" Value="{Binding GrasperForceR}"/>
+                    <Button Name="Start_BTN" Content="Start" Command="{Binding Start_BTN_Click}" MaxWidth="600" HorizontalAlignment="Center"/>
+                    <Button Name="Write_BTN" Content="Write Calibration Data" Command="{Binding WriteCalibrationData}" MaxWidth="600" HorizontalAlignment="Center"/>
+                    <Button Name="Read_BTN" Content="Read Calibration Data" Command="{Binding ReadData}" MaxWidth="600" HorizontalAlignment="Center"/>
                 </StackPanel>
 
             </Grid>
@@ -54,7 +55,9 @@
                         <ComboBox Name="SettingNamesBox" ItemsSource="{Binding SettingNames}" SelectedIndex="{Binding SelectedSetting}"/>
                     </UniformGrid>
                     <Button Content="{Binding ConnectButtonText}" Command="{Binding StartCommand}" />
-                    <Image Name="VideoImage" />
+                    <WindowsFormsHost>
+                        <emgu:ImageBox x:Name="Main_Picturebox"/>
+                    </WindowsFormsHost>
                 </StackPanel>
 
             </Grid>

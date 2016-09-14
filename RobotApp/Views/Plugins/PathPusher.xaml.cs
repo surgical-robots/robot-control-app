@@ -13,16 +13,17 @@ namespace RobotApp.Views.Plugins
     {
         System.Windows.Forms.Timer stepTimer = new System.Windows.Forms.Timer();
 
-        public static int arraySize;
-        public double[] posXR;
-        public double[] posYR;
-        public double[] posZR;
-        public double[] posXL;
-        public double[] posYL;
-        public double[] posZL;
-        public double[] posGJ;
-        public double[] posGT;
-        public double[] posCT;
+        private static int arraySize;
+        private double[] posXR;
+        private double[] posYR;
+        private double[] posZR;
+        private double[] posTTR;
+        private double[] posTAR;
+        private double[] posXL;
+        private double[] posYL;
+        private double[] posZL;
+        private double[] posTTL;
+        private double[] posTAL;
 
         public bool pause = true;
 
@@ -35,21 +36,23 @@ namespace RobotApp.Views.Plugins
         public PathPusher()
         {
             this.TypeName = "Path Pusher";
-
-            Outputs.Add("XRight", new OutputSignalViewModel("X Right"));
-            Outputs.Add("YRight", new OutputSignalViewModel("Y Right"));
-            Outputs.Add("ZRight", new OutputSignalViewModel("Z Right"));
-            Outputs.Add("XLeft", new OutputSignalViewModel("X Left"));
-            Outputs.Add("YLeft", new OutputSignalViewModel("Y Left"));
-            Outputs.Add("ZLeft", new OutputSignalViewModel("Z Left"));
-            Outputs.Add("GraspJaw", new OutputSignalViewModel("Grasper Jaws"));
-            Outputs.Add("GraspTwist", new OutputSignalViewModel("Grasper Twist"));
-            Outputs.Add("CautTwist", new OutputSignalViewModel("Cautery Twist"));
-
+            // set up outputs for two armed 5DOF robot
+            Outputs.Add("XR", new OutputSignalViewModel("X Right"));
+            Outputs.Add("YR", new OutputSignalViewModel("Y Right"));
+            Outputs.Add("ZR", new OutputSignalViewModel("Z Right"));
+            Outputs.Add("ToolTwistR", new OutputSignalViewModel("Tool Twist Right"));
+            Outputs.Add("ToolActionR", new OutputSignalViewModel("Tool Actuation Right"));
+            Outputs.Add("XL", new OutputSignalViewModel("X Left"));
+            Outputs.Add("YL", new OutputSignalViewModel("Y Left"));
+            Outputs.Add("ZL", new OutputSignalViewModel("Z Left"));
+            Outputs.Add("ToolTwistL", new OutputSignalViewModel("Tool Twist Left"));
+            Outputs.Add("ToolActionL", new OutputSignalViewModel("Tool Actuation Left"));
+            // set up output timer
             stepTimer.Interval = timerInterval;
             stepTimer.Tick += stepTimer_Tick;
-
-            ReportList = new DirectoryInfo(Directory.GetCurrentDirectory()).GetFiles("*.lou");
+            // find path files in RobotApp\bin\RobotPathFiles
+            string searchDirectory = Directory.GetCurrentDirectory() + "\\RobotPathFiles";
+            ReportList = new DirectoryInfo(searchDirectory).GetFiles("*.lou");
 
             InitializeComponent();
         }
@@ -61,18 +64,19 @@ namespace RobotApp.Views.Plugins
 
         void updateFrame()
         {
-            Outputs["XRight"].Value = posXR[frameCount];
-            Outputs["YRight"].Value = posYR[frameCount];
-            Outputs["ZRight"].Value = posZR[frameCount];
-
-            Outputs["XLeft"].Value = posXL[frameCount];
-            Outputs["YLeft"].Value = posYL[frameCount];
-            Outputs["ZLeft"].Value = posZL[frameCount];
-
-            Outputs["GraspJaw"].Value = posGJ[frameCount];
-            Outputs["GraspTwist"].Value = posGT[frameCount];
-            Outputs["CautTwist"].Value = posCT[frameCount];
-
+            // update right arm outputs
+            Outputs["XR"].Value = posXR[frameCount];
+            Outputs["YR"].Value = posYR[frameCount];
+            Outputs["ZR"].Value = posZR[frameCount];
+            Outputs["ToolTwistR"].Value = posTTR[frameCount];
+            Outputs["ToolActionR"].Value = posTAR[frameCount];
+            // update left arm outputs
+            Outputs["XL"].Value = posXL[frameCount];
+            Outputs["YL"].Value = posYL[frameCount];
+            Outputs["ZL"].Value = posZL[frameCount];
+            Outputs["ToolTwistL"].Value = posTTL[frameCount];
+            Outputs["ToolActionL"].Value = posTAL[frameCount];
+            // update frame and check if done
             if (frameCount < (arraySize - 1))
                 frameCount++;
             else
@@ -172,12 +176,13 @@ namespace RobotApp.Views.Plugins
                         posXR = Array.ConvertAll<string, double>(pathData[1], Convert.ToDouble);
                         posYR = Array.ConvertAll<string, double>(pathData[2], Convert.ToDouble);
                         posZR = Array.ConvertAll<string, double>(pathData[3], Convert.ToDouble);
-                        posXL = Array.ConvertAll<string, double>(pathData[4], Convert.ToDouble);
-                        posYL = Array.ConvertAll<string, double>(pathData[5], Convert.ToDouble);
-                        posZL = Array.ConvertAll<string, double>(pathData[6], Convert.ToDouble);
-                        posGJ = Array.ConvertAll<string, double>(pathData[7], Convert.ToDouble);
-                        posGT = Array.ConvertAll<string, double>(pathData[8], Convert.ToDouble);
-                        posCT = Array.ConvertAll<string, double>(pathData[9], Convert.ToDouble);
+                        posTTR = Array.ConvertAll<string, double>(pathData[4], Convert.ToDouble);
+                        posTAR = Array.ConvertAll<string, double>(pathData[5], Convert.ToDouble);
+                        posXL = Array.ConvertAll<string, double>(pathData[6], Convert.ToDouble);
+                        posYL = Array.ConvertAll<string, double>(pathData[7], Convert.ToDouble);
+                        posZL = Array.ConvertAll<string, double>(pathData[8], Convert.ToDouble);
+                        posTTL = Array.ConvertAll<string, double>(pathData[9], Convert.ToDouble);
+                        posTAL = Array.ConvertAll<string, double>(pathData[10], Convert.ToDouble);
 
                         if (loopable)
                         {

@@ -9,11 +9,12 @@ namespace Kinematics
 {
     public class CombinedBot : Kinematic
     {
-        double[] oldAngle = new double[12];
+        double[] oldAngle = new double[15];
 
-        Point3D oldPoint;
+        Point3D oldPointL, oldPointR;
 
-        double Yaw=0;
+        double YawDir=0;
+        double TiltDir = 0;
 
         /// <summary>
         /// Measurement in mm of shoulder offset from center plane
@@ -78,18 +79,26 @@ namespace Kinematics
 
             Point3D midPoint;
             midPoint.X = (pzL + pzR) / 2;
-            midPoint.Y = (pxL + pxR) / 2;
+            midPoint.Y = (pxL - pxR) / 2;
             midPoint.Z = (pyL + pyR) / 2;
 
             double r = Math.Sqrt(Math.Pow(midPoint.X, 2) + Math.Pow(midPoint.Y, 2) + Math.Pow(midPoint.Z, 2));
             double Phi = Math.Acos(midPoint.Z / r);
             double Theta = Math.Atan(midPoint.Y / midPoint.X);
 
-            if (Theta > (20 * Math.PI / 180))
-                Yaw += 1;
-            if (Theta < -(20 * Math.PI / 180))
-                Yaw -= 1;
+            if (Phi > (115 * Math.PI / 180))
+                TiltDir = 1;
+            else if (Phi < (65 * Math.PI / 180))
+                TiltDir = -1;
+            else
+                TiltDir = 0;
 
+            if (Theta > (20 * Math.PI / 180))
+                YawDir = 1;
+            else if (Theta < -(20 * Math.PI / 180))
+                YawDir = -1;
+            else
+                YawDir = 0;
 
             double[] angles = new double[15];
             double[] kineAngle = new double[3];
@@ -107,6 +116,7 @@ namespace Kinematics
             maxAngle[2] = Theta3Max * Math.PI / 180;
 
             double Lmax = LengthUpperArm + LengthForearm;
+            double Lmin = Math.Sqrt(Math.Pow(LengthUpperArm, 2) + Math.Pow(LengthForearm, 2) - 2 * LengthUpperArm * LengthForearm * Math.Cos(Math.PI - maxAngle[2]));
 
             double barrierSpring = 0.5;
 
@@ -120,7 +130,18 @@ namespace Kinematics
                 pyL = pyL * Lratio;
                 pzL = pzL * Lratio;
                 L12 = Lmax;
+                //angleLimited = true;
                 kineAngle[2] = 0;
+            }
+            else if (L12 < Lmin)
+            {
+                Lratio = Lmin / L12;
+                pxL = pxL * Lratio;
+                pyL = pyL * Lratio;
+                pzL = pzL * Lratio;
+                L12 = Lmin;
+                //angleLimited = true;
+                kineAngle[2] = maxAngle[2];
             }
             else
             {
@@ -135,6 +156,24 @@ namespace Kinematics
                 angleLimited = true;
             }
             kineAngle[1] = Math.Atan2(argument2, Math.Sqrt(1 - Math.Pow(argument2, 2)));
+            //if (kineAngle[1] < minAngle[1])
+            //{
+            //    double calcTheta = Math.Atan(pxL / pzL);
+            //    double Lxz = L12 * Math.Cos(minAngle[1]);
+            //    pxL = Lxz * Math.Sin(calcTheta);
+            //    pyL = L12 * Math.Sin(minAngle[1]);
+            //    pzL = Lxz * Math.Cos(calcTheta);
+            //    kineAngle[1] = minAngle[1];
+            //}
+            //else if (kineAngle[1] > maxAngle[1])
+            //{
+            //    kineAngle[1] = maxAngle[1];
+            //    double calcTheta = Math.Atan(pxL / pzL);
+            //    double Lxz = L12 * Math.Cos(maxAngle[1]);
+            //    pxL = Lxz * Math.Sin(calcTheta);
+            //    pyL = L12 * Math.Sin(maxAngle[1]);
+            //    pzL = Lxz * Math.Cos(calcTheta);
+            //}
 
             double argument3 = LengthUpperArm * Math.Cos(kineAngle[1]) + LengthForearm * Math.Cos(kineAngle[1]) * Math.Cos(kineAngle[2]);
             kineAngle[0] = -Math.Atan2(pzL, pxL) + Math.Atan2(argument3, Math.Sqrt(Math.Pow(pxL, 2) + Math.Pow(pzL, 2) - Math.Pow(argument3, 2)));
@@ -172,14 +211,14 @@ namespace Kinematics
 
             if(!angleLimited)
             {
-                oldPoint.X = kineX;
-                oldPoint.Y = kineY;
-                oldPoint.Z = kineZ;
+                oldPointL.X = kineX;
+                oldPointL.Y = kineY;
+                oldPointL.Z = kineZ;
             }
 
-            angles[3] = (oldPoint.X - PositionL.X) * barrierSpring;
-            angles[4] = (oldPoint.Y - PositionL.Y) * -barrierSpring;
-            angles[5] = (oldPoint.Z - PositionL.Z) * -barrierSpring;
+            angles[3] = (oldPointL.X - PositionL.X) * barrierSpring;
+            angles[4] = (oldPointL.Y - PositionL.Y) * -barrierSpring;
+            angles[5] = (oldPointL.Z - PositionL.Z) * -barrierSpring;
 
             for (int i = 3; i < 6; i++)
             {
@@ -200,6 +239,15 @@ namespace Kinematics
                 pzR = pzR * Lratio;
                 L12 = Lmax;
                 kineAngle[2] = 0;
+            }
+            else if (L12 < Lmin)
+            {
+                Lratio = Lmin / L12;
+                pxR = pxR * Lratio;
+                pyR = pyR * Lratio;
+                pzR = pzR * Lratio;
+                L12 = Lmin;
+                kineAngle[2] = maxAngle[2];
             }
             else
             {
@@ -251,16 +299,16 @@ namespace Kinematics
 
             if (!angleLimited)
             {
-                oldPoint.X = kineX;
-                oldPoint.Y = kineY;
-                oldPoint.Z = kineZ;
+                oldPointR.X = kineX;
+                oldPointR.Y = kineY;
+                oldPointR.Z = kineZ;
             }
 
-            angles[9] = (oldPoint.X - PositionR.X) * -barrierSpring;
-            angles[10] = (oldPoint.Y - PositionR.Y) * -barrierSpring;
-            angles[11] = (oldPoint.Z - PositionR.Z) * -barrierSpring;
+            angles[9] = (oldPointR.X - PositionR.X) * -barrierSpring;
+            angles[10] = (oldPointR.Y - PositionR.Y) * -barrierSpring;
+            angles[11] = (oldPointR.Z - PositionR.Z) * -barrierSpring;
 
-            for (int i = 3; i < 6; i++)
+            for (int i = 9; i < 12; i++)
             {
                 if (angles[i] > 4)
                     angles[i] = 4;
@@ -268,7 +316,11 @@ namespace Kinematics
                     angles[i] = -4;
             }
 
-            for (int i = 0; i < 6; i++)
+            angles[12] = YawDir;
+            angles[13] = TiltDir;
+            angles[14] = Phi * 180 / Math.PI;
+
+            for (int i = 0; i < 15; i++)
             {
                 if (double.IsNaN(angles[i]))
                 {
@@ -284,7 +336,7 @@ namespace Kinematics
         {
             get {
                 return new string[] { "Left Upper Bevel", "Left Lower Bevel", "Left Elbow", "Force LX", "Force LY", "Force LZ",
-                                    "Right Upper Bevel", "Right Lower Bevel", "Right Elbow", "Force RX", "Force RY", "Force RZ", "Yaw", "Phi", "Theta" };
+                                    "Right Upper Bevel", "Right Lower Bevel", "Right Elbow", "Force RX", "Force RY", "Force RZ", "YawDir", "TiltDir", "Phi" };
             }
         }
     }

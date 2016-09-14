@@ -1,4 +1,4 @@
-﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.DynamixelControl"
+﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.DynamixelAutoControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -24,21 +24,21 @@
             <UniformGrid Columns="2">
                 <UniformGrid Columns="2">
                     <TextBlock Text="Roll: "/>
-                    <TextBlock Text="{Binding DataContext.Slider1Value}"/>
+                    <TextBlock Text="{Binding Slider1Value}"/>
                 </UniformGrid>
-                <Slider Minimum="-45" Maximum="45" Value="{Binding DataContext.Slider1Value, Mode=TwoWay}" />
+                <Slider Minimum="-45" Maximum="45" Value="{Binding Slider1Value}" />
 
                 <UniformGrid Columns="2">
                     <TextBlock Text="Pitch: "/>
-                    <TextBlock Text="{Binding DataContext.Slider2Value}"/>
+                    <TextBlock Text="{Binding Slider2Value}"/>
                 </UniformGrid>
-                <Slider Minimum="40" Maximum="127" Value="{Binding DataContext.Slider2Value, Mode=TwoWay}" />
+                <Slider Minimum="40" Maximum="127" Value="{Binding Slider2Value}" />
 
                 <UniformGrid Columns="2">
                     <TextBlock Text="Yaw: "/>
-                    <TextBlock Text="{Binding DataContext.Slider4Value}"/>
+                    <TextBlock Text="{Binding Slider4Value}"/>
                 </UniformGrid>
-                <Slider Minimum="{Binding YawMinimum}" Maximum="{Binding YawMaximum}" Value="{Binding DataContext.Slider4Value, Mode=TwoWay}" />
+                <Slider Minimum="{Binding YawMinimum}" Maximum="{Binding YawMaximum}" Value="{Binding Slider4Value}" />
                 
                 <!--<UniformGrid Columns="2">
                     <TextBlock Text="Acceleration"/>
@@ -63,7 +63,7 @@
 
             </UniformGrid>
 
-            <TextBlock Text="{Binding DataContext.ErrorText}"/>
+            <TextBlock Text="{Binding ErrorText}"/>
 
         </StackPanel>
     </plugins:PluginBase.PluginContent>

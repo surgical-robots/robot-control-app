@@ -1,4 +1,4 @@
-﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.PrintData"
+﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.AutoSuture"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,11 +10,9 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <plugins:PluginBase.PluginContent>
         <StackPanel>
-            <TextBlock Text="Output File Name" FontSize="16"/>
-            <TextBox Text="{Binding OutputFileName}" />
-            
-            <Button Content="{Binding ButtonText}" Command="{Binding PrintCommand}" />
-
+            <Button Content="Start Suturing" Command="{Binding StartSuturingCommand}" />
         </StackPanel>
     </plugins:PluginBase.PluginContent>
+
+
 </plugins:PluginBase>

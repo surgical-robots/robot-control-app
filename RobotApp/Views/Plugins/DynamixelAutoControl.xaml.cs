@@ -11,29 +11,30 @@ namespace RobotApp.Views.Plugins
     /// <summary>
     /// Interaction logic for DynamixelSlider.xaml
     /// </summary>
-    public partial class DynamixelControl : PluginBase
+    public partial class DynamixelAutoControl : PluginBase
     {
         // Control table address (for DXL Pro)
-        public const int P_TORQUE_ENABLE = 562;
-        public const int P_GOAL_POSITION_L = 596;
-        public const int P_PRESENT_POSITION_L = 611;
-        public const int P_GOAL_VELOCITY_L = 600;
-        public const int P_PRESENT_VELOCITY_L = 615;
-        public const int P_MOVING = 610;
-        public const int P_GOAL_ACCEL_L = 606;
-        public const int P_GOAL_TORQUE_L = 30;
-        public const int P_LED_RED = 563;
-        public const int P_LED_GREEN = 564;
-        public const int P_LED_BLUE = 565;
-        public int PortNumber = 0;
+        private const int P_TORQUE_ENABLE = 562;
+        private const int P_GOAL_POSITION_L = 596;
+        private const int P_PRESENT_POSITION_L = 611;
+        private const int P_GOAL_VELOCITY_L = 600;
+        private const int P_PRESENT_VELOCITY_L = 615;
+        private const int P_MOVING = 610;
+        private const int P_GOAL_ACCEL_L = 606;
+        private const int P_GOAL_TORQUE_L = 30;
+        private const int P_LED_RED = 563;
+        private const int P_LED_GREEN = 564;
+        private const int P_LED_BLUE = 565;
+        private int PortNumber = 0;
+
+        private SerialPort connectPort;
+        private bool connected = false;
+
         public int oldmotor3Setpoint = 0;
 
-
-
-
-        public SerialPort connectPort;
-        public bool connected = false;
-
+        private double yawDir = 0;
+        private double tiltDir = 0;
+        private double Tilt = 0;
 
         int CommStatus;
 
@@ -42,17 +43,47 @@ namespace RobotApp.Views.Plugins
         public const int DEFAULT_BAUD = 57600;
 
         Timer errorTimer = new Timer(5000);
+        Timer setpointTimer = new Timer(100);
 
-        public DynamixelControl()
+        public override void PostLoadSetup()
+        {
+            //Reads in yaw and tilt from CombinedBot.cs
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["TiltDir"].UniqueID, (message) =>
+            {
+                tiltDir = message.Value;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["YawDir"].UniqueID, (message) =>
+            {
+                yawDir = message.Value;
+            });
+
+            base.PostLoadSetup();
+        }
+
+        public DynamixelAutoControl()
         {
             this.DataContext = this;
-            this.TypeName = "Dynamixel Control";
+            this.TypeName = "Automatic Dynamixel Control";
+
+            Inputs.Add("TiltDir", new ViewModel.InputSignalViewModel("Tilt Direction", this.InstanceName));
+            Inputs.Add("YawDir", new ViewModel.InputSignalViewModel("Yaw Direction", this.InstanceName));
+
             InitializeComponent();
-            errorTimer.Elapsed += ErrorTimer_Elapsed;           //constructor, starts timers, initializes ports and everything
+            PostLoadSetup();
+
+            errorTimer.Elapsed += ErrorTimer_Elapsed;
             errorTimer.Start();
+            setpointTimer.Elapsed += SetpointTimer_Elapsed;
+            setpointTimer.Start();
+
             string[] ports = SerialPort.GetPortNames();
             PortList = new List<string>(ports);
+        }
 
+        private void SetpointTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            UpdateSetpoints();
         }
 
         private void ErrorTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -120,13 +151,11 @@ namespace RobotApp.Views.Plugins
                 if (selectedPort != null)
                 {
                     PortNumber = Convert.ToInt32(selectedPort.Remove(0, 3));
-
                 }
                 else
                 {
                     PortNumber = 0;
                 }
-
             }
         }
 
@@ -185,7 +214,14 @@ namespace RobotApp.Views.Plugins
                         }
                         for (byte index = 1; index <= 3; index++)
                         {
-                            dynamixel.dxl2_write_byte(index, P_TORQUE_ENABLE, 1);
+                            try
+                            {
+                                dynamixel.dxl2_write_byte(index, P_TORQUE_ENABLE, 1);
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
                             CommStatus = dynamixel.dxl_get_comm_result();
                             if (CommStatus != dynamixel.COMM_RXSUCCESS)
                             {
@@ -205,7 +241,6 @@ namespace RobotApp.Views.Plugins
                             Slider1Value = 0;
                             Slider2Value = 127;
                             Slider4Value = 0;
-
                         }
                     },
                     () => true));
@@ -299,17 +334,6 @@ namespace RobotApp.Views.Plugins
 
                 slider1Value = (value);
                 RaisePropertyChanged(Slider1ValuePropertyName);
-
-                if (connected)
-                {
-                    UpdateSetpoints();
-
-                    CommStatus = dynamixel.dxl_get_comm_result();
-                    if (CommStatus != dynamixel.COMM_RXSUCCESS)
-                    {
-                        ErrorText = "Failed to send Motor1 setpoint!";
-                    }
-                }
             }
         }
 
@@ -340,17 +364,6 @@ namespace RobotApp.Views.Plugins
 
                 slider2Value = (value);
                 RaisePropertyChanged(Slider2ValuePropertyName);
-
-                if (connected)
-                {
-                    UpdateSetpoints();
-
-                    CommStatus = dynamixel.dxl_get_comm_result();
-                    if (CommStatus != dynamixel.COMM_RXSUCCESS)
-                    {
-                        ErrorText = "Failed to send Motor2 setpoint!";
-                    }
-                }
             }
         }
 
@@ -381,17 +394,6 @@ namespace RobotApp.Views.Plugins
 
                 slider4Value = value;
                 RaisePropertyChanged(Slider4ValuePropertyName);
-
-                if (connected)
-                {
-                    UpdateSetpoints();
-
-                    CommStatus = dynamixel.dxl_get_comm_result();
-                    if (CommStatus != dynamixel.COMM_RXSUCCESS)
-                    {
-                        ErrorText = "Failed to send Motor3 setpoint!";
-                    }
-                }
             }
         }
 
@@ -457,12 +459,37 @@ namespace RobotApp.Views.Plugins
 
         private void UpdateSetpoints()
         {
-            //global frame position
-            double roll = (Slider1Value * (Math.PI / 180));
-            double pitch = (Slider2Value * (Math.PI / 180));        
-            double yaw = (Slider4Value * (Math.PI / 180));         
+            //Check direction and increment yaw
+            if (yawDir == 1 && Slider4Value < YawMaximum)
+                Slider4Value += 2;
+            else if (yawDir == -1 && Slider4Value > YawMinimum)
+                Slider4Value -= 2;
 
-            //Euler Z-Y-Z Rotation matrix 
+            double yaw = (Slider4Value * (Math.PI / 180));
+
+            //Check tilt direction
+            if (tiltDir == -1 && Tilt < 45)
+                Tilt += 1;
+            else if (tiltDir == 1 && Tilt > -45)
+                Tilt -= 1;
+
+            //Calculate what combo of pitch and yaw will give you the desired tilt
+            Slider1Value = Tilt * Math.Sin(yaw);
+            if (Slider1Value > 45) Slider1Value = 45;
+            else if (Slider1Value < -45) Slider1Value = -45;
+            Slider2Value = 90 + Tilt * Math.Cos(yaw);
+            if (Slider2Value > 127) Slider2Value = 127;
+            else if (Slider2Value < 40) Slider2Value = 40;
+
+            //Hack math blows up at 90
+            if (Slider2Value == 90)
+                Slider2Value = 90.1;
+
+            //Global frame
+            double roll = (Slider1Value * (Math.PI / 180));
+            double pitch = (Slider2Value * (Math.PI / 180));
+
+            //ZYZ Euler Matrix
             double x = Math.Sin(pitch) * Math.Cos(roll);
             double y = Math.Sin(pitch) * Math.Sin(roll);
             double z = Math.Cos(pitch);
@@ -475,19 +502,31 @@ namespace RobotApp.Views.Plugins
             double yy = -Math.Sin(roll) * Math.Cos(pitch) * Math.Sin(yaw) + Math.Cos(roll) * Math.Cos(yaw);
             double yz = Math.Sin(pitch) * Math.Sin(yaw);
 
-            //angles between motor axes
+            //angle between motor axes
             double alpha13 = 75 * (Math.PI / 180);
             double alpha35 = 52 * (Math.PI / 180);
 
-            //Solve for 2nd Motor angle
+            //Calculate motor 2 angle
             double cTheta3 = -(z - Math.Cos(alpha13) * Math.Cos(alpha35)) / (Math.Sin(alpha13) * Math.Sin(alpha35));
             double cTheta31 = Math.Sqrt(1 - Math.Pow(cTheta3, 2));
             double Theta3 = Math.Atan2(cTheta31, cTheta3);
 
-            //Solve for 1st Motor angle
+            //Limit motor 2 angle
+            if (Theta3 > (135 * Math.PI / 180))
+                Theta3 = (135 * Math.PI / 180);
+            else if (Theta3 < -(135 * Math.PI / 180))
+                Theta3 = -(135 * Math.PI / 180);
+
+            //Calculate motor 1 angle
             double cTheta1 = -(Math.Cos(alpha35) * Math.Sin(alpha13) * y - Math.Sin(Theta3) * Math.Sin(alpha35) * x + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * y) / (Math.Pow(Math.Cos(Theta3) , 2) * Math.Pow(Math.Cos(alpha13) , 2) * Math.Pow(Math.Sin(alpha35) , 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35) , 2) * Math.Pow(Math.Sin(alpha13) , 2) + Math.Pow(Math.Sin(Theta3) , 2) * Math.Pow(Math.Sin(alpha35) , 2));
             double sTheta1 = (Math.Cos(alpha35) * Math.Sin(alpha13) * x + Math.Sin(Theta3) * Math.Sin(alpha35) * y + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(alpha35) * x) / (Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2) + 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(alpha13), 2) + Math.Pow(Math.Sin(Theta3), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double Theta1 = Math.Atan2(sTheta1, cTheta1);
+
+            //Limit motor 1 angle
+            if (Theta1 > (90 * Math.PI / 180))
+                Theta1 = (90 * Math.PI / 180);
+            else if (Theta1 < -(90 * Math.PI / 180))
+                Theta1 = -(90 * Math.PI / 180);
 
             //Solve for yaw=0, This allows correction for the 3rd motors max and min position, so it can reach a full 360 degree range
             double yawFactor = 0;
@@ -498,24 +537,22 @@ namespace RobotApp.Views.Plugins
             double Theta50 = Math.Atan2(cTheta50, sTheta50);
 
             double yawOffset = (Theta50 * 180 / Math.PI) + 180;
-            YawMinimum = -180 + yawOffset + 1;
-            YawMaximum = 180 + yawOffset - 1;
+            YawMinimum = -180 + yawOffset + 2;
+            YawMaximum = 180 + yawOffset - 2;
 
-            //Solve for 3rd Motor angle
+            //Solve motor 3 angle
             double cTheta5 = -(Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * yx - Math.Cos(Theta1) * Math.Cos(Theta3) * xx + Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * xx - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * yx + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * yx) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double sTheta5 = -(Math.Cos(Theta1) * Math.Cos(Theta3) * yx + Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta3) * xx - Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) * yx - Math.Sin(Theta1) * Math.Sin(alpha13) * Math.Sin(alpha35) * xx + Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Sin(Theta1) * xx) / ((Math.Pow(Math.Cos(Theta1), 2)) * (Math.Pow(Math.Cos(Theta3), 2)) + Math.Pow(Math.Cos(Theta1), 2) * (Math.Pow(Math.Cos(alpha35), 2)) * Math.Pow(Math.Sin(Theta3), 2) + 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Pow(Math.Cos(alpha35), 2) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Sin(Theta1) * Math.Sin(Theta3) - 2 * Math.Cos(Theta1) * Math.Cos(alpha35) * Math.Sin(Theta1) * Math.Sin(Theta3) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(Theta3), 2) * Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Cos(alpha35), 2) * Math.Pow(Math.Sin(Theta1), 2) - 2 * Math.Cos(Theta3) * Math.Cos(alpha13) * Math.Cos(alpha35) * Math.Pow(Math.Sin(Theta1), 2) * Math.Sin(alpha13) * Math.Sin(alpha35) + Math.Pow(Math.Cos(alpha13), 2) * Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(Theta3), 2) + Math.Pow(Math.Sin(Theta1), 2) * Math.Pow(Math.Sin(alpha13), 2) * Math.Pow(Math.Sin(alpha35), 2));
             double Theta5 = Math.Atan2(cTheta5, sTheta5);
 
-            //convert to motor setpoints
             int motor1Setpoint = -(int)Math.Round((((Theta1*180/Math.PI)-90) * 251000 / 180));
             int motor2Setpoint = (int)Math.Round((Theta3*180/Math.PI) * 151875 / 180);
             int motor3Setpoint = -(int)Math.Round(((Theta5 * 180 / Math.PI) + 180) * 151875 / 180);
 
-            //correction if math sends it to a position out of range
             if (motor3Setpoint < -151875)
-                motor3Setpoint += 151875 * 2;
+                motor3Setpoint += 151875*2;
             else if (motor3Setpoint > 151875)
-                motor3Setpoint -= 151875 * 2;
+                motor3Setpoint -= 151875*2;
 
             //If motor 3 setpoint is 180 degrees from the last point (flipping around) then it holds it's old position.
             int SetDif = 0;
@@ -528,7 +565,6 @@ namespace RobotApp.Views.Plugins
                     oldmotor3Setpoint = motor3Setpoint;
             }
 
-            //Write
             dynamixel.dxl2_write_dword(1, P_GOAL_POSITION_L, (UInt32)motor1Setpoint);
             dynamixel.dxl2_write_dword(2, P_GOAL_POSITION_L, (UInt32)motor2Setpoint);
             dynamixel.dxl2_write_dword(3, P_GOAL_POSITION_L, (UInt32)motor3Setpoint);

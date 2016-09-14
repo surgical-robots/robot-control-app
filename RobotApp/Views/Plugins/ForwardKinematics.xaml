@@ -1,4 +1,4 @@
-﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.MotorClutch"
+﻿<plugins:PluginBase x:Class="RobotApp.Views.Plugins.ForwardKinematics"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -11,14 +11,14 @@
     <plugins:PluginBase.PluginContent>
         <StackPanel>
             <UniformGrid Columns="2">
-                <TextBlock Text="Slip Torque" />
-                <TextBox Text="{Binding SlipTorque}" />
+                <TextBlock Text="Invert X Input" />
+                <CheckBox IsChecked="{Binding InvertX}" />
 
-                <TextBlock Text="Kp" />
-                <TextBox Text="{Binding Kp}" />
+                <TextBlock Text="Invert Y Input" />
+                <CheckBox IsChecked="{Binding InvertY}" />
 
-                <TextBlock Text="Enable Clutch" />
-                <CheckBox IsChecked="{Binding ClutchEnabled}" />
+                <TextBlock Text="Invert Z Input" />
+                <CheckBox IsChecked="{Binding InvertZ}" />
             </UniformGrid>
         </StackPanel>
     </plugins:PluginBase.PluginContent>

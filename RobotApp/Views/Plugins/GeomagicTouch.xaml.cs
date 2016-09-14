@@ -70,9 +70,9 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("X", new OutputSignalViewModel("X Position"));
             Outputs.Add("Y", new OutputSignalViewModel("Y Position"));
             Outputs.Add("Z", new OutputSignalViewModel("Z Position"));
-            Outputs.Add("Theta1", new OutputSignalViewModel("Gimbal Theta 1"));
-            Outputs.Add("Theta2", new OutputSignalViewModel("Gimbal Theta 2"));
-            Outputs.Add("Theta3", new OutputSignalViewModel("Gimbal Theta 3"));
+            Outputs.Add("Theta1", new OutputSignalViewModel("Pitch / Theta 1"));
+            Outputs.Add("Theta2", new OutputSignalViewModel("Yaw / Theta 2"));
+            Outputs.Add("Theta3", new OutputSignalViewModel("Roll / Theta 3"));
             Outputs.Add("Inkwell", new OutputSignalViewModel("Inkwell Switch"));
             Outputs.Add("Button1", new OutputSignalViewModel("Button 1"));
             Outputs.Add("Button2", new OutputSignalViewModel("Button 2"));
@@ -152,7 +152,10 @@ namespace RobotApp.Views.Plugins
         {
             if (Device == null)
                 return;
-            Device.Update();
+            if (AngleType == 0)
+                Device.UpdateTransform();
+            else
+                Device.Update();
             Outputs["X"].Value = Device.X;
             Outputs["Y"].Value = Device.Y;
             Outputs["Z"].Value = Device.Z;
@@ -253,6 +256,36 @@ namespace RobotApp.Views.Plugins
                 updatePeriod = value;
                 UpdateTimer.Interval = updatePeriod;
                 RaisePropertyChanged(UpdatePeriodPropertyName);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="AngleType" /> property's name.
+        /// </summary>
+        public const string AngleTypePropertyName = "AngleType";
+
+        private int angleType = 0;
+
+        /// <summary>
+        /// Sets and gets the AngleType property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int AngleType
+        {
+            get
+            {
+                return angleType;
+            }
+
+            set
+            {
+                if (angleType == value)
+                {
+                    return;
+                }
+
+                angleType = value;
+                RaisePropertyChanged(AngleTypePropertyName);
             }
         }
 

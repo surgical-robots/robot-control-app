@@ -8,9 +8,9 @@ namespace RobotApp.Views.Plugins
     /// </summary>
     public partial class Clutch : PluginBase
     {
-        double x, y, z;
-        double offsetX, offsetY, offsetZ;
-        double clutchStartPositionX, clutchStartPositionY, clutchStartPositionZ;
+        double x, y, z, pitch, yaw, roll;
+        double offsetX, offsetY, offsetZ, offsetPitch, offsetYaw, offsetRoll;
+        double clutchStartPositionX, clutchStartPositionY, clutchStartPositionZ, clutchStartPitch, clutchStartYaw, clutchStartRoll;
         bool clutchIsEnabled;
 
         public override void PostLoadSetup()
@@ -37,6 +37,27 @@ namespace RobotApp.Views.Plugins
                     Outputs["Z"].Value = z + offsetZ;
             });
 
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Pitch"].UniqueID, (message) =>
+            {
+                pitch = message.Value;
+                if (!ClutchIsEnabled)
+                    Outputs["Pitch"].Value = pitch + offsetPitch;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Yaw"].UniqueID, (message) =>
+            {
+                yaw = message.Value;
+                if (!ClutchIsEnabled)
+                    Outputs["Yaw"].Value = yaw + offsetYaw;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll"].UniqueID, (message) =>
+            {
+                roll = message.Value;
+                if (!ClutchIsEnabled)
+                    Outputs["Roll"].Value = roll + offsetRoll;
+            });
+
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Clutch"].UniqueID, (message) =>
             {
                 ClutchIsEnabled = message.Value > 0.5 ? true : false;
@@ -61,6 +82,9 @@ namespace RobotApp.Views.Plugins
                         offsetX = 0;
                         offsetY = 0;
                         offsetZ = 0;
+                        offsetPitch = 0;
+                        offsetYaw = 0;
+                        offsetRoll = 0;
                     }));
             }
         }
@@ -79,6 +103,9 @@ namespace RobotApp.Views.Plugins
                     clutchStartPositionX = x;
                     clutchStartPositionY = y;
                     clutchStartPositionZ = z;
+                    clutchStartPitch = pitch;
+                    clutchStartYaw = yaw;
+                    clutchStartRoll = roll;
                 }
                 if(clutchIsEnabled == false)
                 {
@@ -87,31 +114,36 @@ namespace RobotApp.Views.Plugins
                     offsetX -= x - clutchStartPositionX;
                     offsetY -= y - clutchStartPositionY;
                     offsetZ -= z - clutchStartPositionZ;
-
+                    offsetPitch -= pitch - clutchStartPitch;
+                    offsetYaw -= yaw - clutchStartYaw;
+                    offsetRoll -= roll - clutchStartRoll;
                 }
-                
                 this.RaisePropertyChanged("ClutchIsEnabled");
-                    
-
             } 
         }
+
         public Clutch()
         {
             this.TypeName = "Clutch";
+            this.PluginInfo = "Allows user to clutch in and out of a 3D workspace. When INPUT:Clutch > 0.5, the clutch is enabled and disables the outputs. The input positions are offset to adjust the clutch-in position = clutch-out position.\n\nINPUTS: X, Y, Z, Pitch, Yaw, Roll, Clutch\nOUTPUTS: X, Y, Z, Pitch, Yaw, Roll\n";
             InitializeComponent();
             clutchIsEnabled = false;
 
-            /// OUTPUTS
+            // OUTPUTS
             Outputs.Add("X", new ViewModel.OutputSignalViewModel("X"));
             Outputs.Add("Y", new ViewModel.OutputSignalViewModel("Y"));
             Outputs.Add("Z", new ViewModel.OutputSignalViewModel("Z"));
+            Outputs.Add("Pitch", new ViewModel.OutputSignalViewModel("Pitch"));
+            Outputs.Add("Yaw", new ViewModel.OutputSignalViewModel("Yaw"));
+            Outputs.Add("Roll", new ViewModel.OutputSignalViewModel("Roll"));
 
-            /// X input
+            // INPUTS
             Inputs.Add("X", new ViewModel.InputSignalViewModel("X", this.InstanceName));
-            /// Y input
             Inputs.Add("Y", new ViewModel.InputSignalViewModel("Y", this.InstanceName));
-            /// Z input
             Inputs.Add("Z", new ViewModel.InputSignalViewModel("Z", this.InstanceName));
+            Inputs.Add("Pitch", new ViewModel.InputSignalViewModel("Pitch", this.InstanceName));
+            Inputs.Add("Yaw", new ViewModel.InputSignalViewModel("Yaw", this.InstanceName));
+            Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
             Inputs.Add("Clutch", new ViewModel.InputSignalViewModel("Clutch", this.InstanceName));
 
             PostLoadSetup();

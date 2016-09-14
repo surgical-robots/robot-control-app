@@ -30,7 +30,8 @@
                 <TextBlock Text="Invert Z Input" />
                 <CheckBox IsChecked="{Binding InvertZ}" />
             </UniformGrid>
-            
+            <Button Name="HapticsButton" Content="{Binding HapticsText}" Command="{Binding EnableHapticsCommand}" Background="{Binding HapticColor}" />
+
         </StackPanel>
     </plugins:PluginBase.PluginContent>
 </plugins:PluginBase>

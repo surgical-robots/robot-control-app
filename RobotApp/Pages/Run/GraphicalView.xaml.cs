@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows.Threading;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -14,6 +20,13 @@ using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Command;
 using HelixToolkit.Wpf;
 using RobotApp.ViewModel;
+
+using Emgu.CV;
+using Emgu.CV.Cvb;
+using Emgu.CV.UI;
+using Emgu.CV.CvEnum;
+using Emgu.CV.Structure;
+
 using AForge.Video.DirectShow;
 
 namespace RobotApp.Pages
@@ -21,8 +34,47 @@ namespace RobotApp.Pages
     /// <summary>
     /// Interaction logic for GraphicalViewPage.xaml
     /// </summary>
-    public partial class GraphicalView : UserControl, INotifyPropertyChanged
+    public partial class GraphicalView : System.Windows.Controls.UserControl, INotifyPropertyChanged
     {
+        // Fisheye correction variables
+        #region Display and aquire chess board info
+        private Capture _Capture;
+        Image<Bgr, Byte> img; // image captured
+        Image<Gray, Byte> Gray_Frame; // image for processing
+        const int width = 19;//9 //width of chessboard no. squares in width - 1
+        const int height = 6;//6 // heght of chess board no. squares in heigth - 1
+        System.Drawing.Size patternSize = new System.Drawing.Size(width, height); //size of chess board to be detected
+        PointF[] corners; //corners found from chessboard
+        Bgr[] line_colour_array = new Bgr[width * height]; // just for displaying coloured lines of detected chessboard
+
+        static Image<Gray, Byte>[] Frame_array_buffer = new Image<Gray, byte>[100]; //number of images to calibrate camera over
+        int frame_buffer_savepoint = 0;
+        bool start_Flag = false;
+        #endregion
+
+        #region Current mode variables
+        public enum Mode
+        {
+            Caluculating_Intrinsics,
+            Calibrated,
+            SavingFrames,
+            None
+        }
+        Mode currentMode = Mode.None;
+        #endregion
+
+        #region Getting the camera calibration
+        MCvPoint3D32f[][] corners_object_list = new MCvPoint3D32f[Frame_array_buffer.Length][];
+        PointF[][] corners_points_list = new PointF[Frame_array_buffer.Length][];
+
+        IntrinsicCameraParameters IC = new IntrinsicCameraParameters();
+        ExtrinsicCameraParameters[] EX_Param;
+
+        #endregion
+
+        public string path = System.IO.Directory.GetCurrentDirectory();
+
+        // Robot model variables
         private readonly Dispatcher dispatcher;
 
         public ObservableDictionary<string, InputSignalViewModel> Sinks { get; set; }
@@ -141,10 +193,11 @@ namespace RobotApp.Pages
             }
         }
 
-        public VideoCaptureDevice CaptureDevice;
+        private AForge.Video.DirectShow.VideoCaptureDevice CaptureDevice;
         private FilterInfoCollection _deviceList;
         private VideoCapabilities[] _deviceCapabilites;
         private bool _wasRunning = false;
+        private bool _isRunning = false;
 
         public void SetupMessenger()
         {
@@ -201,11 +254,6 @@ namespace RobotApp.Pages
                 cTwist = message.Value;
                 DisplayModel();
             });
-
-            Messenger.Default.Register<Messages.Signal>(this, Sinks["LeftGrasperForce"].UniqueID, (message) =>
-            {
-                GrasperForceL = message.Value;
-            });
         }
 
         public GraphicalView()
@@ -226,6 +274,15 @@ namespace RobotApp.Pages
             Sinks.Add("LeftGrasperForce", new InputSignalViewModel("LeftGrasperForce", "GraphicalView"));
 
             SetupMessenger();
+
+            Random R = new Random();
+            for (int i = 0; i < line_colour_array.Length; i++)
+            {
+                line_colour_array[i] = new Bgr(R.Next(0, 255), R.Next(0, 255), R.Next(0, 255));
+            }
+            //Run();
+            Write_BTN.IsEnabled = false;
+            Main_Picturebox.Size = new System.Drawing.Size(820, 820);
 
             DeviceNames = new ObservableCollection<string>();
             SettingNames = new ObservableCollection<string>();
@@ -420,6 +477,296 @@ namespace RobotApp.Pages
             DisplayModel();
         }
 
+        /// <summary>
+        /// main function processing of the image data
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void _Capture_ImageGrabbed(object sender, EventArgs e)
+        {
+            //lets get a frame from our capture device
+            img = _Capture.RetrieveBgrFrame();
+            Gray_Frame = img.Convert<Gray, Byte>();
+
+            //apply chess board detection
+            if (currentMode == Mode.SavingFrames)
+            {
+                corners = CameraCalibration.FindChessboardCorners(Gray_Frame, patternSize, Emgu.CV.CvEnum.CALIB_CB_TYPE.ADAPTIVE_THRESH);
+                //we use this loop so we can show a colour image rather than a gray: //CameraCalibration.DrawChessboardCorners(Gray_Frame, patternSize, corners);
+
+                if (corners != null) //chess board found
+                {
+                    //make mesurments more accurate by using FindCornerSubPixel
+                    Gray_Frame.FindCornerSubPix(new PointF[1][] { corners }, new System.Drawing.Size(11, 11), new System.Drawing.Size(-1, -1), new MCvTermCriteria(30, 0.1));
+
+                    //if go button has been pressed start aquiring frames else we will just display the points
+                    if (start_Flag)
+                    {
+                        Frame_array_buffer[frame_buffer_savepoint] = Gray_Frame.Copy(); //store the image
+                        frame_buffer_savepoint++;//increase buffer positon
+
+                        //check the state of buffer
+                        if (frame_buffer_savepoint == Frame_array_buffer.Length) currentMode = Mode.Caluculating_Intrinsics; //buffer full
+                    }
+
+                    //dram the results
+                    img.Draw(new CircleF(corners[0], 3), new Bgr(System.Drawing.Color.Yellow), 1);
+                    for (int i = 1; i < corners.Length; i++)
+                    {
+                        img.Draw(new LineSegment2DF(corners[i - 1], corners[i]), line_colour_array[i], 2);
+                        img.Draw(new CircleF(corners[i], 3), new Bgr(System.Drawing.Color.Yellow), 1);
+                    }
+                    //calibrate the delay bassed on size of buffer
+                    //if buffer small you want a big delay if big small delay
+                    Thread.Sleep(100);//allow the user to move the board to a different position
+                }
+                corners = null;
+            }
+            if (currentMode == Mode.Caluculating_Intrinsics)
+            {
+                //we can do this in the loop above to increase speed
+                for (int k = 0; k < Frame_array_buffer.Length; k++)
+                {
+
+                    corners_points_list[k] = CameraCalibration.FindChessboardCorners(Frame_array_buffer[k], patternSize, Emgu.CV.CvEnum.CALIB_CB_TYPE.ADAPTIVE_THRESH);
+                    //for accuracy
+                    Gray_Frame.FindCornerSubPix(corners_points_list, new System.Drawing.Size(11, 11), new System.Drawing.Size(-1, -1), new MCvTermCriteria(30, 0.1));
+
+                    //Fill our objects list with the real world mesurments for the intrinsic calculations
+                    List<MCvPoint3D32f> object_list = new List<MCvPoint3D32f>();
+                    for (int i = 0; i < height; i++)
+                    {
+                        for (int j = 0; j < width; j++)
+                        {
+                            object_list.Add(new MCvPoint3D32f(j * 20.0F, i * 20.0F, 0.0F));
+                        }
+                    }
+                    corners_object_list[k] = object_list.ToArray();
+                }
+
+                //our error should be as close to 0 as possible
+
+                double error = CameraCalibration.CalibrateCamera(corners_object_list, corners_points_list, Gray_Frame.Size, IC, Emgu.CV.CvEnum.CALIB_TYPE.CV_CALIB_RATIONAL_MODEL, new MCvTermCriteria(30, 0.1), out EX_Param);
+                //If Emgu.CV.CvEnum.CALIB_TYPE == CV_CALIB_USE_INTRINSIC_GUESS and/or CV_CALIB_FIX_ASPECT_RATIO are specified, some or all of fx, fy, cx, cy must be initialized before calling the function
+                //if you use FIX_ASPECT_RATIO and FIX_FOCAL_LEGNTH options, these values needs to be set in the intrinsic parameters before the CalibrateCamera function is called. Otherwise 0 values are used as default.
+                System.Windows.Forms.MessageBox.Show("Intrinsic Calculation Error: " + error.ToString(), "Results", MessageBoxButtons.OK, MessageBoxIcon.Information); //display the results to the user
+                currentMode = Mode.Calibrated;
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    Write_BTN.IsEnabled = true;
+                }));
+            }
+            if (currentMode == Mode.Calibrated)
+            {
+                //calculate the camera intrinsics
+                Matrix<float> Map1, Map2;
+                IC.InitUndistortMap(img.Width, img.Height, out Map1, out Map2);
+
+                //remap the image to the particular intrinsics
+                //In the current version of EMGU any pixel that is not corrected is set to transparent allowing the original image to be displayed if the same
+                //image is mapped backed, in the future this should be controllable through the flag '0'
+                Image<Bgr, Byte> temp = img.CopyBlank();
+                CvInvoke.cvRemap(img, temp, Map1, Map2, 0, new MCvScalar(0));
+                img = temp.Copy();
+
+                //set up to allow another calculation
+                SetButtonState(true);
+                start_Flag = false;
+            }
+            Image<Bgr, byte> mainImage = img.Resize(((double)Main_Picturebox.Width / (double)img.Width), Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR);
+            Main_Picturebox.Image = mainImage;
+        }
+
+        private RelayCommand<string> start_BTN_Click;
+
+        /// <summary>
+        /// Gets the DetectCOMsCommand.
+        /// </summary>
+        public RelayCommand<string> Start_BTN_Click
+        {
+            get
+            {
+                return start_BTN_Click
+                    ?? (start_BTN_Click = new RelayCommand<string>(
+                    p =>
+                    {
+                        if (currentMode != Mode.SavingFrames) currentMode = Mode.SavingFrames;
+                        Start_BTN.IsEnabled = false;
+                        //set up the arrays needed
+                        Frame_array_buffer = new Image<Gray, byte>[frameBuffer];
+                        corners_object_list = new MCvPoint3D32f[Frame_array_buffer.Length][];
+                        corners_points_list = new PointF[Frame_array_buffer.Length][];
+                        frame_buffer_savepoint = 0;
+                        //allow the start
+                        start_Flag = true;
+                    }));
+            }
+        }
+
+        private RelayCommand writeCalibrationData;
+
+        /// <summary>
+        /// Gets the WriteCalibrationData.
+        /// </summary>
+        public RelayCommand WriteCalibrationData
+        {
+            get
+            {
+                return writeCalibrationData
+                    ?? (writeCalibrationData = new RelayCommand(
+                    () =>
+                    {
+                        if (currentMode == Mode.Calibrated)
+                        {
+                            string fullPath = path + "\\cal_ObjList.txt";
+                            if (!File.Exists(fullPath))
+                            {
+                                using (StreamWriter sw = File.CreateText(fullPath))
+                                {
+
+                                }
+                            }
+                            else
+                                File.Delete(fullPath);
+                            for (int i = 0; i < corners_object_list[0].Length; i++)
+                            {
+                                using (StreamWriter sw = File.AppendText(fullPath))
+                                {
+                                    sw.Write(corners_object_list[0][i].x);
+                                    sw.Write("\t");
+                                    sw.Write(corners_object_list[0][i].y);
+                                    sw.Write("\t");
+                                    sw.WriteLine(corners_object_list[0][i].z);
+                                }
+                            }
+                            fullPath = path + "\\cal_PntList.txt";
+                            if (!File.Exists(fullPath))
+                            {
+                                using (StreamWriter sw = File.CreateText(fullPath))
+                                {
+
+                                }
+                            }
+                            else
+                                File.Delete(fullPath);
+                            for (int i = 0; i < corners_points_list[0].Length; i++)
+                            {
+                                using (StreamWriter sw = File.AppendText(fullPath))
+                                {
+                                    sw.Write(corners_points_list[0][i].X);
+                                    sw.Write("\t");
+                                    sw.WriteLine(corners_points_list[0][i].Y);
+                                }
+                            }
+                        }
+                    }));
+            }
+        }
+
+        private RelayCommand readData;
+
+        /// <summary>
+        /// Gets the ReadData.
+        /// </summary>
+        public RelayCommand ReadData
+        {
+            get
+            {
+                return readData
+                    ?? (readData = new RelayCommand(
+                    () =>
+                    {
+                        corners_object_list = new MCvPoint3D32f[1][];
+                        string fullPath = path + "\\cal_ObjList.txt";
+                        string[][] path1Data = File.ReadLines(fullPath).Select(line => line.Split('\t')).ToArray();
+                        corners_object_list[0] = new MCvPoint3D32f[path1Data.GetLength(0)];
+                        for (int i = 0; i < path1Data.GetLength(0); i++)
+                        {
+                            double[] dubData = Array.ConvertAll<string, double>(path1Data[i], Convert.ToDouble);
+                            corners_object_list[0][i].x = (float)dubData[0];
+                            corners_object_list[0][i].y = (float)dubData[1];
+                            corners_object_list[0][i].z = (float)dubData[2];
+                        }
+
+                        corners_points_list = new PointF[1][];
+                        fullPath = path + "\\cal_PntList.txt";
+                        string[][] path2Data = File.ReadLines(fullPath).Select(line => line.Split('\t')).ToArray();
+                        corners_points_list[0] = new PointF[path2Data.GetLength(0)];
+                        for (int i = 0; i < path2Data.GetLength(0); i++)
+                        {
+                            double[] dubData = Array.ConvertAll<string, double>(path2Data[i], Convert.ToDouble);
+                            corners_points_list[0][i].X = (float)dubData[0];
+                            corners_points_list[0][i].Y = (float)dubData[1];
+                        }
+
+                        double error = CameraCalibration.CalibrateCamera(corners_object_list, corners_points_list, Gray_Frame.Size, IC, Emgu.CV.CvEnum.CALIB_TYPE.CV_CALIB_RATIONAL_MODEL, new MCvTermCriteria(30, 0.1), out EX_Param);
+                        //If Emgu.CV.CvEnum.CALIB_TYPE == CV_CALIB_USE_INTRINSIC_GUESS and/or CV_CALIB_FIX_ASPECT_RATIO are specified, some or all of fx, fy, cx, cy must be initialized before calling the function
+                        //if you use FIX_ASPECT_RATIO and FIX_FOCAL_LEGNTH options, these values needs to be set in the intrinsic parameters before the CalibrateCamera function is called. Otherwise 0 values are used as default.
+                        System.Windows.Forms.MessageBox.Show("Intrinsic Calculation Error: " + error.ToString(), "Results", MessageBoxButtons.OK, MessageBoxIcon.Information); //display the results to the user
+                        currentMode = Mode.Calibrated;
+                    }));
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="FrameBuffer" /> property's name.
+        /// </summary>
+        public const string FrameBufferPropertyName = "FrameBuffer";
+
+        private int frameBuffer = 1;
+
+        /// <summary>
+        /// Sets and gets the FrameBuffer property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int FrameBuffer
+        {
+            get
+            {
+                return frameBuffer;
+            }
+
+            set
+            {
+                if (frameBuffer == value)
+                {
+                    return;
+                }
+
+                frameBuffer = value;
+                RaisePropertyChanged(FrameBufferPropertyName);
+            }
+        }
+
+        /// <summary>
+        /// Ussed to safly set the button state from capture thread
+        /// </summary>
+        /// <param name="state"></param>
+        delegate void SetButtonStateDelegate(bool state);
+        private void SetButtonState(bool state)
+        {
+            //if (Start_BTN.InvokeRequired)
+            //{
+            //    try
+            //    {
+            //        // update textbox asynchronously
+            //        SetButtonStateDelegate ut = new SetButtonStateDelegate(SetButtonState);
+            //        //if (this.IsHandleCreated && !this.IsDisposed)
+            //        this.BeginInvoke(ut, new object[] { state });
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //    }
+            //}
+            //else
+            //{
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                Start_BTN.IsEnabled = state;
+            }));
+            //}
+        }
+
         public void DisplayModel()
         // DisplayModel -----> Performs Rotations and translations and sends models to VirtualRobotWindow
         {
@@ -546,21 +893,24 @@ namespace RobotApp.Pages
 
                 selectedDevice = value;
                 RaisePropertyChanged(SelectedDeviceNamePropertyName);
-                if (CaptureDevice != null && CaptureDevice.IsRunning)
-                    CaptureDevice.SignalToStop();
-                if (_wasRunning)
-                    CaptureDevice.NewFrame -= CaptureDevice_NewFrame;
 
+                if (_Capture != null && _isRunning)
+                {
+                    _Capture.Stop();
+                }
                 for (int i = 0; i < _deviceList.Count; i++)
                 {
                     if (_deviceList[i].Name == selectedDevice)
                     {
+                        _Capture = new Capture(i);
                         CaptureDevice = new VideoCaptureDevice(_deviceList[i].MonikerString);
                         _deviceCapabilites = CaptureDevice.VideoCapabilities;
                         SelectedSetting = 0;
                         CreateCapabilityList();
-                        CaptureDevice.NewFrame += CaptureDevice_NewFrame;
-                        _wasRunning = true;
+                        _Capture.ImageGrabbed += _Capture_ImageGrabbed;
+
+                        if (_isRunning)
+                            _Capture.Start();
                     }
                 }
             }
@@ -568,24 +918,6 @@ namespace RobotApp.Pages
 
         [System.Runtime.InteropServices.DllImport("gdi32.dll")]
         public static extern bool DeleteObject(IntPtr hObject);
-
-        void CaptureDevice_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
-        {
-            Bitmap frame = eventArgs.Frame;
-            this.Dispatcher.Invoke((Action)(() =>
-            {
-                IntPtr hBitmap = frame.GetHbitmap();
-                try
-                {
-                    VideoImage.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                }
-                finally
-                {
-                    DeleteObject(hBitmap);
-                    frame.Dispose();
-                }
-            }));
-        }
 
         void CreateCapabilityList()
         {
@@ -627,7 +959,15 @@ namespace RobotApp.Pages
                 selectedSetting = value;
                 RaisePropertyChanged(SelectedSettingPropertyName);
                 if (selectedSetting != -1)
-                    CaptureDevice.VideoResolution = _deviceCapabilites[selectedSetting];
+                {
+                    if(_isRunning)
+                        _Capture.Stop();
+                    _Capture.SetCaptureProperty(CAP_PROP.CV_CAP_PROP_FRAME_WIDTH, _deviceCapabilites[selectedSetting].FrameSize.Width);
+                    _Capture.SetCaptureProperty(CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, _deviceCapabilites[selectedSetting].FrameSize.Height);
+                    _Capture.SetCaptureProperty(CAP_PROP.CV_CAP_PROP_FPS, _deviceCapabilites[selectedSetting].AverageFrameRate);
+                    if(_isRunning)
+                        _Capture.Start();
+                }
             }
         }
 
@@ -674,77 +1014,19 @@ namespace RobotApp.Pages
                     ?? (startCommand = new RelayCommand<string>(
                     p =>
                     {
-                        if (CaptureDevice.IsRunning)
+                        if (_isRunning)
                         {
-                            CaptureDevice.SignalToStop();
+                            _Capture.Stop();
                             ConnectButtonText = "Connect";
+                            _isRunning = false;
                         }
                         else
                         {
-                            CaptureDevice.Start();
+                            _Capture.Start();
                             ConnectButtonText = "Disconnect";
+                            _isRunning = true;
                         }
                     }));
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="GrasperForceL" /> property's name.
-        /// </summary>
-        public const string GrasperForceLPropertyName = "GrasperForceL";
-
-        private double grasperForceL = 0;
-
-        /// <summary>
-        /// Sets and gets the GrasperForceL property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public double GrasperForceL
-        {
-            get
-            {
-                return grasperForceL;
-            }
-
-            set
-            {
-                if (grasperForceL == value)
-                {
-                    return;
-                }
-
-                grasperForceL = value;
-                RaisePropertyChanged(GrasperForceLPropertyName);
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="GrasperForceR" /> property's name.
-        /// </summary>
-        public const string GrasperForceRPropertyName = "GrasperForceR";
-
-        private double grasperForceR = 200;
-
-        /// <summary>
-        /// Sets and gets the GrasperForceR property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public double GrasperForceR
-        {
-            get
-            {
-                return grasperForceR;
-            }
-
-            set
-            {
-                if (grasperForceR == value)
-                {
-                    return;
-                }
-
-                grasperForceR = value;
-                RaisePropertyChanged(GrasperForceRPropertyName);
             }
         }
 
