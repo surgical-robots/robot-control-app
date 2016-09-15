@@ -711,72 +711,81 @@ namespace TelSurge
         }
         private void InitializeOmnis_Click(object sender, EventArgs e)
         {
+            //Clients must have a name, Master is just called "Master"
             if (!User.IsMaster && tb_InstanceName.Text.Equals(""))
             {
                 MessageBox.Show("Please enter a name.");
             }
             else
             {
-                if (User.HasOmnis && spLeftOmni.SelectedIndex.Equals(spRightOmni.SelectedIndex))
+                bool success = false;
+                if( User.HasOmnis )
                 {
-                    MessageBox.Show("Please select two different Omni Devices");
+                    if (spLeftOmni.SelectedIndex.Equals(spRightOmni.SelectedIndex))
+                    {
+                        MessageBox.Show("Please select two different Omni Devices");
+                    }
+                    else
+                    {
+                        //Try to connect to Omnis
+                        if (spLeftOmni.Items.Count > 0 && spRightOmni.Items.Count > 0)
+                            success = User.InitializeOmnis(spLeftOmni.SelectedItem.ToString(), spRightOmni.SelectedItem.ToString());
+                    }
                 }
                 else
                 {
-                    int success = 0;
-                    if (spLeftOmni.Items.Count > 0 && spRightOmni.Items.Count > 0)
-                        success = User.InitializeOmnis(spLeftOmni.SelectedItem.ToString(), spRightOmni.SelectedItem.ToString());
+                    //Connect without Omnis
+                    success = true;
+                }
+                if (success)
+                {
+                    //Only allow one successful connection to Omnis
+                    cb_noOmnisAttached.Enabled = false;
+                    UnderlyingTimer.Enabled = true;
+                    //do not allow switching between master and slave state once omnis are initialized
+                    cb_isMaster.Enabled = false;
+                    tb_InstanceName.Enabled = false;
 
-                    if (success == 1 || !User.HasOmnis)
+                    if (User.IsMaster)
                     {
-                        //Only allow one successful connection to Omnis
-                        cb_noOmnisAttached.Enabled = false;
-                        UnderlyingTimer.Enabled = true;
-                        //do not allow switching between master and slave state once omnis are initialized
-                        cb_isMaster.Enabled = false;
-                        tb_InstanceName.Enabled = false;
+                        User.MyName = "Master";
+                        Surgery.Master = User;
+                        //For now, display in control here
+                        switchControl(true);
+                        Surgery.UserInControl = User;
 
-                        if (User.IsMaster)
-                        {
-                            User.MyName = "Master";
-                            Surgery.Master = User;
-                            //For now, display in control here
-                            switchControl(true);
-                            Surgery.UserInControl = User;
+                        //start listening for clients wanting to connect
+                        Thread t = new Thread(new ThreadStart(listenForNewConnections));
+                        t.IsBackground = true;
+                        t.Start();
 
-                            //start listening for clients wanting to connect
-                            Thread t = new Thread(new ThreadStart(listenForNewConnections));
-                            t.IsBackground = true;
-                            t.Start();
-
-                            //start listening for data
-                            SocketData.IsListeningForData = true;
-                            Thread t2 = new Thread(new ThreadStart(SocketData.ListenForData));
-                            t2.IsBackground = true;
-                            t2.Start();
-                        }
-                        else
-                        {
-                            ConnectToMasterButton.Visible = true;
-                            User.MyName = tb_InstanceName.Text;
-                        }
-
-                        if (User.HasOmnis)
-                        {
-                            //Don't show force controls if no omnis attched
-                            btn_zeroForces.Visible = false;
-                            groupBox3.Visible = false;
-                            tb_forces.Visible = false;
-                            lbl_forceStrength.Visible = false;
-                            trb_forceStrength.Visible = false;
-                        }
-
-                        gb_SendingLeft.Visible = true;
-                        tb_SendingLeft.Visible = true;
-                        gb_SendingRight.Visible = true;
-                        tb_SendingRight.Visible = true;
-                        btn_Initialize.Enabled = false;
+                        //start listening for data
+                        SocketData.IsListeningForData = true;
+                        Thread t2 = new Thread(new ThreadStart(SocketData.ListenForData));
+                        t2.IsBackground = true;
+                        t2.Start();
                     }
+                    else
+                    {
+                        ConnectToMasterButton.Visible = true;
+                        User.MyName = tb_InstanceName.Text;
+                    }
+
+                    //Don't show force controls if no omnis attched
+                    if (User.HasOmnis)
+                    {
+                        btn_zeroForces.Visible = false;
+                        groupBox3.Visible = false;
+                        tb_forces.Visible = false;
+                        lbl_forceStrength.Visible = false;
+                        trb_forceStrength.Visible = false;
+                    }
+
+                    gb_SendingLeft.Visible = true;
+                    tb_SendingLeft.Visible = true;
+                    gb_SendingRight.Visible = true;
+                    tb_SendingRight.Visible = true;
+                    btn_Initialize.Enabled = false;
                 }
             }
         }
@@ -785,7 +794,11 @@ namespace TelSurge
             try
             {
                 //Get current position
-                OmniPosition currentPos = User.GetOmniPositions();
+                OmniPosition currentPos = new OmniPosition();
+                if( User.HasOmnis )
+                {
+                    currentPos = User.GetOmniPositions();
+                }
                 showOmniPositions(currentPos);
                 if (User.IsInControl)
                 {

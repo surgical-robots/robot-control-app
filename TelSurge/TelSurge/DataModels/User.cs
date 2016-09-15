@@ -304,9 +304,9 @@ namespace TelSurge
                 }
             }
         }
-        public int InitializeOmnis(string LeftOmniName, string RightOmniName)
+        public bool InitializeOmnis(string LeftOmniName, string RightOmniName)
         {
-            int success = 0;
+            bool success = false;
 
             if (HasOmnis)
             {
@@ -319,7 +319,7 @@ namespace TelSurge
                     SetOmniForce(new OmniPosition());
                     LeftOmni.SetpointEnabled = true;
                     RightOmni.SetpointEnabled = true;
-                    success = 1;
+                    success = true;
                 }
                 catch (Exception ex)
                 {
