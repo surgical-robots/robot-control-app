@@ -62,14 +62,14 @@ namespace path_generation
             //Console.WriteLine("normal ? : {0}, {1}, {2}", normal.x / normal.norm(), normal.y / normal.norm(), normal.z / normal.norm());
             Vector needle = new Vector();
             
-            needle = minimizer(ori2, tangential);
+            //needle = minimizer(ori2, tangential);
             /*DOF.ori.x = tangential.x / tangential.norm();
             DOF.ori.y = tangential.y / tangential.norm();
             DOF.ori.z = tangential.z / tangential.norm();*/
             DOF.ori = new Vector();
-            DOF.ori.x = needle.x;
-            DOF.ori.y = needle.y;
-            DOF.ori.z = needle.z;
+            DOF.ori.x = 0;
+            DOF.ori.y = 0;
+            DOF.ori.z = 0;
             
             return DOF;
         }

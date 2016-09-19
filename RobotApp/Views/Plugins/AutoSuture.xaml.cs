@@ -25,16 +25,22 @@ namespace RobotApp.Views.Plugins
             Messenger.Default.Register<Messages.Signal>(this, Inputs["X"].UniqueID, (message) =>
             {
                 x = message.Value;
+                if (state < 3)
+                    Outputs["X"].Value = x;
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Y"].UniqueID, (message) =>
             {
                 y = message.Value;
+                if (state < 3)
+                    Outputs["Y"].Value = y;
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Z"].UniqueID, (message) =>
             {
                 z = message.Value;
+                if (state < 3)
+                    Outputs["Z"].Value = z;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftUpperBevel"].UniqueID, (message) =>
             {
@@ -111,12 +117,12 @@ namespace RobotApp.Views.Plugins
 
         private void StepTimer_Tick(object sender, EventArgs e)
         {
-            if (state < 3)
-            {
-                Outputs["X"].Value = x;
-                Outputs["Y"].Value = y;
-                Outputs["Z"].Value = z;
-            }
+            //if (state < 3)
+            //{
+            //    Outputs["X"].Value = x;
+            //    Outputs["Y"].Value = y;
+            //    Outputs["Z"].Value = z;
+            //}
             if (state == 3) //calculation of needle center
             {
                 //Console.Write("\n****************S3 SUTURING STATRTS\n");
