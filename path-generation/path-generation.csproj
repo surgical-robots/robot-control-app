@@ -38,6 +38,10 @@
     <Reference Include="matlab2C">
       <HintPath>..\..\..\MATLAB\v7_TATRC\DLL\matlab2C\for_redistribution_files_only\matlab2C.dll</HintPath>
     </Reference>
+    <Reference Include="minimizerNamespace, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Dropbox\Lab\Project\Automated_Suturing\TATRC\C#\dll\minimizerNamespace\for_testing\minimizerNamespace.dll</HintPath>
+    </Reference>
     <Reference Include="MWArray, Version=2.15.1.0, Culture=neutral, PublicKeyToken=e1d84a0da19db86f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files\MATLAB\R2015b\toolbox\dotnetbuilder\bin\win64\v2.0\MWArray.dll</HintPath>
@@ -49,12 +53,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="test">
-      <HintPath>..\..\..\MATLAB\v7_TATRC\DLL\test\for_testing\test.dll</HintPath>
-    </Reference>
-    <Reference Include="testNative">
-      <HintPath>..\..\..\MATLAB\v7_TATRC\DLL\test\for_testing\testNative.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="math.cs" />

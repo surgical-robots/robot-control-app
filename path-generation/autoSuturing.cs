@@ -10,7 +10,7 @@ namespace path_generation
             
             double t = 0;
             double t_incr = Math.PI / 10;
-            while (true)
+            /*while (true)
             {
                 point p;
                 trajectory obj = new trajectory(0, 0, 130);
@@ -19,7 +19,7 @@ namespace path_generation
                 Console.WriteLine("{0}\t{1}\t{2}", p.pos.x, p.pos.y, p.pos.z);
                 if (t > Math.PI) break;
             }
-
+            */
             /*output: 
              * p.pos.x
              * p.pos.y

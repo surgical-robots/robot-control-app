@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace path_generation
 {
+    /*
     public struct position
     {
         public double x;
@@ -22,6 +23,12 @@ namespace path_generation
     {
         public position pos;
         public orientation ori;
+    };
+     */
+    public struct point
+    {
+        public Vector pos;
+        public Vector ori;
     };
     public class Vector
     {

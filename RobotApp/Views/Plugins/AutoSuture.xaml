@@ -11,6 +11,7 @@
     <plugins:PluginBase.PluginContent>
         <StackPanel>
             <Button Content="Start Suturing" Command="{Binding StartSuturingCommand}" />
+            <Button Content="End Suturing" Command="{Binding EndSuturingCommand}" />
         </StackPanel>
     </plugins:PluginBase.PluginContent>
 
