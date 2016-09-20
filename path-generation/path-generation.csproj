@@ -35,8 +35,13 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="matlab2C">
-      <HintPath>..\..\..\MATLAB\v7_TATRC\DLL\matlab2C\for_redistribution_files_only\matlab2C.dll</HintPath>
+    <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\alglibnet2.0.0.0\lib\alglibnet2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="minimizerNamespace, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Dropbox\Lab\Project\Automated_Suturing\TATRC\C#\dll\minimizerNamespace\for_testing\minimizerNamespace.dll</HintPath>
     </Reference>
     <Reference Include="MWArray, Version=2.15.1.0, Culture=neutral, PublicKeyToken=e1d84a0da19db86f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -49,12 +54,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="test">
-      <HintPath>..\..\..\MATLAB\v7_TATRC\DLL\test\for_testing\test.dll</HintPath>
-    </Reference>
-    <Reference Include="testNative">
-      <HintPath>..\..\..\MATLAB\v7_TATRC\DLL\test\for_testing\testNative.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="math.cs" />
@@ -65,6 +64,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
