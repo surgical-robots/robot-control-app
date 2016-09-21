@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System.Threading;
 using path_generation;
+using System.Windows.Media.Media3D;
 
 namespace RobotApp.Views.Plugins
 {
@@ -11,13 +12,18 @@ namespace RobotApp.Views.Plugins
     /// </summary>
     public partial class AutoSuture : PluginBase
     {
+        int version=2;
+        trajectory_version2 obj2;
+        trajectory_version3 obj3;
+
         double x, y, z;
         double leftUpperBevel, leftLowerBevel, leftElbow; // for calculating orientation of forearm
         double t = 0;
         double t_incr = Math.PI / 10;
         static int state;
-        double x_entry, y_entry, z_entry, x_exit, y_exit, z_exit, x_needle, y_needle, z_needle;
-        Vector needle_old, needle_new; // orientaton
+        //double x_entry, y_entry, z_entry, x_exit, y_exit, z_exit, x_needle, y_needle, z_needle;
+        Vector3D entry_point, exit_point;
+        //Vector needle_old, needle_new; // orientaton
         System.Windows.Forms.Timer stepTimer = new System.Windows.Forms.Timer();
 
         public override void PostLoadSetup()
@@ -58,9 +64,8 @@ namespace RobotApp.Views.Plugins
             {
                 if (state == 1)
                 {
-                    x_entry = x;
-                    y_entry = y;
-                    z_entry = z;
+                    //entry_point = new Vector3D(x, y, z);
+                    entry_point = new Vector3D(-30, 0, 130);
                     Console.Write("\n****************S1 ENTRY POINT\n");
                     state++;
                 }
@@ -69,11 +74,19 @@ namespace RobotApp.Views.Plugins
             {
                 if (state == 2)
                 {
-                    x_exit = x;
-                    y_exit = y;
-                    z_exit = z;
+                    //exit_point = new Vector3D(x, y, z);
+                    exit_point = new Vector3D(-15, 0, 130);
                     Console.Write("\n****************S2 EXIT POINT\n");
                     state++;
+                    switch (version)
+                    {
+                        case 2:
+                            obj2 = new trajectory_version2(entry_point, exit_point); // initializing trajectory
+                            break;
+                        case 3:
+                            obj3 = new trajectory_version3(entry_point, exit_point); // initializing trajectory
+                            break;
+                    }
                 }
             });
 
@@ -90,8 +103,8 @@ namespace RobotApp.Views.Plugins
             this.PluginInfo = "";
             InitializeComponent();
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
-            needle_old = null;
-            needle_new = null;
+            //needle_old = null;
+            //needle_new = null;
             // OUTPUTS
             Outputs.Add("X", new ViewModel.OutputSignalViewModel("X"));
             Outputs.Add("Y", new ViewModel.OutputSignalViewModel("Y"));
@@ -117,31 +130,29 @@ namespace RobotApp.Views.Plugins
 
         private void StepTimer_Tick(object sender, EventArgs e)
         {
-            //if (state < 3)
-            //{
-            //    Outputs["X"].Value = x;
-            //    Outputs["Y"].Value = y;
-            //    Outputs["Z"].Value = z;
-            //}
+
             if (state == 3) //calculation of needle center
             {
                 //Console.Write("\n****************S3 SUTURING STATRTS\n");
-                x_needle = (x_entry + x_exit) / 2;
-                y_needle = (y_entry + y_exit) / 2;
-                z_needle = (z_entry + z_exit) / 2;
-                point p;
-                trajectory obj = new trajectory(x_needle, y_needle, z_needle);
-                p = obj.end_effector(get_ori2(), t);
+                dof4 p;
+                switch (version)
+                {
+                    default:
+                        p = obj2.end_effector(get_forearm_orientation(), t_incr);
+                        break;
+                    case 3:
+                        p = obj3.end_effector(get_forearm_orientation(), t_incr);
+                        break;
+                }
                 t = t + t_incr;
                 Console.Write("\n****************t: {0}\n", t);
                 //Console.WriteLine("{0}\t{1}\t{2}", p.pos.x, p.pos.y, p.pos.z);
-                Outputs["X"].Value = p.pos.x;
-                Outputs["Y"].Value = p.pos.y;
-                Outputs["Z"].Value = p.pos.z;
-                needle_new = p.ori;
-                //needle_new.y = p.ori.y;
-                //needle_new.z = p.ori.z;
+                Outputs["X"].Value = p.pos.X;
+                Outputs["Y"].Value = p.pos.Y;
+                Outputs["Z"].Value = p.pos.Z;
+                Outputs["Twist"].Value = p.twist * 180 / Math.PI;
                 // calculating twist between two sequence
+                /*
                 double twist;
                 if (needle_old != null)
                     twist = Math.Acos((needle_new.x * needle_old.x + needle_new.y * needle_old.y + needle_new.z * needle_old.z) / (Math.Sqrt(needle_new.x * needle_new.x + needle_new.y * needle_new.y + needle_new.z * needle_new.z) * Math.Sqrt(needle_old.x * needle_old.x + needle_old.y * needle_old.y + needle_old.z * needle_old.z)));
@@ -149,8 +160,7 @@ namespace RobotApp.Views.Plugins
                     twist = 0;
                 Outputs["Twist"].Value = twist * 180/Math.PI;
                 needle_old = p.ori;
-                //needle_old.y = p.ori.y;
-                //needle_old.z = p.ori.z;
+                */
             
 
             //Outputs["pickPoint"].Value = entry_enabled == true ? 1 : 0;
@@ -164,19 +174,26 @@ namespace RobotApp.Views.Plugins
                 
             }
         }
-        private Vector get_ori2()
+        private Vector3D get_forearm_orientation()
         {
-            Vector ori2 = new Vector();
-            /*
+            double LengthUpperArm = 68.58;
+            double LengthForearm = 96.393;
+            // calculate forward kinematics and haptic forces, assuming kineAngle[0] is leftUpperBevel and kineAngle[1] is leftLowerBevel
+            double theta1 = ((leftUpperBevel + leftLowerBevel) / 2) * Math.PI / 180;
+            double theta2 = ((leftUpperBevel - leftLowerBevel) / 2) * Math.PI / 180;
+            double theta3 = leftElbow * Math.PI / 180;
+
             // calculate forward kinematics and haptic forces
-            double kineZ = LengthUpperArm * Math.Cos(kineAngle[0]) * Math.Cos(kineAngle[1]) - LengthForearm * (Math.Sin(kineAngle[0]) * Math.Sin(kineAngle[2]) - Math.Cos(kineAngle[0]) * Math.Cos(kineAngle[1]) * Math.Cos(kineAngle[2]));
-            double kineY = LengthUpperArm * Math.Sin(kineAngle[1]) + LengthForearm * Math.Sin(kineAngle[1]) * Math.Cos(kineAngle[2]);
-            double kineX = LengthUpperArm * Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]) + LengthForearm * (Math.Cos(kineAngle[0]) * Math.Sin(kineAngle[2]) + Math.Sin(kineAngle[0]) * Math.Cos(kineAngle[1]) * Math.Cos(kineAngle[2]));
-*/
-            ori2.x = 1;// leftElbow;
-            ori2.y = 1;// leftUpperBevel;
-            ori2.z = 1;// leftUpperBevel;
-            return ori2;
+            double shoulder_Z = LengthUpperArm * Math.Cos(theta1) * Math.Cos(theta2) - LengthForearm * (Math.Sin(theta1) * Math.Sin(theta3) - Math.Cos(theta1) * Math.Cos(theta2) * Math.Cos(theta3));
+            double shoulder_Y = LengthUpperArm * Math.Sin(theta2) + LengthForearm * Math.Sin(theta2) * Math.Cos(theta3);
+            double shoulder_X = LengthUpperArm * Math.Sin(theta1) * Math.Cos(theta2) + LengthForearm * (Math.Cos(theta1) * Math.Sin(theta3) + Math.Sin(theta1) * Math.Cos(theta2) * Math.Cos(theta3));
+
+            double elbow_Z = LengthUpperArm * Math.Cos(theta1) * Math.Cos(theta2);
+            double elbow_Y = LengthUpperArm * Math.Sin(theta2) ;
+            double elbow_X = LengthUpperArm * Math.Sin(theta1) * Math.Cos(theta2);
+
+            Vector3D forearm_orientation = new Vector3D(shoulder_X - elbow_X, shoulder_Y - elbow_Y, shoulder_Z - elbow_Z);
+            return forearm_orientation;
         }
 
         private RelayCommand startSuturingCommand;
