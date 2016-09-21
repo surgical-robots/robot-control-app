@@ -88,7 +88,6 @@ namespace TelSurge
                     frame = frame.Resize(((double)Main.CaptureImageBox.Width / (double)frame.Width), Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR);
                     frame = addMarkup(frame);
                     Main.ShowVideoFrame(frame);
-                    //Main.CaptureImageBox.Image = frame;
                     sendVideoStream(frame);
                 }
             }
@@ -216,8 +215,8 @@ namespace TelSurge
                 }
                 _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FPS, 40);
                 _capture.ImageGrabbed += ProcessFrame;
-                _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, 1080);
-                _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_WIDTH, 1920);
+                _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_HEIGHT, 720);
+                _capture.SetCaptureProperty(Emgu.CV.CvEnum.CAP_PROP.CV_CAP_PROP_FRAME_WIDTH, 1280);
                 _capture.Start();
                 IsCapturing = true;
             }
