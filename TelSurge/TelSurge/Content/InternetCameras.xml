@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfIPCamera xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <IPCamera>
+    <Identifier>0</Identifier>
     <Name>OregonState</Name>
     <Address>http://trackfield.webcam.oregonstate.edu/mjpg/video.mjpg</Address>
   </IPCamera>
   <IPCamera>
+    <Identifier>1</Identifier>
     <Name>France</Name>
     <Address>http://camera1.mairie-brest.fr/mjpg/video.mjpg</Address>
   </IPCamera>
   <IPCamera>
+    <Identifier>2</Identifier>
     <Name>Axis 215</Name>
     <Address>http://root:1234@129.93.8.214/axis-cgi/mjpg/video.cgi?.mjpg</Address>
   </IPCamera>
   <IPCamera>
+    <Identifier>3</Identifier>
     <Name>PTZOptics</Name>
-    <Address>rtsp://129.93.8.214/2</Address>
+    <Address>rtsp://129.93.14.183/1</Address>
+    <PTZAddress>129.93.14.183</PTZAddress>
   </IPCamera>
   <IPCamera>
+    <Identifier>4</Identifier>
     <Name>Test</Name>
     <Address>C:\Users\TATRC\Desktop\Sample.png</Address>
   </IPCamera>

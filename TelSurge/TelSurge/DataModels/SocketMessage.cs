@@ -16,35 +16,22 @@ namespace TelSurge.DataModels
         public OmniPosition PositionOffset { get; set; }
 
         //other message type information
-        public bool inControl { get; set; }
-        public string IPAddress { get; set; }
-        public double[] Forces { get; set; } // {LX, LY, LZ, RX, RY, RZ}
-        public bool sendFreezeCmd { get; set; }
-        public bool isFrozen { get; set; }
-        public bool hasOmnis { get; set; }
+        public User User { get; set; }
+        public OmniPosition Forces { get; set; } 
+        public bool sendToggleFrozen { get; set; }
         public bool EmergencySwitch { get; set; }
         public bool ClearMarkingsReq { get; set; }
 
         //name of connectee
-        public string Name { get; set; }
         public string Port { get; set; }
 
-        public List<string> ConnectedClients { get; set; }
+        public Surgery Surgery { get; set; }
 
 
-
-        public SocketMessage()
+        public SocketMessage(Surgery Surgery, User User)
         {
-            isFrozen = false;
-            EmergencySwitch = false;
-            ClearMarkingsReq = false;
-        }
-
-        public SocketMessage(string name, string ipAddr)
-        {
-            this.Name = name;
-            this.IPAddress = ipAddr;
-            isFrozen = false;
+            this.Surgery = Surgery;
+            this.User = User;
             EmergencySwitch = false;
             ClearMarkingsReq = false;
         }

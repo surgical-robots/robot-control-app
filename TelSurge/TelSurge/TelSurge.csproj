@@ -97,12 +97,14 @@
     <Compile Include="AssignButtons.Designer.cs">
       <DependentUpon>AssignButtons.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataModels\AudioConference.cs" />
     <Compile Include="CameraControl.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CameraControl.Designer.cs">
       <DependentUpon>CameraControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataModels\Figure.cs" />
     <Compile Include="DataModels\IPCamera.cs" />
     <Compile Include="IPCameras.cs">
       <SubType>Form</SubType>
@@ -133,6 +135,9 @@
     <Compile Include="ChangeMyIP.Designer.cs">
       <DependentUpon>ChangeMyIP.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataModels\Markup.cs" />
+    <Compile Include="DataModels\SocketData.cs" />
+    <Compile Include="DataModels\Surgery.cs" />
     <Compile Include="TelSurgeMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -158,6 +163,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataModels\User.cs" />
+    <Compile Include="DataModels\VideoCapture.cs" />
     <EmbeddedResource Include="AssignButtons.resx">
       <DependentUpon>AssignButtons.cs</DependentUpon>
     </EmbeddedResource>
@@ -250,6 +257,12 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GeomagicTouch\GeomagicTouch.vcxproj">
+      <Project>{bd2fd765-4d8e-462b-b1fd-f1f793bd8416}</Project>
+      <Name>GeomagicTouch</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Baseclass.Contrib.Nuget.Output.2.1.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\..\packages\Baseclass.Contrib.Nuget.Output.2.1.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />

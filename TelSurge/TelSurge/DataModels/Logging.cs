@@ -7,7 +7,7 @@ using System.IO;
 
 namespace TelSurge.DataModels
 {
-    class Logging
+    public class Logging
     {
         public enum StatusTypes { Error, Running, Stopped }
         public string StatusMessage { get; set; }

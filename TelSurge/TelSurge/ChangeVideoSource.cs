@@ -33,21 +33,22 @@ namespace TelSurge
             int choice = ddl_Devices.SelectedIndex;
             if (ddl_Devices.Items[choice].Equals("Master Video Feed"))
             {
-                _main.changeVideoSource(); //Start receiving video from Master
-                _main.videoIsPTZ = false;
+                //Master Video Feed
+                _main.VideoCapture.CaptureDevice = "";
+                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.MasterFeed);
             }
             else if (choice >= IPCamerasIndex)
             {
-                _main.changeVideoSource(ipSources[choice - IPCamerasIndex].Address);
-                //TODO: Determine if selected IP Camera has network controls
-                //For now just use controls for specific camera
-                if (ipSources[choice - IPCamerasIndex].Name.Equals("Axis 215"))
-                    _main.videoIsPTZ = true;
+                //IP source
+                _main.VideoCapture.CaptureDevice = ipSources[choice - IPCamerasIndex].Address;
+                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.IP);
+                _main.VideoCapture.PTZAddress = ipSources[choice - IPCamerasIndex].PTZAddress;
             }
             else
             {
-                _main.changeVideoSource(choice);
-                _main.videoIsPTZ = false;
+                //Local device
+                _main.VideoCapture.CaptureDevice = choice.ToString();
+                _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.Local);
             }
             this.Close();
         }
@@ -69,7 +70,7 @@ namespace TelSurge
                     if (i == 0)
                         IPCamerasIndex = ddl_Devices.Items.Count - 1;
                 }
-                if (!_main.isMaster && _main.isConnectedToMaster) //If client, add option to return to receiving video from Master
+                if (!_main.User.IsMaster && _main.User.ConnectedToMaster) //If client, add option to return to receiving video from Master
                     ddl_Devices.Items.Add("Master Video Feed");
 
                 ddl_Devices.SelectedIndex = 0;

@@ -29,9 +29,6 @@ namespace TelSurge
         private void btn_Done_Click(object sender, EventArgs e)
         {
             _main.networkDelay = trb_Delay.Value;
-            _main.networkVideoDelayChanged = true;
-            _main.videoBuffer.Clear();
-            _main.networkDataDelayChanged = true;
             //_main.dataBuffer.Clear();  Switching delay could be dangerous. Instantaneous position change is possible.
             this.Close();
         }

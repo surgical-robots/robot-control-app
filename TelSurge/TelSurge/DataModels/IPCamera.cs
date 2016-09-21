@@ -8,9 +8,10 @@ namespace TelSurge.DataModels
 {
     public class IPCamera
     {
-        //public int Identifier { get; set; }
+        public int Identifier { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
+        public string PTZAddress { get; set; }
 
         public IPCamera()
         {
@@ -18,9 +19,16 @@ namespace TelSurge.DataModels
         }
         public IPCamera(int ID, string Name, string Address)
         {
-            //this.Identifier = ID;
+            this.Identifier = ID;
             this.Name = Name;
             this.Address = Address;
+        }
+        public IPCamera(int ID, string Name, string Address, string PTZAddress)
+        {
+            this.Identifier = ID;
+            this.Name = Name;
+            this.Address = Address;
+            this.PTZAddress = PTZAddress;
         }
     }
 }

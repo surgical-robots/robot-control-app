@@ -46,6 +46,7 @@ namespace TelSurge
                 }
 
                 comboBox1.DataSource = availablePorts;
+                comboBox1.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -100,70 +101,22 @@ namespace TelSurge
         {
             try
             {
-                if (connectedPort == null)
-                    connectedPort = new SerialPort(comboBox1.SelectedValue.ToString(), baudRate);
-
+                connectedPort = new SerialPort((string)comboBox1.SelectedValue);
+                _main.User.ConnectExternalButtons(connectedPort, connected, numOfButtons[connectedPort.PortName]);
+                connected = !connected;
                 if (connected)
                 {
-                    if (connectedPort.IsOpen)
-                        connectedPort.Close();
-                    btn_Connect.Text = "Connect";
-                    _main.externalButtons = null;
-                    listen = false;
-                    ListenThread.Abort();
+                    btn_Connect.Text = "Disconnect";
                 }
                 else
                 {
-                    if (!connectedPort.IsOpen)
-                        connectedPort.Open();
-                    btn_Connect.Text = "Disconnect";
-                    if (_main.currentPosition != null)
-                        _main.externalButtons = new bool[numOfButtons[connectedPort.PortName]];
-                    listen = true;
-                    ListenThread = new Thread(new ThreadStart(Listen));
-                    ListenThread.Start();
+                    btn_Connect.Text = "Connect";
                 }
-                connected = !connected;
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
-        }
-
-        public void Listen()
-        {
-            int intReturnASCII = 0;
-            int count = numOfButtons[connectedPort.PortName];
-
-            while (listen)
-            {
-
-                if (connectedPort.BytesToRead >= numOfButtons[connectedPort.PortName])
-                {
-                    intReturnASCII = 0;
-                    string returnMessage = "";
-                    count = numOfButtons[connectedPort.PortName];
-
-                    while (count > 0)
-                    {
-                        intReturnASCII = connectedPort.ReadByte();
-                        returnMessage = returnMessage + Convert.ToChar(intReturnASCII);
-                        count--;
-                    }
-                    if (returnMessage != "")
-                    {
-                        if (_main.currentPosition != null)
-                        {
-                            if (_main.externalButtons == null)
-                                _main.externalButtons = new bool[numOfButtons[connectedPort.PortName]];
-                            for (int i = 0; i < numOfButtons[connectedPort.PortName]; i++)
-                            {
-                                _main.externalButtons[i] = Convert.ToBoolean(Char.GetNumericValue(returnMessage[i]));
-                            }
-                        }
-                    }
-                }
             }
         }
 
