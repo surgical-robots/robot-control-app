@@ -40,7 +40,15 @@ namespace RobotApp.ViewModel
 
         private void ExecuteLoadCommand()
         {
-            MainViewModel.LoadData(ConfigPath);
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.InitialDirectory = Directory.GetCurrentDirectory();
+            dlg.Filter = "Robot Configuration Files|*.ControllerConfig";
+            dlg.RestoreDirectory = true;
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if(result == true)
+                MainViewModel.LoadData(dlg.FileName);
         }
 
         private RelayCommand saveCommand;
@@ -59,7 +67,15 @@ namespace RobotApp.ViewModel
 
         private void ExecuteSaveCommand()
         {
-            MainViewModel.SaveData(ConfigPath);
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "config";
+            dlg.DefaultExt = ".ControllerConfig";
+            dlg.Filter = "Robot Configuration Files|*.ControllerConfig";
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if(result == true)
+                MainViewModel.SaveData(dlg.FileName);
         }
 
         public ControllerConfigurationViewModel()
