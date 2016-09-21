@@ -241,6 +241,7 @@
     <Compile Include="ViewModel\InputSignalViewModel.cs" />
     <Compile Include="ViewModel\SignalSinkRegistryViewModel.cs" />
     <Compile Include="ViewModel\OutputSignalViewModel.cs" />
+    <Compile Include="ViewModel\TransportDevices\SocketTransportViewModel.cs" />
     <Compile Include="ViewModel\TransportDevices\SerialTransportViewModel.cs" />
     <Compile Include="ViewModel\SettingsAppearanceViewModel.cs" />
     <Compile Include="ViewModel\TransportViewModelBase.cs" />
@@ -376,6 +377,9 @@
     </Compile>
     <Compile Include="Views\SignalSourceView.xaml.cs">
       <DependentUpon>SignalSourceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SocketTransportView.xaml.cs">
+      <DependentUpon>SocketTransportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\StatusBar.xaml.cs">
       <DependentUpon>StatusBar.xaml</DependentUpon>
@@ -589,6 +593,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SignalSourceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SocketTransportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
