@@ -4,7 +4,7 @@ using GalaSoft.MvvmLight.Messaging;
 using System.Threading;
 using path_generation;
 using System.Windows.Media.Media3D;
-
+using System.Windows.Forms;
 namespace RobotApp.Views.Plugins
 {
     /// <summary>
@@ -15,11 +15,11 @@ namespace RobotApp.Views.Plugins
         int version=2;
         trajectory_version2 obj2;
         trajectory_version3 obj3;
-
+        double r = 14;
         double x, y, z;
         double leftUpperBevel, leftLowerBevel, leftElbow; // for calculating orientation of forearm
         double t = 0;
-        double t_incr = Math.PI / 10;
+        double t_incr = Math.PI / 100;
         static int state;
         //double x_entry, y_entry, z_entry, x_exit, y_exit, z_exit, x_needle, y_needle, z_needle;
         Vector3D entry_point, exit_point;
@@ -62,31 +62,42 @@ namespace RobotApp.Views.Plugins
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Entry"].UniqueID, (message) =>
             {
-                if (state == 1)
+                if (state == 1)// select entry point
                 {
                     //entry_point = new Vector3D(x, y, z);
                     entry_point = new Vector3D(-30, 0, 130);
-                    Console.Write("\n****************S1 ENTRY POINT\n");
+                    Console.Write("\nState 1: ENTRY POINT selected\n");
                     state++;
                 }
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Exit"].UniqueID, (message) =>
             {
-                if (state == 2)
+                if (state == 2)// select entry point
                 {
                     //exit_point = new Vector3D(x, y, z);
-                    exit_point = new Vector3D(-15, 0, 130);
-                    Console.Write("\n****************S2 EXIT POINT\n");
-                    state++;
-                    switch (version)
+                    exit_point = new Vector3D(-25, 0, 130);
+                    if((exit_point-entry_point).Length>r)
                     {
-                        case 2:
-                            obj2 = new trajectory_version2(entry_point, exit_point); // initializing trajectory
-                            break;
-                        case 3:
-                            obj3 = new trajectory_version3(entry_point, exit_point); // initializing trajectory
-                            break;
+                        MessageBox.Show("Entery and exit points are not valid!");
+                        state = 1;
                     }
+                    else
+                    {
+                        Console.Write("\nState 2 EXIT POINT selected\n");
+                        state++;
+                        switch (version)
+                        {
+                            case 2:
+                                obj2 = new trajectory_version2(entry_point, exit_point); // initializing trajectory
+                                break;
+                            case 3:
+                                obj3 = new trajectory_version3(entry_point, exit_point); // initializing trajectory
+                                break;
+                        }
+                        Outputs["Clutch"].Value = 1;
+                    }
+
+ 
                 }
             });
 
@@ -98,7 +109,6 @@ namespace RobotApp.Views.Plugins
         }
         public AutoSuture()
         {
-            Console.Write("\n****************S0 START\n");
             this.TypeName = "AutoSuture";
             this.PluginInfo = "";
             InitializeComponent();
@@ -110,6 +120,7 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("Y", new ViewModel.OutputSignalViewModel("Y"));
             Outputs.Add("Z", new ViewModel.OutputSignalViewModel("Z"));
             Outputs.Add("Twist", new ViewModel.OutputSignalViewModel("Twist"));
+            Outputs.Add("Clutch", new ViewModel.OutputSignalViewModel("Clutch"));
 
 
             // INPUTS
@@ -150,7 +161,7 @@ namespace RobotApp.Views.Plugins
                 Outputs["X"].Value = p.pos.X;
                 Outputs["Y"].Value = p.pos.Y;
                 Outputs["Z"].Value = p.pos.Z;
-                Outputs["Twist"].Value = p.twist * 180 / Math.PI;
+                Outputs["Twist"].Value = -p.twist * 180 / Math.PI;
                 // calculating twist between two sequence
                 /*
                 double twist;
@@ -164,12 +175,13 @@ namespace RobotApp.Views.Plugins
             
 
             //Outputs["pickPoint"].Value = entry_enabled == true ? 1 : 0;
-            if (t > 2 * Math.PI)
+            if (t > 1.5 * Math.PI)
             {
-                //stepTimer.Stop();
+                stepTimer.Stop();
                 state = 1;
                 t = 0;
-                Console.Write("\n**************** End\n");
+                //Outputs["Clutch"].Value = 0;
+                Console.Write("\nAutomatically ended\n");
             }
                 
             }
@@ -230,6 +242,7 @@ namespace RobotApp.Views.Plugins
                     {
                         state = 1;
                         t = 0;
+                        Outputs["Clutch"].Value = 0;
                         stepTimer.Stop();
                     }));
             }

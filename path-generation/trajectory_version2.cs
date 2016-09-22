@@ -15,13 +15,13 @@ namespace path_generation
         private Vector3D circle_center; // position of needle in the grasper;
         private static Vector3D needle_holder_position;
 
-        static double needle_holder_twist;
+        double needle_holder_twist = 0;
         double delta_theta;
         Vector3D e_u, e_v, e_x, e_y, circle_normal;
-        private double r = 13; // radius of the needle
+        private double r = 14; // radius of the needle
         //double LengthUpperArm = 68.58;
         //double LengthForearm = 96.393;
-        private double t_incr = Math.PI / 10;
+        private double t_incr = Math.PI / 100;
         static Vector3D ideal_needle_orientation = new Vector3D();
         public trajectory_version2()
         {
@@ -46,7 +46,7 @@ namespace path_generation
             circle_center = new Vector3D(0.5 * (entry_point.X + exit_point.X), 0.5 * (entry_point.Y + exit_point.Y), 0.5 * (entry_point.Z + exit_point.Z));
             circle_center = circle_center - offset;
             needle_holder_position = 2 * circle_center - entry_point;
-
+            needle_holder_twist = Math.Acos(Vector3D.DotProduct((needle_holder_position - circle_center), e_x)  /  ((needle_holder_position - circle_center).Length * e_x.Length) );
 
             /*
             Vector3D temp = new Vector3D();
@@ -71,7 +71,7 @@ namespace path_generation
             Quaternion q_needle_holder_position = new Quaternion(temp.X, temp.Y, temp.Z, 0);
             //print_quaternion(q_needle_holder_position);
 
-            Quaternion q_circle_normal = new Quaternion(Math.Sin(t_incr / 2) * circle_normal.X, Math.Sin(t_incr / 2) * circle_normal.Y, Math.Sin(t_incr / 2) * circle_normal.Z, Math.Cos(t_incr / 2));
+            Quaternion q_circle_normal = new Quaternion(Math.Sin(-t_incr / 2) * circle_normal.X, Math.Sin(-t_incr / 2) * circle_normal.Y, Math.Sin(-t_incr / 2) * circle_normal.Z, Math.Cos(-t_incr / 2));
             Quaternion q_circle_normal_conjugate = new Quaternion();
             q_circle_normal_conjugate = q_circle_normal;
             q_circle_normal_conjugate.Conjugate();
