@@ -4,10 +4,10 @@
     {
         public FourDOFsolver()
         {
-            this.DHparameters = new double[4, 3] { {   0,      0, 0 }, 
-                                                {  90,      0, 0 }, 
-                                                { -90,  68.58, 0 }, 
-                                                {  90, 96.393, 0 } };
+            this.DHparameters = new double[4, 4] { {   0,      0, 0, 0 }, 
+                                                   {  90,      0, 0, 0 }, 
+                                                   { -90,  68.58, 0, 0 }, 
+                                                   {  90, 96.393, 0, 0 } };
             this.N = 4;
             this.Sigma = new bool[3] { false, false, false };
             this.MinMax = new System.Windows.Point[N];
