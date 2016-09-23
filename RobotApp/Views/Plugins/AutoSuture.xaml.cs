@@ -155,16 +155,16 @@ namespace RobotApp.Views.Plugins
                 {
                     Console.Write("\nSuturing satrted.\n");
                     trajectory.create();
-                    needle.circle_center = trajectory.circle_center;
+                    needle.local_coordinate = trajectory.local_coordinate;
                     Outputs["Clutch"].Value = 1; // enalble clutch
                     state++;
                 }
             }
             if (state == 4) //calculation of needle holder position
             {
-                dof4 end_effector;
-                end_effector.pos = trajectory.get_needle_tip_position();
-                end_effector.twist = trajectory.get_needle_tip_twist();
+                //dof4 end_effector;
+                //end_effector.pos = trajectory.get_needle_tip_position();
+                //end_effector.twist = trajectory.get_needle_tip_twist();
                 needle.set_needle_tip_position(trajectory.get_needle_tip_position());
                 needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
 

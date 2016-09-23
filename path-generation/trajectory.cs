@@ -15,12 +15,12 @@ namespace path_generation
         public double needle_radius = 14; // radius of the needle
         public Vector3D entry_point;
         public Vector3D exit_point;
-        public Vector3D circle_center; // position of needle in the grasper;
         public int number_of_points = 20;
-
+        public Coordinate local_coordinate;
+        public Coordinate twisted_local_coordinate;
         public double incr { get; private set; }
-        private double total_angle = 0; // total angle swept
-        private Vector3D e_u, e_v, e_x, e_y, circle_normal;
+        //private double total_angle = 0; // total angle swept
+        //private Vector3D e_u, e_v, e_x, e_y, circle_normal;
         private  static Vector3D needle_tip_position;
         private double needle_tip_twist = 0;
 
@@ -42,67 +42,58 @@ namespace path_generation
         {
             this.entry_point = entry_point;
             this.exit_point = exit_point;
-            incr = Math.PI / number_of_points;
-            e_u = new Vector3D(); //e: unit vector
-            e_u = exit_point - entry_point;
-            circle_normal = new Vector3D();
-            e_x = new Vector3D(e_u.X, 0, e_u.Z);
-            e_x = e_x / e_x.Length;
-            e_y = new Vector3D(0, 1, 0);
-            circle_normal = Vector3D.CrossProduct(e_y, e_u);
-            circle_normal = circle_normal / circle_normal.Length;
-            e_v = new Vector3D();
-            e_v = Vector3D.CrossProduct(circle_normal, e_u);
-            Vector3D offset = new Vector3D();
-            offset = Math.Sqrt(needle_radius * needle_radius - .25 * e_u.Length * e_u.Length) * e_v / e_v.Length;
-            circle_center = new Vector3D(0.5 * (entry_point.X + exit_point.X), 0.5 * (entry_point.Y + exit_point.Y), 0.5 * (entry_point.Z + exit_point.Z));
-            circle_center = circle_center - offset;
-            needle_tip_position = entry_point;
-            needle_tip_twist = Math.Acos(Vector3D.DotProduct((needle_tip_position - circle_center), e_x) / ((needle_tip_position - circle_center).Length * e_x.Length));
-            ///needle_holder_position = 2 * circle_center - entry_point;
-            /// = Math.Acos(Vector3D.DotProduct((needle_holder_position - circle_center), e_x)  /  ((needle_holder_position - circle_center).Length * e_x.Length) );
+            create();
 
-
-            print_vector(entry_point);
-            print_vector(exit_point);
-            print_vector(circle_center);
-            print_vector(needle_tip_position);
         }
-        public void create()
+        public void create() // enrty and exit point must be given beforehand
         {
             incr = Math.PI / number_of_points;
-            e_u = new Vector3D(); //e: unit vector
-            e_u = exit_point - entry_point;
-            circle_normal = new Vector3D();
-            e_x = new Vector3D(e_u.X, 0, e_u.Z);
-            e_x = e_x / e_x.Length;
-            e_y = new Vector3D(0, 1, 0);
-            circle_normal = Vector3D.CrossProduct(e_y, e_u);
-            circle_normal = circle_normal / circle_normal.Length;
-            e_v = new Vector3D();
-            e_v = Vector3D.CrossProduct(circle_normal, e_u);
+            local_coordinate.origin = new Vector3D();
+            local_coordinate.e_x = new Vector3D();
+            local_coordinate.e_y = new Vector3D();
+            local_coordinate.e_z = new Vector3D();
+            twisted_local_coordinate.origin = new Vector3D();
+            twisted_local_coordinate.e_x = new Vector3D();
+            twisted_local_coordinate.e_y = new Vector3D();
+            twisted_local_coordinate.e_z = new Vector3D();
+            twisted_local_coordinate.e_x = new Vector3D(); //e: unit vector
+            twisted_local_coordinate.e_x = exit_point - entry_point;
+            local_coordinate.e_x = new Vector3D(twisted_local_coordinate.e_x.X, 0, twisted_local_coordinate.e_x.Z);
+            local_coordinate.e_x = local_coordinate.e_x / local_coordinate.e_x.Length;
+            local_coordinate.e_y = new Vector3D(0, 1, 0);
+            local_coordinate.e_z = Vector3D.CrossProduct(local_coordinate.e_y, twisted_local_coordinate.e_x);
+            local_coordinate.e_z = local_coordinate.e_z / local_coordinate.e_z.Length;
+            twisted_local_coordinate.e_y = Vector3D.CrossProduct(local_coordinate.e_z, twisted_local_coordinate.e_x);
             Vector3D offset = new Vector3D();
-            offset = Math.Sqrt(needle_radius * needle_radius - .25 * e_u.Length * e_u.Length) * e_v / e_v.Length;
-            circle_center = new Vector3D(0.5 * (entry_point.X + exit_point.X), 0.5 * (entry_point.Y + exit_point.Y), 0.5 * (entry_point.Z + exit_point.Z));
-            circle_center = circle_center - offset;
+            offset = Math.Sqrt(needle_radius * needle_radius - .25 * twisted_local_coordinate.e_x.Length * twisted_local_coordinate.e_x.Length) * twisted_local_coordinate.e_y / twisted_local_coordinate.e_y.Length;
+            local_coordinate.origin = new Vector3D(0.5 * (entry_point.X + exit_point.X), 0.5 * (entry_point.Y + exit_point.Y), 0.5 * (entry_point.Z + exit_point.Z));
+            local_coordinate.origin = local_coordinate.origin - offset;
+            twisted_local_coordinate.origin = local_coordinate.origin;
+            twisted_local_coordinate.e_z = local_coordinate.e_z;
+
             needle_tip_position = entry_point;
-            needle_tip_twist = Math.Acos(Vector3D.DotProduct((needle_tip_position - circle_center), e_x) / ((needle_tip_position - circle_center).Length * e_x.Length));
+            needle_tip_twist = Math.Acos(Vector3D.DotProduct((needle_tip_position - local_coordinate.origin), local_coordinate.e_x) / ((needle_tip_position - local_coordinate.origin).Length * local_coordinate.e_x.Length));
             ///needle_holder_position = 2 * circle_center - entry_point;
             /// = Math.Acos(Vector3D.DotProduct((needle_holder_position - circle_center), e_x)  /  ((needle_holder_position - circle_center).Length * e_x.Length) );
 
 
             print_vector(entry_point);
             print_vector(exit_point);
-            print_vector(circle_center);
+            print_vector(local_coordinate.origin);
             print_vector(needle_tip_position);
         }
         public Vector3D get_needle_tip_position()
         {
+            Vector3D circle_normal = new Vector3D();
+            circle_normal = local_coordinate.e_z;
+            Vector3D circle_center = new Vector3D();
+            circle_center = local_coordinate.origin;
             //total_angle = total_angle + incr;
             Vector3D temp = new Vector3D();
             temp = needle_tip_position - circle_center;
             Quaternion q_needle_tip_position = new Quaternion(temp.X, temp.Y, temp.Z, 0);
             //print_quaternion(q_needle_holder_position);
+
 
             Quaternion q_circle_normal = new Quaternion(Math.Sin(-incr / 2) * circle_normal.X, Math.Sin(-incr / 2) * circle_normal.Y, Math.Sin(-incr / 2) * circle_normal.Z, Math.Cos(-incr / 2));
             Quaternion q_circle_normal_conjugate = new Quaternion();
@@ -118,6 +109,14 @@ namespace path_generation
             //print_quaternion(q_needle_holder_position);
 
 
+        }
+        public Vector3D get_normal()
+        {
+            return local_coordinate.e_z;
+        }
+        public Vector3D get_center()
+        {
+            return local_coordinate.origin;
         }
         public double get_needle_tip_twist()
         {

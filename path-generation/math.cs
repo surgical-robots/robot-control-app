@@ -20,7 +20,13 @@ namespace path_generation
         public double twist;
     }
 
-    
+    public struct Coordinate
+    {
+        public Vector3D origin;
+        public Vector3D e_x;
+        public Vector3D e_y;
+        public Vector3D e_z;
+    }
  
 
 

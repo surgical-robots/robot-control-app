@@ -12,13 +12,13 @@ namespace path_generation
 {
     public class Needle
     {
-        public Vector3D circle_center; // position of needle in the grasper;
-        
+        public Coordinate local_coordinate;
+        public Coordinate twisted_local_coordinate;   
+
         private static Vector3D needle_holder_position;
         private Vector3D needle_tip_position;
         private double needle_holder_twist = 0;
         private double needle_tip_twist;
-
         //double delta_theta;
         //Vector3D e_u, e_v, e_x, e_y, circle_normal;
         //private double r = 14; // radius of the needle
@@ -34,6 +34,8 @@ namespace path_generation
         }
         public Needle(Vector3D needle_tip_position)
         {
+            Vector3D circle_center = new Vector3D();
+            circle_center = local_coordinate.origin;
             this.needle_tip_position = needle_tip_position;
             needle_holder_position = 2 * circle_center - needle_tip_position;
             //needle_holder_twist = Math.Acos(Vector3D.DotProduct((needle_holder_position - circle_center), e_x)  /  ((needle_holder_position - circle_center).Length * e_x.Length) );
@@ -62,6 +64,8 @@ namespace path_generation
         }
         public Vector3D get_needle_holder_position()
         {
+            Vector3D circle_center = new Vector3D();
+            circle_center = local_coordinate.origin;
             needle_holder_position = 2 * circle_center - needle_tip_position;
             return needle_holder_position;
         }
