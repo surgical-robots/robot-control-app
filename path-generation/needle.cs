@@ -19,18 +19,9 @@ namespace path_generation
         private Vector3D needle_tip_position;
         private double needle_holder_twist = 0;
         private double needle_tip_twist;
-        //double delta_theta;
-        //Vector3D e_u, e_v, e_x, e_y, circle_normal;
-        //private double r = 14; // radius of the needle
-        //double LengthUpperArm = 68.58;
-        //double LengthForearm = 96.393;
-        //private double t_incr = Math.PI / 100;
-        //static Vector3D ideal_needle_orientation = new Vector3D();
+
         public Needle()
         {
-            //xc = 0; // center of the needle
-            //yc = 0;
-            //zc = 130;
         }
         public Needle(Vector3D needle_tip_position)
         {
@@ -38,22 +29,11 @@ namespace path_generation
             circle_center = local_coordinate.origin;
             this.needle_tip_position = needle_tip_position;
             needle_holder_position = 2 * circle_center - needle_tip_position;
-            //needle_holder_twist = Math.Acos(Vector3D.DotProduct((needle_holder_position - circle_center), e_x)  /  ((needle_holder_position - circle_center).Length * e_x.Length) );
-
-            /*
-            Vector3D temp = new Vector3D();
-            temp = needle_holder_position - circle_center;
-            needle_holder_twist = Math.Acos(Vector3D.DotProduct(temp, e_x) / (temp.Length * e_x.Length));
-             * */
 
             print_vector(needle_holder_position);
         }
-        /*private void update_needle_holder_twist()
-        {
-            Vector3D temp = new Vector3D();
-            temp = needle_holder_position - circle_center;
-            needle_holder_twist = Math.Acos(Vector3D.DotProduct(temp, e_x) / (temp.Length * e_x.Length));
-        }*/
+
+
         public void set_needle_tip_position(Vector3D needle_tip_position)
         {
             this.needle_tip_position = needle_tip_position;
@@ -74,26 +54,7 @@ namespace path_generation
             return needle_tip_twist;
 
         }
-        /*private void update_needle_holder_position()
-        {
-            Vector3D temp = new Vector3D();
-            temp = needle_holder_position - circle_center;
-            Quaternion q_needle_holder_position = new Quaternion(temp.X, temp.Y, temp.Z, 0);
-            //print_quaternion(q_needle_holder_position);
 
-            Quaternion q_circle_normal = new Quaternion(Math.Sin(-t_incr / 2) * circle_normal.X, Math.Sin(-t_incr / 2) * circle_normal.Y, Math.Sin(-t_incr / 2) * circle_normal.Z, Math.Cos(-t_incr / 2));
-            Quaternion q_circle_normal_conjugate = new Quaternion();
-            q_circle_normal_conjugate = q_circle_normal;
-            q_circle_normal_conjugate.Conjugate();
-            q_needle_holder_position = q_circle_normal * q_needle_holder_position * q_circle_normal_conjugate;
-            needle_holder_position.X = q_needle_holder_position.X + circle_center.X;
-            needle_holder_position.Y = q_needle_holder_position.Y + circle_center.Y;
-            needle_holder_position.Z = q_needle_holder_position.Z + circle_center.Z;
-            //print_quaternion(q_circle_normal);
-            //print_quaternion(q_needle_holder_position);
-
-
-        }*/
         
 
         /*public dof4 end_effector(Vector3D forearm_orientation, double delta_theta) //trajectory() in MATLAB; calculation position of end effector and ideal orientation of the needle

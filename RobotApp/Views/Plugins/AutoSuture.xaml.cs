@@ -12,19 +12,13 @@ namespace RobotApp.Views.Plugins
     /// </summary>
     public partial class AutoSuture : PluginBase
     {
-        //int version=2;
-        //trajectory_version2 obj2;
-        //trajectory_version3 obj3;
-        Trajectory trajectory;
-        Needle needle;
-        //double r = 14;
+        Trajectory trajectory; // ideal trajectory; gives the needle tip at every moment
+        Needle needle; // the trajectory will initialize the needle, then will get updated based on new needle tip.
         double x, y, z;
         double leftUpperBevel, leftLowerBevel, leftElbow; // for calculating orientation of forearm
         double t = 0;
-        //double t_incr = Math.PI / 100;
         static int state;
-        //double x_entry, y_entry, z_entry, x_exit, y_exit, z_exit, x_needle, y_needle, z_needle;
-        //Vector needle_old, needle_new; // orientaton
+
         System.Windows.Forms.Timer stepTimer = new System.Windows.Forms.Timer();
 
         public override void PostLoadSetup()
@@ -82,22 +76,6 @@ namespace RobotApp.Views.Plugins
                     trajectory.exit_point = exit_point;
                     state++;
                 }
-
-
-                        /*switch (version)
-                        {
-                            case 2:
-                                obj2 = new trajectory_version2(entry_point, exit_point); // initializing trajectory
-                                break;
-                            case 3:
-                                obj3 = new trajectory_version3(entry_point, exit_point); // initializing trajectory
-                                break;
-                        }*/
-                        
-                    
-
- 
-
             });
 
             base.PostLoadSetup();
@@ -119,7 +97,6 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("Twist", new ViewModel.OutputSignalViewModel("Twist"));
             Outputs.Add("Clutch", new ViewModel.OutputSignalViewModel("Clutch"));
 
-
             // INPUTS
             Inputs.Add("X", new ViewModel.InputSignalViewModel("X", this.InstanceName));
             Inputs.Add("Y", new ViewModel.InputSignalViewModel("Y", this.InstanceName));
@@ -130,7 +107,7 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("leftLowerBevel", new ViewModel.InputSignalViewModel("leftLowerBevel", this.InstanceName));
             Inputs.Add("leftElbow", new ViewModel.InputSignalViewModel("leftElbow", this.InstanceName));
 
-
+            // Initializing
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
             trajectory = new Trajectory();
             needle = new Needle();
@@ -168,48 +145,22 @@ namespace RobotApp.Views.Plugins
                 needle.set_needle_tip_position(trajectory.get_needle_tip_position());
                 needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
 
-                //Console.Write("\n****************S3 SUTURING STATRTS\n");
-                /*dof4 p;
-                switch (version)
-                {
-                    default:
-                        p = obj2.end_effector(get_forearm_orientation(), t_incr);
-                        break;
-                    case 3:
-                        p = obj3.end_effector(get_forearm_orientation(), t_incr);
-                        break;
-                }*/
+
                 t = t + trajectory.incr;
                 Console.Write("\n****************t: {0}\n", t);
                 //Console.WriteLine("{0}\t{1}\t{2}", p.pos.x, p.pos.y, p.pos.z);
-
                 Outputs["X"].Value = needle.get_needle_holder_position().X;
                 Outputs["Y"].Value = needle.get_needle_holder_position().Y;
                 Outputs["Z"].Value = needle.get_needle_holder_position().Z;
                 Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
-                
-                // calculating twist between two sequence
-                /*
-                double twist;
-                if (needle_old != null)
-                    twist = Math.Acos((needle_new.x * needle_old.x + needle_new.y * needle_old.y + needle_new.z * needle_old.z) / (Math.Sqrt(needle_new.x * needle_new.x + needle_new.y * needle_new.y + needle_new.z * needle_new.z) * Math.Sqrt(needle_old.x * needle_old.x + needle_old.y * needle_old.y + needle_old.z * needle_old.z)));
-                else
-                    twist = 0;
-                Outputs["Twist"].Value = twist * 180/Math.PI;
-                needle_old = p.ori;
-                */
-            
-
-            //Outputs["pickPoint"].Value = entry_enabled == true ? 1 : 0;
-            if (t > 1.5 * Math.PI)
-            {
-                stepTimer.Stop();
-                state = 1;
-                t = 0;
-                //Outputs["Clutch"].Value = 0;
-                Console.Write("\nAutomatically ended\n");
-            }
-                
+                if (t > 1.5 * Math.PI)
+                {
+                    stepTimer.Stop();
+                    state = 1;
+                    t = 0;
+                    //Outputs["Clutch"].Value = 0;
+                    Console.Write("\nAutomatically ended\n");
+                }
             }
         }
         private Vector3D get_forearm_orientation()
