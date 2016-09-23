@@ -60,7 +60,8 @@
     <Compile Include="math.cs" />
     <Compile Include="autoSuturing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="trajectory_version3 - Copy.cs" />
+    <Compile Include="needle_holder.cs" />
+    <Compile Include="trajectory.cs" />
     <Compile Include="trajectory_version3.cs" />
     <Compile Include="trajectory_version2.cs" />
   </ItemGroup>

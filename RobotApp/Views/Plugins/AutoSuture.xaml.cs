@@ -15,6 +15,8 @@ namespace RobotApp.Views.Plugins
         int version=2;
         trajectory_version2 obj2;
         trajectory_version3 obj3;
+        trajectory traj;
+        needle_holder grasper;
         double r = 14;
         double x, y, z;
         double leftUpperBevel, leftLowerBevel, leftElbow; // for calculating orientation of forearm
@@ -85,7 +87,10 @@ namespace RobotApp.Views.Plugins
                     {
                         Console.Write("\nState 2 EXIT POINT selected\n");
                         state++;
-                        switch (version)
+                        traj = new trajectory(entry_point, exit_point);
+                        grasper = new needle_holder();
+                        grasper.circle_center = traj.circle_center;
+                        /*switch (version)
                         {
                             case 2:
                                 obj2 = new trajectory_version2(entry_point, exit_point); // initializing trajectory
@@ -93,7 +98,7 @@ namespace RobotApp.Views.Plugins
                             case 3:
                                 obj3 = new trajectory_version3(entry_point, exit_point); // initializing trajectory
                                 break;
-                        }
+                        }*/
                         Outputs["Clutch"].Value = 1;
                     }
 
@@ -144,8 +149,14 @@ namespace RobotApp.Views.Plugins
 
             if (state == 3) //calculation of needle center
             {
+                dof4 end_effector;
+                end_effector.pos = traj.get_needle_tip_position();
+                end_effector.twist = traj.get_needle_tip_twist();
+                grasper.set_needle_tip_position(traj.get_needle_tip_position());
+                grasper.set_needle_tip_twist(traj.get_needle_tip_twist());
+
                 //Console.Write("\n****************S3 SUTURING STATRTS\n");
-                dof4 p;
+                /*dof4 p;
                 switch (version)
                 {
                     default:
@@ -154,14 +165,16 @@ namespace RobotApp.Views.Plugins
                     case 3:
                         p = obj3.end_effector(get_forearm_orientation(), t_incr);
                         break;
-                }
+                }*/
                 t = t + t_incr;
                 Console.Write("\n****************t: {0}\n", t);
                 //Console.WriteLine("{0}\t{1}\t{2}", p.pos.x, p.pos.y, p.pos.z);
-                Outputs["X"].Value = p.pos.X;
-                Outputs["Y"].Value = p.pos.Y;
-                Outputs["Z"].Value = p.pos.Z;
-                Outputs["Twist"].Value = -p.twist * 180 / Math.PI;
+
+                Outputs["X"].Value = grasper.get_needle_holder_position().X;
+                Outputs["Y"].Value = grasper.get_needle_holder_position().Y;
+                Outputs["Z"].Value = grasper.get_needle_holder_position().Z;
+                Outputs["Twist"].Value = -grasper.get_needle_holder_twist() * 180 / Math.PI;
+                
                 // calculating twist between two sequence
                 /*
                 double twist;
