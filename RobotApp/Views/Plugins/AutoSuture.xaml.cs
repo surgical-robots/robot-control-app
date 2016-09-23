@@ -12,19 +12,18 @@ namespace RobotApp.Views.Plugins
     /// </summary>
     public partial class AutoSuture : PluginBase
     {
-        int version=2;
-        trajectory_version2 obj2;
-        trajectory_version3 obj3;
-        trajectory traj;
-        needle_holder grasper;
-        double r = 14;
+        //int version=2;
+        //trajectory_version2 obj2;
+        //trajectory_version3 obj3;
+        Trajectory trajectory;
+        Needle needle;
+        //double r = 14;
         double x, y, z;
         double leftUpperBevel, leftLowerBevel, leftElbow; // for calculating orientation of forearm
         double t = 0;
-        double t_incr = Math.PI / 100;
+        //double t_incr = Math.PI / 100;
         static int state;
         //double x_entry, y_entry, z_entry, x_exit, y_exit, z_exit, x_needle, y_needle, z_needle;
-        Vector3D entry_point, exit_point;
         //Vector needle_old, needle_new; // orientaton
         System.Windows.Forms.Timer stepTimer = new System.Windows.Forms.Timer();
 
@@ -66,9 +65,10 @@ namespace RobotApp.Views.Plugins
             {
                 if (state == 1)// select entry point
                 {
-                    //entry_point = new Vector3D(x, y, z);
-                    entry_point = new Vector3D(-30, 0, 130);
                     Console.Write("\nState 1: ENTRY POINT selected\n");
+                    //Vector3D entry_point = new Vector3D(x, y, z);
+                    Vector3D entry_point = new Vector3D(-30, 0, 130);
+                    trajectory.entry_point = entry_point;
                     state++;
                 }
             });
@@ -76,20 +76,14 @@ namespace RobotApp.Views.Plugins
             {
                 if (state == 2)// select entry point
                 {
-                    //exit_point = new Vector3D(x, y, z);
-                    exit_point = new Vector3D(-25, 0, 130);
-                    if((exit_point-entry_point).Length>r)
-                    {
-                        MessageBox.Show("Entery and exit points are not valid!");
-                        state = 1;
-                    }
-                    else
-                    {
-                        Console.Write("\nState 2 EXIT POINT selected\n");
-                        state++;
-                        traj = new trajectory(entry_point, exit_point);
-                        grasper = new needle_holder();
-                        grasper.circle_center = traj.circle_center;
+                    Console.Write("\nState 2 EXIT POINT selected\n");
+                    //Vector3D exit_point = new Vector3D(x, y, z);
+                    Vector3D exit_point = new Vector3D(-25, 0, 130);
+                    trajectory.exit_point = exit_point;
+                    state++;
+                }
+
+
                         /*switch (version)
                         {
                             case 2:
@@ -99,11 +93,11 @@ namespace RobotApp.Views.Plugins
                                 obj3 = new trajectory_version3(entry_point, exit_point); // initializing trajectory
                                 break;
                         }*/
-                        Outputs["Clutch"].Value = 1;
-                    }
+                        
+                    
 
  
-                }
+
             });
 
             base.PostLoadSetup();
@@ -117,9 +111,7 @@ namespace RobotApp.Views.Plugins
             this.TypeName = "AutoSuture";
             this.PluginInfo = "";
             InitializeComponent();
-            state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
-            //needle_old = null;
-            //needle_new = null;
+
             // OUTPUTS
             Outputs.Add("X", new ViewModel.OutputSignalViewModel("X"));
             Outputs.Add("Y", new ViewModel.OutputSignalViewModel("Y"));
@@ -137,6 +129,12 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("leftUpperBevel", new ViewModel.InputSignalViewModel("leftUpperBevel", this.InstanceName));
             Inputs.Add("leftLowerBevel", new ViewModel.InputSignalViewModel("leftLowerBevel", this.InstanceName));
             Inputs.Add("leftElbow", new ViewModel.InputSignalViewModel("leftElbow", this.InstanceName));
+
+
+            state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
+            trajectory = new Trajectory();
+            needle = new Needle();
+
             // set up output timer
             stepTimer.Interval = 100;
             stepTimer.Tick += StepTimer_Tick; ;
@@ -146,14 +144,29 @@ namespace RobotApp.Views.Plugins
 
         private void StepTimer_Tick(object sender, EventArgs e)
         {
-
-            if (state == 3) //calculation of needle center
+            if (state ==3)// checked if entry&exit are valid. create the trajectory and needle
+            {
+                if ((trajectory.exit_point - trajectory.entry_point).Length > trajectory.needle_radius)
+                {
+                    MessageBox.Show("Entery and exit points are not valid!");
+                    state = 1;
+                }
+                else
+                {
+                    Console.Write("\nSuturing satrted.\n");
+                    trajectory.create();
+                    needle.circle_center = trajectory.circle_center;
+                    Outputs["Clutch"].Value = 1; // enalble clutch
+                    state++;
+                }
+            }
+            if (state == 4) //calculation of needle holder position
             {
                 dof4 end_effector;
-                end_effector.pos = traj.get_needle_tip_position();
-                end_effector.twist = traj.get_needle_tip_twist();
-                grasper.set_needle_tip_position(traj.get_needle_tip_position());
-                grasper.set_needle_tip_twist(traj.get_needle_tip_twist());
+                end_effector.pos = trajectory.get_needle_tip_position();
+                end_effector.twist = trajectory.get_needle_tip_twist();
+                needle.set_needle_tip_position(trajectory.get_needle_tip_position());
+                needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
 
                 //Console.Write("\n****************S3 SUTURING STATRTS\n");
                 /*dof4 p;
@@ -166,14 +179,14 @@ namespace RobotApp.Views.Plugins
                         p = obj3.end_effector(get_forearm_orientation(), t_incr);
                         break;
                 }*/
-                t = t + t_incr;
+                t = t + trajectory.incr;
                 Console.Write("\n****************t: {0}\n", t);
                 //Console.WriteLine("{0}\t{1}\t{2}", p.pos.x, p.pos.y, p.pos.z);
 
-                Outputs["X"].Value = grasper.get_needle_holder_position().X;
-                Outputs["Y"].Value = grasper.get_needle_holder_position().Y;
-                Outputs["Z"].Value = grasper.get_needle_holder_position().Z;
-                Outputs["Twist"].Value = -grasper.get_needle_holder_twist() * 180 / Math.PI;
+                Outputs["X"].Value = needle.get_needle_holder_position().X;
+                Outputs["Y"].Value = needle.get_needle_holder_position().Y;
+                Outputs["Z"].Value = needle.get_needle_holder_position().Z;
+                Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
                 
                 // calculating twist between two sequence
                 /*

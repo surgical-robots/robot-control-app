@@ -10,7 +10,7 @@ using System.Windows.Media.Media3D;
 
 namespace path_generation
 {
-    public class needle_holder
+    public class Needle
     {
         public Vector3D circle_center; // position of needle in the grasper;
         
@@ -26,13 +26,13 @@ namespace path_generation
         //double LengthForearm = 96.393;
         //private double t_incr = Math.PI / 100;
         //static Vector3D ideal_needle_orientation = new Vector3D();
-        public needle_holder()
+        public Needle()
         {
             //xc = 0; // center of the needle
             //yc = 0;
             //zc = 130;
         }
-        public needle_holder(Vector3D needle_tip_position)
+        public Needle(Vector3D needle_tip_position)
         {
             this.needle_tip_position = needle_tip_position;
             needle_holder_position = 2 * circle_center - needle_tip_position;

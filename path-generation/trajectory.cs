@@ -10,18 +10,18 @@ using System.Windows.Media.Media3D;
 
 namespace path_generation
 {
-    public class trajectory
+    public class Trajectory
     {
         public double needle_radius = 14; // radius of the needle
         public Vector3D entry_point;
         public Vector3D exit_point;
+        public Vector3D circle_center; // position of needle in the grasper;
         public int number_of_points = 20;
 
-        private double incr;
+        public double incr { get; private set; }
         private double total_angle = 0; // total angle swept
-        public Vector3D circle_center; // position of needle in the grasper;
-        private  static Vector3D needle_tip_position;
         private Vector3D e_u, e_v, e_x, e_y, circle_normal;
+        private  static Vector3D needle_tip_position;
         private double needle_tip_twist = 0;
 
 
@@ -32,16 +32,44 @@ namespace path_generation
 
         //private double t_incr = Math.PI / 100;
         //static Vector3D ideal_needle_orientation = new Vector3D();
-        public trajectory()
+        public Trajectory()
         {
             //xc = 0; // center of the needle
             //yc = 0;
             //zc = 130;
         }
-        public trajectory(Vector3D entry_point, Vector3D exit_point)
+        public Trajectory(Vector3D entry_point, Vector3D exit_point)
         {
             this.entry_point = entry_point;
             this.exit_point = exit_point;
+            incr = Math.PI / number_of_points;
+            e_u = new Vector3D(); //e: unit vector
+            e_u = exit_point - entry_point;
+            circle_normal = new Vector3D();
+            e_x = new Vector3D(e_u.X, 0, e_u.Z);
+            e_x = e_x / e_x.Length;
+            e_y = new Vector3D(0, 1, 0);
+            circle_normal = Vector3D.CrossProduct(e_y, e_u);
+            circle_normal = circle_normal / circle_normal.Length;
+            e_v = new Vector3D();
+            e_v = Vector3D.CrossProduct(circle_normal, e_u);
+            Vector3D offset = new Vector3D();
+            offset = Math.Sqrt(needle_radius * needle_radius - .25 * e_u.Length * e_u.Length) * e_v / e_v.Length;
+            circle_center = new Vector3D(0.5 * (entry_point.X + exit_point.X), 0.5 * (entry_point.Y + exit_point.Y), 0.5 * (entry_point.Z + exit_point.Z));
+            circle_center = circle_center - offset;
+            needle_tip_position = entry_point;
+            needle_tip_twist = Math.Acos(Vector3D.DotProduct((needle_tip_position - circle_center), e_x) / ((needle_tip_position - circle_center).Length * e_x.Length));
+            ///needle_holder_position = 2 * circle_center - entry_point;
+            /// = Math.Acos(Vector3D.DotProduct((needle_holder_position - circle_center), e_x)  /  ((needle_holder_position - circle_center).Length * e_x.Length) );
+
+
+            print_vector(entry_point);
+            print_vector(exit_point);
+            print_vector(circle_center);
+            print_vector(needle_tip_position);
+        }
+        public void create()
+        {
             incr = Math.PI / number_of_points;
             e_u = new Vector3D(); //e: unit vector
             e_u = exit_point - entry_point;
