@@ -14,7 +14,8 @@ namespace RobotApp.Views.Plugins
     {
         Trajectory trajectory; // ideal trajectory; gives the needle tip at every moment
         Needle needle; // the trajectory will initialize the needle, then will get updated based on new needle tip.
-        double x, y, z;
+        double x, y, z, twist;
+        double x_clutchOffset = 0, y_clutchOffset = 0, z_clutchOffset = 0, twist_clutchOffset = 0;
         double leftUpperBevel, leftLowerBevel, leftElbow; // for calculating orientation of forearm
         double t = 0;
         static int state;
@@ -27,21 +28,25 @@ namespace RobotApp.Views.Plugins
             {
                 x = message.Value;
                 if (state < 3)
-                    Outputs["X"].Value = x;
+                    Outputs["X"].Value = x + x_clutchOffset;
             });
-
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Y"].UniqueID, (message) =>
             {
                 y = message.Value;
                 if (state < 3)
-                    Outputs["Y"].Value = y;
+                    Outputs["Y"].Value = y + y_clutchOffset;
             });
-
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Z"].UniqueID, (message) =>
             {
                 z = message.Value;
                 if (state < 3)
-                    Outputs["Z"].Value = z;
+                    Outputs["Z"].Value = z + z_clutchOffset;
+            });
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll/Twist"].UniqueID, (message) =>
+            {
+                twist = message.Value;
+                if (state < 3)
+                    Outputs["Twist"].Value = twist + twist_clutchOffset;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftUpperBevel"].UniqueID, (message) =>
             {
@@ -60,8 +65,8 @@ namespace RobotApp.Views.Plugins
                 if (state == 1)// select entry point
                 {
                     Console.Write("\nState 1: ENTRY POINT selected\n");
-                    //Vector3D entry_point = new Vector3D(x, y, z);
-                    Vector3D entry_point = new Vector3D(-30, 0, 130);
+                    Vector3D entry_point = new Vector3D(x, y, z);
+                    //Vector3D entry_point = new Vector3D(-30, 0, 130);
                     trajectory.entry_point = entry_point;
                     state++;
                 }
@@ -71,8 +76,8 @@ namespace RobotApp.Views.Plugins
                 if (state == 2)// select entry point
                 {
                     Console.Write("\nState 2 EXIT POINT selected\n");
-                    //Vector3D exit_point = new Vector3D(x, y, z);
-                    Vector3D exit_point = new Vector3D(-25, 0, 130);
+                    Vector3D exit_point = new Vector3D(x, y, z);
+                    //Vector3D exit_point = new Vector3D(-25, 0, 130);
                     trajectory.exit_point = exit_point;
                     state++;
                 }
@@ -101,16 +106,19 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("X", new ViewModel.InputSignalViewModel("X", this.InstanceName));
             Inputs.Add("Y", new ViewModel.InputSignalViewModel("Y", this.InstanceName));
             Inputs.Add("Z", new ViewModel.InputSignalViewModel("Z", this.InstanceName));
+            Inputs.Add("Roll/Twist", new ViewModel.InputSignalViewModel("Roll/Twist", this.InstanceName));
             Inputs.Add("Entry", new ViewModel.InputSignalViewModel("Entry", this.InstanceName));
             Inputs.Add("Exit", new ViewModel.InputSignalViewModel("Exit", this.InstanceName));
             Inputs.Add("leftUpperBevel", new ViewModel.InputSignalViewModel("leftUpperBevel", this.InstanceName));
             Inputs.Add("leftLowerBevel", new ViewModel.InputSignalViewModel("leftLowerBevel", this.InstanceName));
             Inputs.Add("leftElbow", new ViewModel.InputSignalViewModel("leftElbow", this.InstanceName));
 
-            // Initializing
+            /*// Initializing
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
             trajectory = new Trajectory();
             needle = new Needle();
+            Outputs["Clutch"].Value = 0;
+             * */
 
             // set up output timer
             stepTimer.Interval = 100;
@@ -123,10 +131,10 @@ namespace RobotApp.Views.Plugins
         {
             if (state ==3)// checked if entry&exit are valid. create the trajectory and needle
             {
-                if ((trajectory.exit_point - trajectory.entry_point).Length > trajectory.needle_radius)
+                if ((trajectory.exit_point - trajectory.entry_point).Length > 2 * trajectory.needle_radius)
                 {
-                    MessageBox.Show("Entery and exit points are not valid!");
                     state = 1;
+                    MessageBox.Show("Entery and exit points are not valid!\nPick the entry and exit points again.");
                 }
                 else
                 {
@@ -134,6 +142,9 @@ namespace RobotApp.Views.Plugins
                     trajectory.create();
                     needle.local_coordinate = trajectory.local_coordinate;
                     Outputs["Clutch"].Value = 1; // enalble clutch
+                    //x_clutch = x;
+                    //y_clutch = y;
+                    //z_clutch = z;
                     state++;
                 }
             }
@@ -155,13 +166,30 @@ namespace RobotApp.Views.Plugins
                 Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
                 if (t > 1.5 * Math.PI)
                 {
-                    stepTimer.Stop();
-                    state = 1;
-                    t = 0;
-                    //Outputs["Clutch"].Value = 0;
+                    end_suturing();
                     Console.Write("\nAutomatically ended\n");
                 }
             }
+        }
+        private void start_suturing()
+        {
+            trajectory = new Trajectory();
+            needle = new Needle();
+            t = 0;
+            state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
+            Outputs["Clutch"].Value = 0;
+            stepTimer.Start();
+        }
+        private void end_suturing()
+        {
+            stepTimer.Stop();
+            t = 0;
+            state = 1;
+            x_clutchOffset = Outputs["X"].Value - x;
+            y_clutchOffset = Outputs["Y"].Value - y;
+            z_clutchOffset = Outputs["Z"].Value - z;
+            twist_clutchOffset = Outputs["Twist"].Value - twist;
+            Outputs["Clutch"].Value = 0;
         }
         private Vector3D get_forearm_orientation()
         {
@@ -198,8 +226,7 @@ namespace RobotApp.Views.Plugins
                     ?? (startSuturingCommand = new RelayCommand(
                     () =>
                     {
-                        t = 0;
-                        stepTimer.Start();
+                        start_suturing();
                     }));
             }
         }
@@ -217,10 +244,12 @@ namespace RobotApp.Views.Plugins
                     ?? (endSuturingCommand = new RelayCommand(
                     () =>
                     {
-                        state = 1;
+                        /*state = 1;
                         t = 0;
                         Outputs["Clutch"].Value = 0;
                         stepTimer.Stop();
+                         * */
+                        end_suturing();
                     }));
             }
         }
