@@ -105,11 +105,11 @@ namespace path_generation
         }
 
 
-        public void print_quaternion(Quaternion q)
+        public static void print_quaternion(Quaternion q)
         {
             Console.Write("\n [{0}, {1}, {2}]\t w: {3}\n", q.X, q.Y, q.Z, q.W);
         }
-        public void print_vector(Vector3D v)
+        public static void print_vector(Vector3D v)
         {
             Console.Write("\n [{0}, {1}, {2}]\n", v.X, v.Y, v.Z);
         }
