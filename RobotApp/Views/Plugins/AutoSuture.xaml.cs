@@ -65,8 +65,8 @@ namespace RobotApp.Views.Plugins
                 if (state == 1)// select entry point
                 {
                     Console.Write("\nState 1: ENTRY POINT selected\n");
-                    //Vector3D entry_point = new Vector3D(x, y, z);
-                    Vector3D entry_point = new Vector3D(-30, 0, 130);
+                    Vector3D entry_point = new Vector3D(x, y, z);
+                    //Vector3D entry_point = new Vector3D(-30, 0, 130);
                     trajectory.entry_point = entry_point;
                     state++;
                 }
@@ -76,8 +76,8 @@ namespace RobotApp.Views.Plugins
                 if (state == 2)// select entry point
                 {
                     Console.Write("\nState 2 EXIT POINT selected\n");
-                    //Vector3D exit_point = new Vector3D(x, y, z);
-                    Vector3D exit_point = new Vector3D(-25, 0, 130);
+                    Vector3D exit_point = new Vector3D(x, y, z);
+                    //Vector3D exit_point = new Vector3D(-25, 0, 130);
                     trajectory.exit_point = exit_point;
                     state++;
                 }
@@ -230,7 +230,7 @@ namespace RobotApp.Views.Plugins
             t = 0;
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
             Outputs["Clutch"].Value = 0;
-            Outputs["Twist"].Value = 0;
+            //Outputs["Twist"].Value = 0;
             stepTimer.Start();
         }
         private void end_suturing()
@@ -241,7 +241,7 @@ namespace RobotApp.Views.Plugins
             x_clutchOffset = Outputs["X"].Value - x;
             y_clutchOffset = Outputs["Y"].Value - y;
             z_clutchOffset = Outputs["Z"].Value - z;
-            //twist_clutchOffset = Outputs["Twist"].Value - twist;
+            twist_clutchOffset = Outputs["Twist"].Value - twist;
             Outputs["Clutch"].Value = 0;
         }
         private Vector3D get_forearm_orientation()
