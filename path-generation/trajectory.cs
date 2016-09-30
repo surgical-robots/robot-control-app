@@ -61,7 +61,7 @@ namespace path_generation
 
             needle_tip_position = entry_point;
             needle_tip_twist = Math.Acos(Vector3D.DotProduct((needle_tip_position - local_coordinate.origin), local_coordinate.e_x) / ((needle_tip_position - local_coordinate.origin).Length * local_coordinate.e_x.Length));
-
+            needle_tip_twist = Math.PI - needle_tip_twist;
             print_vector(entry_point);
             print_vector(exit_point);
             print_vector(local_coordinate.origin);

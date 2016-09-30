@@ -144,6 +144,7 @@ namespace RobotApp.Views.Plugins
             }
             if (state == 4)
             {
+                /*
                 needle.set_needle_tip_position(trajectory.get_needle_tip_position());
                 needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
                 Vector3D start_position = new Vector3D(Outputs["X"].Value, Outputs["Y"].Value, Outputs["Z"].Value);
@@ -153,7 +154,8 @@ namespace RobotApp.Views.Plugins
 
                 if (vector_interpolation(start_position, target_position) & digit_interpolation(start_twist, target_twist))
                     state++;
-                //state++;
+                 */
+                state++;
             }
             if (state == 5) //calculation of needle holder position
             {
@@ -172,16 +174,16 @@ namespace RobotApp.Views.Plugins
                 Outputs["Z"].Value = needle.get_needle_holder_position().Z;
                 Outputs["Twist"].Value = twist_correction(needle.get_needle_holder_twist());
                 //Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
-                if (t >= 2 * Math.PI)
+                if (t >=  Math.PI)
                 {
-                    //end_suturing();
+                    end_suturing();
                     Console.Write("\nAutomatically ended\n");
                 }
             }
         }
         private double twist_correction(double t)
         {
-            return ((-t * 180 / Math.PI) % 360);
+            return (-t * 180 / Math.PI);
         }
         private bool vector_interpolation(Vector3D start, Vector3D target)
         {
@@ -210,9 +212,9 @@ namespace RobotApp.Views.Plugins
         {
             double mid;
             double difference = target - start;
-            if (difference > 5)
+            if (Math.Abs(difference) > 5)
             {
-                mid = start + 5;
+                mid = start + 5 * Math.Sign(difference);
                 Outputs["Twist"].Value = mid;
                 return false;
             }
@@ -230,8 +232,11 @@ namespace RobotApp.Views.Plugins
             t = 0;
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
             Outputs["Clutch"].Value = 0;
-            //Outputs["Twist"].Value = 0;
+            //Outputs["Twist"].Value = 180;
             stepTimer.Start();
+            StartSuturingButtonText = "Suturing...";
+            StartSuturingButton.IsEnabled = false;
+            EndSuturingButton.IsEnabled = true;
         }
         private void end_suturing()
         {
@@ -243,6 +248,9 @@ namespace RobotApp.Views.Plugins
             z_clutchOffset = Outputs["Z"].Value - z;
             twist_clutchOffset = Outputs["Twist"].Value - twist;
             Outputs["Clutch"].Value = 0;
+            StartSuturingButtonText = "Start Suturing";
+            StartSuturingButton.IsEnabled = true;
+            EndSuturingButton.IsEnabled = false;
         }
         private Vector3D get_forearm_orientation()
         {
@@ -316,9 +324,7 @@ namespace RobotApp.Views.Plugins
                         {
                             return;
                         }*/
-                        StartSuturingButtonText = "Suturing...";
-                        StartSuturingButton.IsEnabled = false;
-                        EndSuturingButton.IsEnabled = true;
+
                         start_suturing();
                         
                     }));
@@ -343,14 +349,13 @@ namespace RobotApp.Views.Plugins
                         {
                             return;
                         }
-                        StartSuturingButtonText = "Start Suturing";
+                        
                         /*state = 1;
                         t = 0;
                         Outputs["Clutch"].Value = 0;
                         stepTimer.Stop();
                          * */
-                        StartSuturingButton.IsEnabled = true;
-                        EndSuturingButton.IsEnabled = false;
+
                         end_suturing();
                     }));
             }
