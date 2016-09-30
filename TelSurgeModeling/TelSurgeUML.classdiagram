@@ -1,0 +1,332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="630e56c9-c945-4b44-bdbd-50db96343ed4" name="TelSurgeUML" linkedPackageId="8f25f50f-b738-4794-8d60-cd58a08b0ec3" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
+  <profileInstances>
+    <packageHasProfileInstances Id="9759ec9b-74d7-4e84-a7f1-055ea0caccef">
+      <profileInstance Id="f61c884a-ea32-4c5c-b385-de2db5a57497" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="4af90685-d05a-492f-b902-e3dd7b67a886">
+      <profileInstance Id="8a2ddb6f-0380-427c-92ba-c289ecb4d29c" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="3dcbbae7-fa72-4d66-a3df-4cf279f86785" name="Main" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="46120ec6-658d-41f1-87bb-ea4e9c3d4882" />
+        <suppliersInternal>
+          <interfaceRealization Id="2f646ee9-1e26-45d9-b3cd-44bb98b5ce7e">
+            <interfaceMoniker Id="bb5470b0-7358-49c3-92c2-959e835d1eda" LastKnownName="TelSurge View (Robot App)" />
+            <elementDefinition Id="0c128920-e7db-4e75-8ea9-539385cbf8f3" />
+          </interfaceRealization>
+          <interfaceRealization Id="e5944a45-5136-498c-bb1d-1c69feef5b18">
+            <interfaceMoniker Id="96f53242-8c3e-4de8-a7c0-5946d7deac5c" LastKnownName="Other TelSurge(s)" />
+            <elementDefinition Id="1eabfd43-b951-4f74-a278-681517ff390d" />
+          </interfaceRealization>
+          <interfaceRealization Id="ac03211a-8e0d-42d5-851f-85969fcd5325">
+            <interfaceMoniker Id="f212e193-550c-470d-a60c-9fa9dfcd742e" LastKnownName="Physical Devices" />
+            <elementDefinition Id="1cbca104-10f3-4409-a1ec-2d01727f225a" />
+          </interfaceRealization>
+        </suppliersInternal>
+        <ownedOperationsInternal>
+          <operation Id="b47ecd89-08f4-4f0b-aa5c-8c74da04abc8" name="Manage Users" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="9aa34b5d-838b-4899-aa9a-e3d0ae231fbc" />
+          </operation>
+          <operation Id="574a90c7-81fd-4e90-a0aa-e02eaa3990ad" name="Manage Robot Control Data" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="19dae864-5085-4092-a0aa-8f9ad9761ad7" />
+          </operation>
+          <operation Id="6f47e76c-f4e5-4c9f-9397-eb74eac60c16" name="Get and Display Omni Data" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="c10c243f-3864-40b5-bfa9-6e7d68cd5806" />
+          </operation>
+          <operation Id="4ab92f66-a65f-440b-bd60-21435687616a" name="Freeze/UnFreeze" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="9a9f0e19-1cc4-465b-8dac-008faf6fce00" />
+          </operation>
+          <operation Id="14d03824-3023-4ac6-ac1f-8b09f2e91bec" name="Haptic Forces" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="938bb9e9-a55a-4dcf-9481-7ba4a32fa6bc" />
+          </operation>
+          <operation Id="c83c45ed-0198-4b9d-adb3-83e3e408ce26" name="Runtime Logging" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="806abfbd-f0b2-4f79-9979-144917208825" />
+          </operation>
+        </ownedOperationsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="a3a67558-1b1f-422d-bf9b-3b02ee57f1b4" name="Markup" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="ddfee7ed-3479-4325-b1d6-cc61e9acf432" />
+        <targetEnds>
+          <association Id="dd5b8139-9df0-4e52-9bd7-ac22185929e1" isDerived="false" sourceEndRoleName="Markup" targetEndRoleName="Surgery" isLeaf="false" isAbstract="false">
+            <classMoniker Id="c0474b5c-83ef-4049-a348-b208b6fdf3aa" LastKnownName="Surgery" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="ffd783c9-f76a-465e-84d4-8ffc3880bb0d" name="Markup" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="a4bdd997-8085-4872-9ebe-a6ef8f7e4bfb" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="c1d10dfc-3061-4de5-8109-3fef45418ea0" name="Surgery" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="f96dc792-76c5-4e5c-be9d-3f5f813a6d41" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="d4361b2c-c2f7-41aa-ae47-28c9421a2154" />
+          </association>
+          <association Id="46eaff94-37d9-4802-9fba-6ca10e176dca" isDerived="false" sourceEndRoleName="Markup" targetEndRoleName="Video Capture" isLeaf="false" isAbstract="false">
+            <classMoniker Id="f8f54f0b-c87b-4600-b322-759ae5cfb099" LastKnownName="Video Capture" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="b97360c2-e153-4056-9ad6-725959d3e281" name="Markup" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="b3b73997-fd51-484b-a1f4-52a2d9a7e645" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="01ef588c-f95f-4478-bf0a-24674b55e83f" name="Video Capture" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="6f279a5b-938f-42d2-aa2e-9cbf949e7b3d" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="710f65c6-8969-49d1-a014-bb331a76edb6" />
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation Id="2781e732-9a97-4c97-8e6a-efeb0ba9842c" name="Add Markings" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="d913b0d1-873d-4b33-8daa-41bb531f5453" />
+          </operation>
+          <operation Id="39af1b1e-d469-41e7-8484-60360d7f2cf5" name="Delete Last Marking" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="efe3c5ef-b14a-43c7-999a-42e48aeb44a4" />
+          </operation>
+          <operation Id="aba57105-910d-485d-84bf-02c5ab5207cd" name="Clear Markings" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="028999fa-7e0f-48b0-a486-7f0091ed4aad" />
+          </operation>
+          <operation Id="36576890-2e59-4aaa-b60d-0aaf519149a5" name="Send Markings" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="12be3061-d36b-4f13-a3d3-e60a349f269f" />
+          </operation>
+          <operation Id="61307ddc-1700-466a-9f76-bb6abd144c82" name="Receive Markings" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="b834e2c3-d1ae-4f1e-8559-b1eba903d211" />
+          </operation>
+        </ownedOperationsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="f8f54f0b-c87b-4600-b322-759ae5cfb099" name="Video Capture" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="aae67b69-5b16-44e6-bd6d-7accf675dee6" />
+        <targetEnds>
+          <association Id="e153763e-d9c1-42ea-b71e-f6581739389f" isDerived="false" sourceEndRoleName="Video Capture" targetEndRoleName="User" isLeaf="false" isAbstract="false">
+            <classMoniker Id="ee08cc1c-11cf-4ec6-91ed-3bf5d384f0a8" LastKnownName="User" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="5df69175-0941-4694-913b-e65a231a7a12" name="Video Capture" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="14382b00-d142-44fb-a3de-a12b1ae6cb40" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="b690be44-b696-4a85-bce9-1fd8caef4fc5" name="User" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="28e75dc0-f2dd-49df-81d6-b2000f92a414" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="d18103ca-7cac-489a-a564-6b663fe29fa8" />
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation Id="a5e3bd9b-7131-48eb-9982-8aba6b6a6ba1" name="Capture Video" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="3b0272c7-ef16-480c-a0b8-d83dc395a399" />
+          </operation>
+          <operation Id="8de7bd1e-844b-4c50-90dd-848bcf35e8e1" name="Send Video Stream" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="96c879fb-3e3e-4641-9a1b-758e392ba438" />
+          </operation>
+          <operation Id="02bc4126-3e01-4369-ba6e-03bc8091e986" name="Add Markup" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="26829517-a5ca-474f-b529-2ba202813fe3" />
+          </operation>
+          <operation Id="490118ba-4a48-44e0-8b5d-635450fb2d2c" name="Receive Video Stream" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="91975f0f-9af7-4496-b85a-f365a183071f" />
+          </operation>
+          <operation Id="f134e93a-2a6c-4826-9f9c-c2ef7177c1b1" name="Switch Video Feed" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="cd4a777c-df6c-419d-b2cf-455f91203dd2" />
+          </operation>
+        </ownedOperationsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="941f2b72-875a-4f5b-bfc5-91be6b18585c" name="Audio Conference" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="6c0609ff-8fb8-49b9-ae39-9c05b2b82591" />
+        <targetEnds>
+          <association Id="bda58d8a-4a90-4d87-8d63-8e1248821f5a" isDerived="false" sourceEndRoleName="Audio Conference" targetEndRoleName="Surgery" isLeaf="false" isAbstract="false">
+            <classMoniker Id="c0474b5c-83ef-4049-a348-b208b6fdf3aa" LastKnownName="Surgery" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="3fea4a00-feee-48ef-be12-9889374e5f00" name="Audio Conference" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="ada64a36-cabd-4418-830d-6c92be761f43" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="92bb3723-20db-41b7-b129-51e9f2339106" name="Surgery" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="7bef40e3-a911-4399-94a6-6ed15a2f85db" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="f0a46dc1-9951-4cc7-b361-185a09a28160" />
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation Id="d800d5ff-fa1e-40ed-b92c-359d4cb0bb38" name="Send Audio" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="78ee937f-e127-4f0b-bcf3-52d9dd2aa1d3" />
+          </operation>
+          <operation Id="b406bb15-6c81-413c-89ef-713856f58bbf" name="Receive Audio" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="f1e9c90d-f104-471a-b3c2-1a7eca8927c3" />
+          </operation>
+          <operation Id="bc39cbb2-9e9c-42b5-bb55-67dbfe72406d" name="Join Conference" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="242321f2-0fc5-4a57-8055-9b24cb1e9355" />
+          </operation>
+          <operation Id="5d9c0f59-78d3-43e1-ac1f-74a589a5b921" name="Leave Conference" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="d3b36379-8dde-4c04-8e70-7c9c04ac4569" />
+          </operation>
+        </ownedOperationsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="dad78359-73c8-4e89-a842-db9c023cbd5f" name="Socket Data" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="765f44e5-d6db-47f3-8698-edd49d55f1fc" />
+        <targetEnds>
+          <association Id="d4d54bc2-778a-4db4-b16f-73c2f9be8773" isDerived="false" sourceEndRoleName="Socket Data" targetEndRoleName="User" isLeaf="false" isAbstract="false">
+            <classMoniker Id="ee08cc1c-11cf-4ec6-91ed-3bf5d384f0a8" LastKnownName="User" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="2388a8a4-5dbc-4efb-801e-f5fba5d4fbbf" name="Socket Data" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="9457c01a-c81b-4727-8eca-a8ab19c1ef4e" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="25744e0d-e880-43d2-ab76-0b2e58707022" name="User" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="851b841e-aaa0-4d82-9e8c-834e4da0becc" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="d8d3efd7-a3e8-4bb1-8be9-f9b506be7537" />
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation Id="cd958a53-cd4b-417a-a111-5b2c30c583a0" name="Send Omni Data" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="95d51992-5257-43be-8f20-f5054ef22e27" />
+          </operation>
+          <operation Id="9a7a64f1-c7f1-4f0e-b3c8-b3f520f2a904" name="Receive Omni Data" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="a70e7719-d881-4ec3-b3d5-6306cd33947b" />
+          </operation>
+        </ownedOperationsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="ee08cc1c-11cf-4ec6-91ed-3bf5d384f0a8" name="User" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="698af327-4473-4c0c-9e51-9266af3ee87e" />
+        <targetEnds>
+          <association Id="e4176fe8-9a36-4cc9-aed4-bf7d72448194" isDerived="false" sourceEndRoleName="User" targetEndRoleName="Surgery" isLeaf="false" isAbstract="false">
+            <classMoniker Id="c0474b5c-83ef-4049-a348-b208b6fdf3aa" LastKnownName="Surgery" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="e1df9b91-803a-4dd9-a20d-c7a23c50d45d" name="User" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <lowerValueInternal>
+                    <literalString Id="043a7ba0-2bbd-4906-84cb-48143d3b0832" name="Lower" value="N">
+                      <elementDefinition Id="894014d7-bdc2-4ba0-a91d-4ac806fe6424" />
+                    </literalString>
+                  </lowerValueInternal>
+                  <upperValueInternal>
+                    <literalString Id="ee5c911a-7eea-4226-b2ec-bae17a5c0e21" name="Upper" value="N">
+                      <elementDefinition Id="ece6f4aa-0967-4f20-8be1-4dabb56840d0" />
+                    </literalString>
+                  </upperValueInternal>
+                  <elementDefinition Id="20e4dba6-01da-435a-b6a4-a3281e41479a" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="cdf7020a-6cbe-4bfc-8d67-02bf242d7421" name="Surgery" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="d4d028ef-3e93-4499-a126-dd66e94c2b01" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="077f88e0-72a8-4a27-be80-e64766fe047b" />
+          </association>
+          <association Id="c3ffdc3e-ca87-4028-95ab-5e3c798b4599" isDerived="false" sourceEndRoleName="User" targetEndRoleName="Main" isLeaf="false" isAbstract="false">
+            <classMoniker Id="3dcbbae7-fa72-4d66-a3df-4cf279f86785" LastKnownName="Main" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="7c691430-13b6-48a0-8a41-74a26e52d331" name="User" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="eedfd487-c1f1-43e9-bca2-d52d299b1100" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="6fbbe8cc-4e60-45d0-bc43-ebff9e35f2ad" name="Main" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="ff6567a0-685e-4a48-984d-79d6f0fa3fab" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="9f51634a-2753-4544-a87d-3c72b86f5887" />
+          </association>
+        </targetEnds>
+        <ownedOperationsInternal>
+          <operation Id="486edd0c-c8e5-4d6a-bb12-a948c2d14503" name="Join Surgery" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="17a5e839-fc03-427e-abe1-5743b29a1220" />
+          </operation>
+          <operation Id="7d1376d0-b2a2-471f-8c33-6ebee63d67ff" name="Leave Surgery" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="f16d7f15-d9e1-4550-98ed-bada85348ceb" />
+          </operation>
+          <operation Id="ef238bfe-0341-493d-a1f8-e933339297b8" name="Connect Omnis" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="280edae2-0f71-46da-b83a-28dba8907990" />
+          </operation>
+          <operation Id="0248930c-8b51-4cb8-b49b-ee428fa00c1f" name="Follow" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="6d741720-c639-40f2-9c6f-923019dbe767" />
+          </operation>
+          <operation Id="b549afae-0266-4c50-8bfa-cf05ec29107c" name="Request Control" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="0278a0ea-94f2-4bb5-b090-879b62c5a8c8" />
+          </operation>
+          <operation Id="80f479e5-b885-47f6-8665-cdf3cacb2950" name="Grant Control" isLeaf="false" isStatic="false" isAbstract="false" concurrency="Sequential" isQuery="false">
+            <elementDefinition Id="532a898b-6405-4440-8bfc-e6d71d7e8a5b" />
+          </operation>
+        </ownedOperationsInternal>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <class Id="c0474b5c-83ef-4049-a348-b208b6fdf3aa" name="Surgery" isAbstract="false" isLeaf="false" isActiveClass="false">
+        <elementDefinition Id="8df7906b-4aec-4887-8573-018c7e3b7fca" />
+        <targetEnds>
+          <association Id="51c02ed9-8e63-48df-9d88-37b0d1c5e330" isDerived="false" sourceEndRoleName="Surgery" targetEndRoleName="Main" isLeaf="false" isAbstract="false">
+            <classMoniker Id="3dcbbae7-fa72-4d66-a3df-4cf279f86785" LastKnownName="Main" />
+            <relationshipOwnedElementsInternal>
+              <associationHasOwnedEnds>
+                <memberEnd Id="350ed94e-4bb2-4207-ae3c-3d21f9841898" name="Surgery" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false" isNavigableOwned="false">
+                  <elementDefinition Id="6e3c4773-1436-44c7-b4c6-8da288258e99" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+              <associationHasOwnedEnds>
+                <memberEnd Id="e5f01cb9-b393-4c7c-834a-dbaec158c989" name="Main" isLeaf="false" isStatic="false" isReadOnly="false" isDerived="false" isDerivedUnion="false" aggregation="None" isComposite="false">
+                  <elementDefinition Id="35791f98-e81c-4ae5-8220-27a742a8e759" />
+                </memberEnd>
+              </associationHasOwnedEnds>
+            </relationshipOwnedElementsInternal>
+            <elementDefinition Id="503ef402-cbcc-4400-9478-bc453a73d5e7" />
+          </association>
+        </targetEnds>
+      </class>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="bb5470b0-7358-49c3-92c2-959e835d1eda" name="TelSurge View (Robot App)" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="c1c3dcc3-abb8-47c0-8ed5-1dd88129604f" />
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="96f53242-8c3e-4de8-a7c0-5946d7deac5c" name="Other TelSurge(s)" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="03f28ca1-aa4a-42fb-a944-43e010a32f87" />
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+    <logicalClassDesignerModelHasTypes>
+      <Interface Id="f212e193-550c-470d-a60c-9fa9dfcd742e" name="Physical Devices" isAbstract="false" isLeaf="false">
+        <elementDefinition Id="4637beff-b4c0-40b4-a7db-d54b2651536d" />
+      </Interface>
+    </logicalClassDesignerModelHasTypes>
+  </packagedElements>
+  <package Id="8f25f50f-b738-4794-8d60-cd58a08b0ec3" name="TelSurgeModeling">
+    <elementDefinition Id="3b361700-1762-48bd-86ba-1dfcfe79a533" />
+  </package>
+</logicalClassDesignerModel>

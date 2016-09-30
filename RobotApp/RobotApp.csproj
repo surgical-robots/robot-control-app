@@ -241,6 +241,7 @@
     <Compile Include="ViewModel\InputSignalViewModel.cs" />
     <Compile Include="ViewModel\SignalSinkRegistryViewModel.cs" />
     <Compile Include="ViewModel\OutputSignalViewModel.cs" />
+    <Compile Include="ViewModel\TransportDevices\SocketTransportViewModel.cs" />
     <Compile Include="ViewModel\TransportDevices\SerialTransportViewModel.cs" />
     <Compile Include="ViewModel\SettingsAppearanceViewModel.cs" />
     <Compile Include="ViewModel\TransportViewModelBase.cs" />
@@ -376,6 +377,9 @@
     </Compile>
     <Compile Include="Views\SignalSourceView.xaml.cs">
       <DependentUpon>SignalSourceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SocketTransportView.xaml.cs">
+      <DependentUpon>SocketTransportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\StatusBar.xaml.cs">
       <DependentUpon>StatusBar.xaml</DependentUpon>
@@ -592,6 +596,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SocketTransportView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\StatusBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -636,9 +644,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\HelixToolkit.Wpf.dll" />
-    <Content Include="bin\Debug\newphantom.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Resource Include="Content\CityDelays.xml" />
     <Content Include="x64\cudart64_65.dll" />
     <Content Include="x64\cufft64_65.dll" />

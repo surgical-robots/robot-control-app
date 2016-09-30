@@ -22,39 +22,75 @@ namespace TelSurge
 
         private void fillAvailableBtns()
         {
-            lb_AvailableBtns.Items.Add("OmniLeft_Front");
-            lb_AvailableBtns.Items.Add("OmniLeft_Back");
-            lb_AvailableBtns.Items.Add("OmniRight_Front");
-            lb_AvailableBtns.Items.Add("OmniRight_Back");
-            if (_main.externalButtons != null)
-            {
-                for (int i = 0; i < _main.externalButtons.Count(); i++)
-                    lb_AvailableBtns.Items.Add("Ext_" + i);
-            }
+            //Emergency Switch
+            List<string> availableBtns = new List<string>() {
+                "OmniLeft_Front",
+                "OmniLeft_Back",
+                "OmniRight_Front",
+                "OmniRight_Back"
+            };
+            for (int i = 0; i < _main.User.NumExternalButtons; i++)
+                availableBtns.Add("Ext_" + i);
+            
+            lb_AvailableEmergencyBtns.DataSource = availableBtns;
+            lb_AvailableEmergencyBtns.SelectedIndex = 0;
+
+            
+            //Following Button
+            lb_AvailableFollowingBtns.DataSource = availableBtns.ToList();
+            lb_AvailableFollowingBtns.SelectedIndex = 0;
+
+            //Freeze Button
+            lb_AvailableFreezeBtns.DataSource = availableBtns.ToList();
+            lb_AvailableFreezeBtns.SelectedIndex = 0;
         }
 
         private void AssignButtons_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //Save on exit
-            try {
-                string selectedBtn = (string)lb_AvailableBtns.SelectedItem;
-                _main.EmergencySwitchBoundBtn = selectedBtn;
-                if (selectedBtn.Contains("Left"))
+            if (lb_AvailableEmergencyBtns.SelectedIndex.Equals(lb_AvailableFollowingBtns.SelectedIndex))
+            {
+                MessageBox.Show("Please select different buttons for each input.", "Inputs must be bound to different buttons.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                //Save on exit
+                try
                 {
-                    _main.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex + 1;
+                    //Emergency Switch
+                    string selectedButton = (string)lb_AvailableEmergencyBtns.SelectedItem;
+                    _main.User.EmergencySwitchBoundBtn = selectedButton;
+                    _main.User.EmergencySwitchBoundValue = getButtonValue(lb_AvailableEmergencyBtns);
+
+                    //Following Button
+                    selectedButton = (string)lb_AvailableFollowingBtns.SelectedItem;
+                    _main.User.FollowingBoundBtn = selectedButton;
+                    _main.User.FollowingBoundValue = getButtonValue(lb_AvailableFollowingBtns);
+
+                    //Freeze Button
+                    selectedButton = (string)lb_AvailableFreezeBtns.SelectedItem;
+                    _main.User.FreezeBoundBtn = selectedButton;
+                    _main.User.FreezeBoundValue = getButtonValue(lb_AvailableFreezeBtns);
                 }
-                else if (selectedBtn.Contains("Right"))
+                catch (Exception ex)
                 {
-                    _main.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex - 1;
-                }
-                else
-                {
-                    _main.EmergencySwitchBoundValue = lb_AvailableBtns.SelectedIndex - 4;
+                    _main.ShowError(ex.Message, ex.ToString());
                 }
             }
-            catch (Exception ex)
+        }
+        private int getButtonValue(ListBox lb)
+        {
+            string selectedButton = (string)lb.SelectedItem;
+            if (selectedButton.Contains("Left"))
             {
-                _main.ShowError(ex.Message, ex.ToString());
+                return lb.SelectedIndex + 1;
+            }
+            else if (selectedButton.Contains("Right"))
+            {
+                return lb.SelectedIndex - 1;
+            }
+            else
+            {
+                return lb.SelectedIndex - 4;
             }
         }
     }

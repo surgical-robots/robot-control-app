@@ -16,6 +16,7 @@ namespace RobotApp.ViewModel
         {
             ConnectionTypes = new ObservableCollection<TransportViewModelBase>();
             ConnectionTypes.Add(new SerialTransportViewModel());
+            ConnectionTypes.Add(new SocketTransportViewModel());
         }
     }
 }
