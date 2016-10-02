@@ -68,6 +68,7 @@ namespace RobotApp.Views.Plugins
                     Vector3D entry_point = new Vector3D(x, y, z);
                     //Vector3D entry_point = new Vector3D(-30, 0, 130);
                     trajectory.entry_point = entry_point;
+                    Print.print_vector(trajectory.entry_point);
                     state++;
                 }
             });
@@ -79,6 +80,7 @@ namespace RobotApp.Views.Plugins
                     Vector3D exit_point = new Vector3D(x, y, z);
                     //Vector3D exit_point = new Vector3D(-25, 0, 130);
                     trajectory.exit_point = exit_point;
+                    Print.print_vector(trajectory.exit_point);
                     state++;
                 }
             });
@@ -131,11 +133,11 @@ namespace RobotApp.Views.Plugins
                 if ((trajectory.exit_point - trajectory.entry_point).Length > 2 * trajectory.needle_radius)
                 {
                     state = 1;
+                    end_suturing();
                     MessageBox.Show("Entery and exit points are not valid!\nPick the entry and exit points again.");
                 }
                 else
                 {
-                    Console.Write("\nSuturing satrted.\n");
                     trajectory.create();
                     needle.local_coordinate = trajectory.local_coordinate;
                     Outputs["Clutch"].Value = 1; // enalble clutch
@@ -159,26 +161,42 @@ namespace RobotApp.Views.Plugins
             }
             if (state == 5) //calculation of needle holder position
             {
-                //dof4 end_effector;
-                //end_effector.pos = trajectory.get_needle_tip_position();
-                //end_effector.twist = trajectory.get_needle_tip_twist();
-                needle.set_needle_tip_position(trajectory.get_needle_tip_position());
-                needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
-
-
                 t = t + trajectory.incr;
                 Console.Write("\n****************t: {0}\n", t);
                 //Console.WriteLine("{0}\t{1}\t{2}", p.pos.x, p.pos.y, p.pos.z);
-                Outputs["X"].Value = needle.get_needle_holder_position().X;
-                Outputs["Y"].Value = needle.get_needle_holder_position().Y;
-                Outputs["Z"].Value = needle.get_needle_holder_position().Z;
-                Outputs["Twist"].Value = twist_correction(needle.get_needle_holder_twist());
-                //Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
+                //dof4 end_effector;
+                //end_effector.pos = trajectory.get_needle_tip_position();
+                //end_effector.twist = trajectory.get_needle_tip_twist();
+                update_output();
                 if (t >=  Math.PI)
                 {
                     end_suturing();
                     Console.Write("\nAutomatically ended\n");
                 }
+            }
+        }
+        private void update_output()
+        {
+            needle.set_needle_tip_position(trajectory.get_needle_tip_position());
+            needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
+            Vector3D pos_incr = new Vector3D(Outputs["X"].Value - needle.get_needle_holder_position().X, Outputs["Y"].Value - needle.get_needle_holder_position().Y, Outputs["Z"].Value - needle.get_needle_holder_position().Z);
+            double twist_incr = Outputs["Twist"].Value - twist_correction(needle.get_needle_holder_twist());
+            if (pos_incr.Length < 30 & Math.Abs(twist_incr) < 45)
+            {
+                Outputs["X"].Value = needle.get_needle_holder_position().X;
+                Outputs["Y"].Value = needle.get_needle_holder_position().Y;
+                Outputs["Z"].Value = needle.get_needle_holder_position().Z;
+                Outputs["Twist"].Value = twist_correction(needle.get_needle_holder_twist());
+                //Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
+            }
+            else
+            {
+                state = 1;
+                end_suturing();
+                Console.Write("\nPosition increment is: {0}\nTwist increment is {1}", pos_incr.Length, Math.Abs(twist_incr));
+                Console.Write("\nCurrent position increment is: [{0}, {1}, {2}]\nNext position is: [{3}, {4}, {5}]", Outputs["X"].Value, Outputs["Y"].Value, Outputs["Z"].Value, needle.get_needle_holder_position().X, needle.get_needle_holder_position().Y, needle.get_needle_holder_position().Z);
+                Console.Write("\nCurrent twist increment is: {0}\nNext twist is: {1}", Outputs["Twist"].Value, twist_correction(needle.get_needle_holder_twist()));
+                MessageBox.Show("The increment for the position is bigger than 30 (mm) and/or for the twist is bigger than 45 degrees. See the output for more info.");
             }
         }
         private double twist_correction(double t)
@@ -227,12 +245,13 @@ namespace RobotApp.Views.Plugins
         }
         private void start_suturing()
         {
+            Console.Write("\nSuturing satrted.\n");
             trajectory = new Trajectory();
             needle = new Needle();
             t = 0;
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
             Outputs["Clutch"].Value = 0;
-            //Outputs["Twist"].Value = 180;
+            Outputs["Twist"].Value = -50;
             stepTimer.Start();
             StartSuturingButtonText = "Suturing...";
             StartSuturingButton.IsEnabled = false;
@@ -240,6 +259,7 @@ namespace RobotApp.Views.Plugins
         }
         private void end_suturing()
         {
+            Console.Write("\nSuturing ended.\n");
             stepTimer.Stop();
             t = 0;
             state = 1;
