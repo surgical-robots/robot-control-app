@@ -140,6 +140,8 @@ namespace TelSurge
 
                 SocketMessage dataMsg = DeserializeObject<SocketMessage>(arry);
                 Main.Surgery.Merge(dataMsg.Surgery, Main.User.IsInControl, Main.User.IsMaster);
+                if (Main.User.IsMaster)
+                    Main.messageCount++;
                 if (dataMsg.sendToggleFrozen)
                 {
                     if (Main.User.IsFrozen)
