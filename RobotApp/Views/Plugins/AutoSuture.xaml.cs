@@ -4,7 +4,7 @@ using GalaSoft.MvvmLight.Messaging;
 using System.Threading;
 using path_generation;
 using System.Windows.Media.Media3D;
-
+using System.Windows.Forms;
 namespace RobotApp.Views.Plugins
 {
     /// <summary>
@@ -12,18 +12,14 @@ namespace RobotApp.Views.Plugins
     /// </summary>
     public partial class AutoSuture : PluginBase
     {
-        int version=2;
-        trajectory_version2 obj2;
-        trajectory_version3 obj3;
-
-        double x, y, z;
+        Trajectory trajectory; // ideal trajectory; gives the needle tip at every moment
+        Needle needle; // the trajectory will initialize the needle, then will get updated based on new needle tip.
+        double x, y, z, twist;
+        double x_clutchOffset = 0, y_clutchOffset = 0, z_clutchOffset = 0, twist_clutchOffset = 0;
         double leftUpperBevel, leftLowerBevel, leftElbow; // for calculating orientation of forearm
         double t = 0;
-        double t_incr = Math.PI / 10;
         static int state;
-        //double x_entry, y_entry, z_entry, x_exit, y_exit, z_exit, x_needle, y_needle, z_needle;
-        Vector3D entry_point, exit_point;
-        //Vector needle_old, needle_new; // orientaton
+
         System.Windows.Forms.Timer stepTimer = new System.Windows.Forms.Timer();
 
         public override void PostLoadSetup()
@@ -32,21 +28,25 @@ namespace RobotApp.Views.Plugins
             {
                 x = message.Value;
                 if (state < 3)
-                    Outputs["X"].Value = x;
+                    Outputs["X"].Value = x + x_clutchOffset;
             });
-
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Y"].UniqueID, (message) =>
             {
                 y = message.Value;
                 if (state < 3)
-                    Outputs["Y"].Value = y;
+                    Outputs["Y"].Value = y + y_clutchOffset;
             });
-
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Z"].UniqueID, (message) =>
             {
                 z = message.Value;
                 if (state < 3)
-                    Outputs["Z"].Value = z;
+                    Outputs["Z"].Value = z + z_clutchOffset;
+            });
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll/Twist"].UniqueID, (message) =>
+            {
+                twist = message.Value;
+                if (state < 3)
+                    Outputs["Twist"].Value = twist + twist_clutchOffset;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftUpperBevel"].UniqueID, (message) =>
             {
@@ -62,65 +62,61 @@ namespace RobotApp.Views.Plugins
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Entry"].UniqueID, (message) =>
             {
-                if (state == 1)
+                if (state == 1)// select entry point
                 {
-                    //entry_point = new Vector3D(x, y, z);
-                    entry_point = new Vector3D(-30, 0, 130);
-                    Console.Write("\n****************S1 ENTRY POINT\n");
+                    Console.Write("\nState 1: ENTRY POINT selected\n");
+                    Vector3D entry_point = new Vector3D(x, y, z);
+                    //Vector3D entry_point = new Vector3D(-30, 0, 130);
+                    trajectory.entry_point = entry_point;
                     state++;
                 }
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Exit"].UniqueID, (message) =>
             {
-                if (state == 2)
+                if (state == 2)// select entry point
                 {
-                    //exit_point = new Vector3D(x, y, z);
-                    exit_point = new Vector3D(-15, 0, 130);
-                    Console.Write("\n****************S2 EXIT POINT\n");
+                    Console.Write("\nState 2 EXIT POINT selected\n");
+                    Vector3D exit_point = new Vector3D(x, y, z);
+                    //Vector3D exit_point = new Vector3D(-25, 0, 130);
+                    trajectory.exit_point = exit_point;
                     state++;
-                    switch (version)
-                    {
-                        case 2:
-                            obj2 = new trajectory_version2(entry_point, exit_point); // initializing trajectory
-                            break;
-                        case 3:
-                            obj3 = new trajectory_version3(entry_point, exit_point); // initializing trajectory
-                            break;
-                    }
                 }
             });
 
             base.PostLoadSetup();
         }
-        private void locate_needle()
-        {
-
-        }
         public AutoSuture()
         {
-            Console.Write("\n****************S0 START\n");
             this.TypeName = "AutoSuture";
             this.PluginInfo = "";
             InitializeComponent();
-            state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
-            //needle_old = null;
-            //needle_new = null;
+
             // OUTPUTS
             Outputs.Add("X", new ViewModel.OutputSignalViewModel("X"));
             Outputs.Add("Y", new ViewModel.OutputSignalViewModel("Y"));
             Outputs.Add("Z", new ViewModel.OutputSignalViewModel("Z"));
             Outputs.Add("Twist", new ViewModel.OutputSignalViewModel("Twist"));
-
+            Outputs.Add("Clutch", new ViewModel.OutputSignalViewModel("Clutch"));
 
             // INPUTS
             Inputs.Add("X", new ViewModel.InputSignalViewModel("X", this.InstanceName));
             Inputs.Add("Y", new ViewModel.InputSignalViewModel("Y", this.InstanceName));
             Inputs.Add("Z", new ViewModel.InputSignalViewModel("Z", this.InstanceName));
+            Inputs.Add("Roll/Twist", new ViewModel.InputSignalViewModel("Roll/Twist", this.InstanceName));
             Inputs.Add("Entry", new ViewModel.InputSignalViewModel("Entry", this.InstanceName));
             Inputs.Add("Exit", new ViewModel.InputSignalViewModel("Exit", this.InstanceName));
             Inputs.Add("leftUpperBevel", new ViewModel.InputSignalViewModel("leftUpperBevel", this.InstanceName));
             Inputs.Add("leftLowerBevel", new ViewModel.InputSignalViewModel("leftLowerBevel", this.InstanceName));
             Inputs.Add("leftElbow", new ViewModel.InputSignalViewModel("leftElbow", this.InstanceName));
+
+            /*// Initializing
+            state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
+            trajectory = new Trajectory();
+            needle = new Needle();
+            Outputs["Clutch"].Value = 0;
+             * */
+            EndSuturingButton.IsEnabled = false;
+
             // set up output timer
             stepTimer.Interval = 100;
             stepTimer.Tick += StepTimer_Tick; ;
@@ -130,49 +126,131 @@ namespace RobotApp.Views.Plugins
 
         private void StepTimer_Tick(object sender, EventArgs e)
         {
-
-            if (state == 3) //calculation of needle center
+            if (state == 3)// checked if entry&exit are valid. create the trajectory and needle
             {
-                //Console.Write("\n****************S3 SUTURING STATRTS\n");
-                dof4 p;
-                switch (version)
+                if ((trajectory.exit_point - trajectory.entry_point).Length > 2 * trajectory.needle_radius)
                 {
-                    default:
-                        p = obj2.end_effector(get_forearm_orientation(), t_incr);
-                        break;
-                    case 3:
-                        p = obj3.end_effector(get_forearm_orientation(), t_incr);
-                        break;
+                    state = 1;
+                    MessageBox.Show("Entery and exit points are not valid!\nPick the entry and exit points again.");
                 }
-                t = t + t_incr;
+                else
+                {
+                    Console.Write("\nSuturing satrted.\n");
+                    trajectory.create();
+                    needle.local_coordinate = trajectory.local_coordinate;
+                    Outputs["Clutch"].Value = 1; // enalble clutch
+                    state++;
+                }
+            }
+            if (state == 4)
+            {
+                /*
+                needle.set_needle_tip_position(trajectory.get_needle_tip_position());
+                needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
+                Vector3D start_position = new Vector3D(Outputs["X"].Value, Outputs["Y"].Value, Outputs["Z"].Value);
+                Vector3D target_position = needle.get_needle_holder_position();
+                double start_twist = Outputs["Twist"].Value;
+                double target_twist = twist_correction(needle.get_needle_holder_twist());
+
+                if (vector_interpolation(start_position, target_position) & digit_interpolation(start_twist, target_twist))
+                    state++;
+                 */
+                state++;
+            }
+            if (state == 5) //calculation of needle holder position
+            {
+                //dof4 end_effector;
+                //end_effector.pos = trajectory.get_needle_tip_position();
+                //end_effector.twist = trajectory.get_needle_tip_twist();
+                needle.set_needle_tip_position(trajectory.get_needle_tip_position());
+                needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
+
+
+                t = t + trajectory.incr;
                 Console.Write("\n****************t: {0}\n", t);
                 //Console.WriteLine("{0}\t{1}\t{2}", p.pos.x, p.pos.y, p.pos.z);
-                Outputs["X"].Value = p.pos.X;
-                Outputs["Y"].Value = p.pos.Y;
-                Outputs["Z"].Value = p.pos.Z;
-                Outputs["Twist"].Value = p.twist * 180 / Math.PI;
-                // calculating twist between two sequence
-                /*
-                double twist;
-                if (needle_old != null)
-                    twist = Math.Acos((needle_new.x * needle_old.x + needle_new.y * needle_old.y + needle_new.z * needle_old.z) / (Math.Sqrt(needle_new.x * needle_new.x + needle_new.y * needle_new.y + needle_new.z * needle_new.z) * Math.Sqrt(needle_old.x * needle_old.x + needle_old.y * needle_old.y + needle_old.z * needle_old.z)));
-                else
-                    twist = 0;
-                Outputs["Twist"].Value = twist * 180/Math.PI;
-                needle_old = p.ori;
-                */
+                Outputs["X"].Value = needle.get_needle_holder_position().X;
+                Outputs["Y"].Value = needle.get_needle_holder_position().Y;
+                Outputs["Z"].Value = needle.get_needle_holder_position().Z;
+                Outputs["Twist"].Value = twist_correction(needle.get_needle_holder_twist());
+                //Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
+                if (t >=  Math.PI)
+                {
+                    end_suturing();
+                    Console.Write("\nAutomatically ended\n");
+                }
+            }
+        }
+        private double twist_correction(double t)
+        {
+            return (-t * 180 / Math.PI);
+        }
+        private bool vector_interpolation(Vector3D start, Vector3D target)
+        {
+            Vector3D mid = new Vector3D();
+            Vector3D line = target - start;
+            double length = line.Length;
             
-
-            //Outputs["pickPoint"].Value = entry_enabled == true ? 1 : 0;
-            if (t > 2 * Math.PI)
+            if (length > 5)
             {
-                //stepTimer.Stop();
-                state = 1;
-                t = 0;
-                Console.Write("\n**************** End\n");
+                mid = start + 5 * line / length;
+                Outputs["X"].Value = mid.X;
+                Outputs["Y"].Value = mid.Y;
+                Outputs["Z"].Value = mid.Z;
+                return false;
             }
-                
+            else
+            {
+                mid = target;
+                Outputs["X"].Value = mid.X;
+                Outputs["Y"].Value = mid.Y;
+                Outputs["Z"].Value = mid.Z;
+                return true;
             }
+        }
+        private bool digit_interpolation(double start, double target)
+        {
+            double mid;
+            double difference = target - start;
+            if (Math.Abs(difference) > 5)
+            {
+                mid = start + 5 * Math.Sign(difference);
+                Outputs["Twist"].Value = mid;
+                return false;
+            }
+            else
+            {
+                mid = target;
+                Outputs["Twist"].Value = mid;
+                return true;
+            }
+        }
+        private void start_suturing()
+        {
+            trajectory = new Trajectory();
+            needle = new Needle();
+            t = 0;
+            state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
+            Outputs["Clutch"].Value = 0;
+            //Outputs["Twist"].Value = 180;
+            stepTimer.Start();
+            StartSuturingButtonText = "Suturing...";
+            StartSuturingButton.IsEnabled = false;
+            EndSuturingButton.IsEnabled = true;
+        }
+        private void end_suturing()
+        {
+            stepTimer.Stop();
+            t = 0;
+            state = 1;
+            x_clutchOffset = Outputs["X"].Value - x;
+            y_clutchOffset = Outputs["Y"].Value - y;
+            z_clutchOffset = Outputs["Z"].Value - z;
+            twist_clutchOffset = Outputs["Twist"].Value - twist;
+            Outputs["Clutch"].Value = 0;
+            StartSuturingButtonText = "Start Suturing";
+            StartSuturingButton.IsEnabled = true;
+            EndSuturingButton.IsEnabled = false;
         }
         private Vector3D get_forearm_orientation()
         {
@@ -196,6 +274,39 @@ namespace RobotApp.Views.Plugins
             return forearm_orientation;
         }
 
+
+        /// <summary>
+        /// The <see cref="StartSuturingButtonText" /> property's name.
+        /// </summary>
+        public const string StartSuturingButtonTextPropertyName = "StartSuturingButtonText";
+
+        private string startSuturingButtonText = "Start Sturing";
+
+        /// <summary>
+        /// Sets and gets the ConnectButtonText property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string StartSuturingButtonText
+        {
+            get
+            {
+                return startSuturingButtonText;
+            }
+
+            set
+            {
+                if (startSuturingButtonText == value)
+                {
+                    return;
+                }
+
+                startSuturingButtonText = value;
+                RaisePropertyChanged(StartSuturingButtonTextPropertyName);
+            }
+        }
+
+
+
         private RelayCommand startSuturingCommand;
 
         /// <summary>
@@ -209,9 +320,15 @@ namespace RobotApp.Views.Plugins
                     ?? (startSuturingCommand = new RelayCommand(
                     () =>
                     {
-                        t = 0;
-                        stepTimer.Start();
+                        /*if (!StartSuturingCommand.CanExecute(null))
+                        {
+                            return;
+                        }*/
+
+                        start_suturing();
+                        
                     }));
+                
             }
         }
 
@@ -228,9 +345,18 @@ namespace RobotApp.Views.Plugins
                     ?? (endSuturingCommand = new RelayCommand(
                     () =>
                     {
-                        state = 1;
+                        if (!EndSuturingCommand.CanExecute(null))
+                        {
+                            return;
+                        }
+                        
+                        /*state = 1;
                         t = 0;
+                        Outputs["Clutch"].Value = 0;
                         stepTimer.Stop();
+                         * */
+
+                        end_suturing();
                     }));
             }
         }

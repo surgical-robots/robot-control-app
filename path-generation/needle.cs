@@ -10,83 +10,54 @@ using System.Windows.Media.Media3D;
 
 namespace path_generation
 {
-    public class trajectory_version2
+    public class Needle
     {
-        private Vector3D circle_center; // position of needle in the grasper;
+        public Coordinate local_coordinate;
+        public Coordinate twisted_local_coordinate;   
+
         private static Vector3D needle_holder_position;
+        private Vector3D needle_tip_position;
+        private double needle_holder_twist = 0;
+        private double needle_tip_twist;
 
-        double needle_holder_twist = 0;
-        double delta_theta;
-        Vector3D e_u, e_v, e_x, e_y, circle_normal;
-        private double r = 14; // radius of the needle
-        //double LengthUpperArm = 68.58;
-        //double LengthForearm = 96.393;
-        private double t_incr = Math.PI / 100;
-        static Vector3D ideal_needle_orientation = new Vector3D();
-        public trajectory_version2()
+        public Needle()
         {
-            //xc = 0; // center of the needle
-            //yc = 0;
-            //zc = 130;
         }
-        public trajectory_version2(Vector3D entry_point, Vector3D exit_point)
+        public Needle(Vector3D needle_tip_position)
         {
-            e_u = new Vector3D(); //e: unit vector
-            e_u = exit_point - entry_point;
-            circle_normal = new Vector3D();
-            e_x = new Vector3D(e_u.X, 0, e_u.Z);
-            e_x = e_x / e_x.Length;
-            e_y = new Vector3D(0, 1, 0);
-            circle_normal = Vector3D.CrossProduct(e_y, e_u);
-            circle_normal = circle_normal / circle_normal.Length;
-            e_v = new Vector3D();
-            e_v = Vector3D.CrossProduct(circle_normal, e_u);
-            Vector3D offset = new Vector3D();
-            offset = Math.Sqrt(r*r-.25 * e_u.Length*e_u.Length) * e_v/e_v.Length;
-            circle_center = new Vector3D(0.5 * (entry_point.X + exit_point.X), 0.5 * (entry_point.Y + exit_point.Y), 0.5 * (entry_point.Z + exit_point.Z));
-            circle_center = circle_center - offset;
-            needle_holder_position = 2 * circle_center - entry_point;
-            needle_holder_twist = Math.Acos(Vector3D.DotProduct((needle_holder_position - circle_center), e_x)  /  ((needle_holder_position - circle_center).Length * e_x.Length) );
+            Vector3D circle_center = new Vector3D();
+            circle_center = local_coordinate.origin;
+            this.needle_tip_position = needle_tip_position;
+            needle_holder_position = 2 * circle_center - needle_tip_position;
 
-            /*
-            Vector3D temp = new Vector3D();
-            temp = needle_holder_position - circle_center;
-            needle_holder_twist = Math.Acos(Vector3D.DotProduct(temp, e_x) / (temp.Length * e_x.Length));
-             * */
-            print_vector(entry_point);
-            print_vector(exit_point);
-            print_vector(circle_center);
             print_vector(needle_holder_position);
         }
-        /*private void update_needle_holder_twist()
-        {
-            Vector3D temp = new Vector3D();
-            temp = needle_holder_position - circle_center;
-            needle_holder_twist = Math.Acos(Vector3D.DotProduct(temp, e_x) / (temp.Length * e_x.Length));
-        }*/
-        private void update_needle_holder_position()
-        {
-            Vector3D temp = new Vector3D();
-            temp = needle_holder_position - circle_center;
-            Quaternion q_needle_holder_position = new Quaternion(temp.X, temp.Y, temp.Z, 0);
-            //print_quaternion(q_needle_holder_position);
 
-            Quaternion q_circle_normal = new Quaternion(Math.Sin(-t_incr / 2) * circle_normal.X, Math.Sin(-t_incr / 2) * circle_normal.Y, Math.Sin(-t_incr / 2) * circle_normal.Z, Math.Cos(-t_incr / 2));
-            Quaternion q_circle_normal_conjugate = new Quaternion();
-            q_circle_normal_conjugate = q_circle_normal;
-            q_circle_normal_conjugate.Conjugate();
-            q_needle_holder_position = q_circle_normal * q_needle_holder_position * q_circle_normal_conjugate;
-            needle_holder_position.X = q_needle_holder_position.X + circle_center.X;
-            needle_holder_position.Y = q_needle_holder_position.Y + circle_center.Y;
-            needle_holder_position.Z = q_needle_holder_position.Z + circle_center.Z;
-            //print_quaternion(q_circle_normal);
-            //print_quaternion(q_needle_holder_position);
 
+        public void set_needle_tip_position(Vector3D needle_tip_position)
+        {
+            this.needle_tip_position = needle_tip_position;
+        }
+        public void set_needle_tip_twist(double needle_tip_twist)
+        {
+            this.needle_tip_twist = needle_tip_twist;
+        }
+        public Vector3D get_needle_holder_position()
+        {
+            Vector3D circle_center = new Vector3D();
+            circle_center = local_coordinate.origin;
+            needle_holder_position = 2 * circle_center - needle_tip_position;
+            return needle_holder_position;
+        }
+        public double get_needle_holder_twist()
+        {
+            return needle_tip_twist;
 
         }
+
         
 
-        public dof4 end_effector(Vector3D forearm_orientation, double delta_theta) //trajectory() in MATLAB; calculation position of end effector and ideal orientation of the needle
+        /*public dof4 end_effector(Vector3D forearm_orientation, double delta_theta) //trajectory() in MATLAB; calculation position of end effector and ideal orientation of the needle
         {
             needle_holder_twist = needle_holder_twist  + t_incr;
             update_needle_holder_position();
@@ -112,7 +83,7 @@ namespace path_generation
             Vector3D optimal_needle_orientation = new Vector3D();
             optimal_needle_orientation = minimizer(forearm_orientation);
             DOF.ori = optimal_needle_orientation;
-            */
+            /
             return needle_holder;
         }
         private Vector3D minimizer(Vector3D forearm_orientation)
@@ -140,7 +111,7 @@ namespace path_generation
         private static void minimizer_fun(double[] x, ref double func, double[] grad, object obj)
         {
             func = -(x[0] * ideal_needle_orientation.X + x[1] * ideal_needle_orientation.Y + x[2] * ideal_needle_orientation.Z);
-        }
+        }*/
         public void print_quaternion(Quaternion q)
         {
             Console.Write("\n [{0}, {1}, {2}]\t w: {3}\n", q.X, q.Y, q.Z, q.W);
