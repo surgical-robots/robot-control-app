@@ -141,14 +141,15 @@ namespace RobotApp.Views.Plugins
                     trajectory.create();
                     needle.local_coordinate = trajectory.local_coordinate;
                     Outputs["Clutch"].Value = 1; // enalble clutch
+                    needle.set_needle_tip_position(trajectory.get_needle_tip_position());
+                    needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
                     state++;
                 }
             }
             if (state == 4)
             {
-                /*
-                needle.set_needle_tip_position(trajectory.get_needle_tip_position());
-                needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
+                
+
                 Vector3D start_position = new Vector3D(Outputs["X"].Value, Outputs["Y"].Value, Outputs["Z"].Value);
                 Vector3D target_position = needle.get_needle_holder_position();
                 double start_twist = Outputs["Twist"].Value;
@@ -156,8 +157,8 @@ namespace RobotApp.Views.Plugins
 
                 if (vector_interpolation(start_position, target_position) & digit_interpolation(start_twist, target_twist))
                     state++;
-                 */
-                state++;
+                
+                //state++;
             }
             if (state == 5) //calculation of needle holder position
             {
@@ -167,26 +168,26 @@ namespace RobotApp.Views.Plugins
                 //dof4 end_effector;
                 //end_effector.pos = trajectory.get_needle_tip_position();
                 //end_effector.twist = trajectory.get_needle_tip_twist();
-                update_output();
-                if (t >=  Math.PI)
+                needle.set_needle_tip_position(trajectory.get_needle_tip_position());
+                needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
+                update_output(needle.get_needle_holder_position(), twist_correction(needle.get_needle_holder_twist()));
+                if (t >=  0.5 * Math.PI)
                 {
                     end_suturing();
                     Console.Write("\nAutomatically ended\n");
                 }
             }
         }
-        private void update_output()
+        private void update_output(Vector3D pos_new, double twist_new)
         {
-            needle.set_needle_tip_position(trajectory.get_needle_tip_position());
-            needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
-            Vector3D pos_incr = new Vector3D(Outputs["X"].Value - needle.get_needle_holder_position().X, Outputs["Y"].Value - needle.get_needle_holder_position().Y, Outputs["Z"].Value - needle.get_needle_holder_position().Z);
-            double twist_incr = Outputs["Twist"].Value - twist_correction(needle.get_needle_holder_twist());
+            Vector3D pos_incr = new Vector3D(Outputs["X"].Value - pos_new.X, Outputs["Y"].Value - pos_new.Y, Outputs["Z"].Value - pos_new.Z);
+            double twist_incr = Outputs["Twist"].Value - twist_new;
             if (pos_incr.Length < 30 & Math.Abs(twist_incr) < 45)
             {
-                Outputs["X"].Value = needle.get_needle_holder_position().X;
-                Outputs["Y"].Value = needle.get_needle_holder_position().Y;
-                Outputs["Z"].Value = needle.get_needle_holder_position().Z;
-                Outputs["Twist"].Value = twist_correction(needle.get_needle_holder_twist());
+                Outputs["X"].Value = pos_new.X;
+                Outputs["Y"].Value = pos_new.Y;
+                Outputs["Z"].Value = pos_new.Z;
+                Outputs["Twist"].Value = twist_new;
                 //Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
             }
             else
@@ -194,9 +195,44 @@ namespace RobotApp.Views.Plugins
                 state = 1;
                 end_suturing();
                 Console.Write("\nPosition increment is: {0}\nTwist increment is {1}", pos_incr.Length, Math.Abs(twist_incr));
-                Console.Write("\nCurrent position increment is: [{0}, {1}, {2}]\nNext position is: [{3}, {4}, {5}]", Outputs["X"].Value, Outputs["Y"].Value, Outputs["Z"].Value, needle.get_needle_holder_position().X, needle.get_needle_holder_position().Y, needle.get_needle_holder_position().Z);
-                Console.Write("\nCurrent twist increment is: {0}\nNext twist is: {1}", Outputs["Twist"].Value, twist_correction(needle.get_needle_holder_twist()));
+                Console.Write("\nCurrent position increment is: [{0}, {1}, {2}]\nNext position is: [{3}, {4}, {5}]", Outputs["X"].Value, Outputs["Y"].Value, Outputs["Z"].Value, pos_new.X, pos_new.Y, pos_new.Z);
+                Console.Write("\nCurrent twist increment is: {0}\nNext twist is: {1}", Outputs["Twist"].Value, twist_new);
                 MessageBox.Show("The increment for the position is bigger than 30 (mm) and/or for the twist is bigger than 45 degrees. See the output for more info.");
+            }
+        }
+        private void update_output(Vector3D pos_new)
+        {
+            Vector3D pos_incr = new Vector3D(Outputs["X"].Value - pos_new.X, Outputs["Y"].Value - pos_new.Y, Outputs["Z"].Value - pos_new.Z);
+            if (pos_incr.Length < 30)
+            {
+                Outputs["X"].Value = pos_new.X;
+                Outputs["Y"].Value = pos_new.Y;
+                Outputs["Z"].Value = pos_new.Z;
+            }
+            else
+            {
+                state = 1;
+                end_suturing();
+                Console.Write("\nPosition increment is: {0}\n", pos_incr.Length);
+                Console.Write("\nCurrent position increment is: [{0}, {1}, {2}]\nNext position is: [{3}, {4}, {5}]", Outputs["X"].Value, Outputs["Y"].Value, Outputs["Z"].Value, pos_new.X, pos_new.Y, pos_new.Z);
+                MessageBox.Show("The increment for the position is bigger than 30 (mm). See the output for more info.");
+            }
+        }
+        private void update_output(double twist_new)
+        {
+            double twist_incr = Outputs["Twist"].Value - twist_new;
+            if (Math.Abs(twist_incr) < 45)
+            {
+                Outputs["Twist"].Value = twist_new;
+                //Outputs["Twist"].Value = -needle.get_needle_holder_twist() * 180 / Math.PI;
+            }
+            else
+            {
+                state = 1;
+                end_suturing();
+                Console.Write("\nTwist increment is {0}", Math.Abs(twist_incr));
+                Console.Write("\nCurrent twist increment is: {0}\nNext twist is: {1}", Outputs["Twist"].Value, twist_new);
+                MessageBox.Show("The increment for the twist is bigger than 45 degrees. See the output for more info.");
             }
         }
         private double twist_correction(double t)
@@ -212,17 +248,19 @@ namespace RobotApp.Views.Plugins
             if (length > 5)
             {
                 mid = start + 5 * line / length;
-                Outputs["X"].Value = mid.X;
-                Outputs["Y"].Value = mid.Y;
-                Outputs["Z"].Value = mid.Z;
+                update_output(mid);
+                //Outputs["X"].Value = mid.X;
+                //Outputs["Y"].Value = mid.Y;
+                //Outputs["Z"].Value = mid.Z;
                 return false;
             }
             else
             {
                 mid = target;
-                Outputs["X"].Value = mid.X;
-                Outputs["Y"].Value = mid.Y;
-                Outputs["Z"].Value = mid.Z;
+                update_output(mid);
+                //Outputs["X"].Value = mid.X;
+                //Outputs["Y"].Value = mid.Y;
+                //Outputs["Z"].Value = mid.Z;
                 return true;
             }
         }
@@ -233,13 +271,15 @@ namespace RobotApp.Views.Plugins
             if (Math.Abs(difference) > 5)
             {
                 mid = start + 5 * Math.Sign(difference);
-                Outputs["Twist"].Value = mid;
+                update_output(mid);
+                //Outputs["Twist"].Value = mid;
                 return false;
             }
             else
             {
                 mid = target;
-                Outputs["Twist"].Value = mid;
+                update_output(mid);
+                //Outputs["Twist"].Value = mid;
                 return true;
             }
         }
@@ -251,7 +291,7 @@ namespace RobotApp.Views.Plugins
             t = 0;
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
             Outputs["Clutch"].Value = 0;
-            Outputs["Twist"].Value = -50;
+            //Outputs["Twist"].Value = 0;
             stepTimer.Start();
             StartSuturingButtonText = "Suturing...";
             StartSuturingButton.IsEnabled = false;
