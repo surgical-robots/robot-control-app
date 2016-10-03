@@ -21,6 +21,8 @@ namespace RobotApp.Views.Plugins
         static int state;
 
         System.Windows.Forms.Timer stepTimer = new System.Windows.Forms.Timer();
+        System.Windows.Forms.Timer interpolationTimer = new System.Windows.Forms.Timer();
+
 
         public override void PostLoadSetup()
         {
@@ -121,7 +123,7 @@ namespace RobotApp.Views.Plugins
 
             // set up output timer
             stepTimer.Interval = 100;
-            stepTimer.Tick += StepTimer_Tick; ;
+            stepTimer.Tick += StepTimer_Tick;
 
             PostLoadSetup();
         }
@@ -157,7 +159,7 @@ namespace RobotApp.Views.Plugins
 
                 if (vector_interpolation(start_position, target_position) & digit_interpolation(start_twist, target_twist))
                     state++;
-                
+                System.Threading.Thread.Sleep(100);
                 //state++;
             }
             if (state == 5) //calculation of needle holder position
@@ -171,7 +173,7 @@ namespace RobotApp.Views.Plugins
                 needle.set_needle_tip_position(trajectory.get_needle_tip_position());
                 needle.set_needle_tip_twist(trajectory.get_needle_tip_twist());
                 update_output(needle.get_needle_holder_position(), twist_correction(needle.get_needle_holder_twist()));
-                if (t >=  0.5 * Math.PI)
+                if (t >=  1 * Math.PI)
                 {
                     end_suturing();
                     Console.Write("\nAutomatically ended\n");
@@ -302,7 +304,7 @@ namespace RobotApp.Views.Plugins
             Console.Write("\nSuturing ended.\n");
             stepTimer.Stop();
             t = 0;
-            state = 1;
+            state = 0;
             x_clutchOffset = Outputs["X"].Value - x;
             y_clutchOffset = Outputs["Y"].Value - y;
             z_clutchOffset = Outputs["Z"].Value - z;
@@ -311,7 +313,17 @@ namespace RobotApp.Views.Plugins
             StartSuturingButtonText = "Start Suturing";
             StartSuturingButton.IsEnabled = true;
             EndSuturingButton.IsEnabled = false;
+            // set up interpolation timer
+            interpolationTimer.Interval = 50;
+            interpolationTimer.Tick += interpolationTimer_Tick;
+            interpolationTimer.Start();
         }
+        private void interpolationTimer_Tick(object sender, EventArgs e)
+        {
+            while (!digit_interpolation(Outputs["Twist"].Value, 0)) ;
+            interpolationTimer.Stop();
+        }
+
         private Vector3D get_forearm_orientation()
         {
             double LengthUpperArm = 68.58;
