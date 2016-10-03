@@ -57,6 +57,7 @@ namespace TelSurge
         //OUTPUTS
         public OmniPosition OutputPosition { get; set; }
         private Point videoClickPoint = new Point();
+        public int messageCount { get; set; }
 
         /*
         double forceOffset_LX = 0;
@@ -104,6 +105,7 @@ namespace TelSurge
                 fillAudioDeviceDDL();
                 HapticForces = new OmniPosition();
                 SendFrozen = false;
+                messageCount = 0;
 
                 //Set Force Trackbar
                 //want force divider between 20 and 220
@@ -813,6 +815,7 @@ namespace TelSurge
                     {
                         //Only send data to Master while InControl
                         SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
+                        messageCount++;
                     }
                     //Check for freeze button press
                     if (telSurgeOnly && this.User.CheckForFreeze(currentPos))
