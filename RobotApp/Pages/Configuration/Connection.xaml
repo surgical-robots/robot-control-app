@@ -23,6 +23,9 @@
                 <DataTemplate DataType="{x:Type vm:SerialTransportViewModel}">
                     <view:SerialTransportView/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type vm:SocketTransportViewModel}">
+                    <view:SocketTransportView/>
+                </DataTemplate>
             </ContentControl.Resources>
         </ContentControl>
     </DockPanel>

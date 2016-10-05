@@ -122,7 +122,7 @@ namespace RobotApp.Views.Plugins
 
         public void PrintFile()
         {
-            string fullPath = path + "\\Data\\" + OutputFileName;
+            string fullPath = path + OutputFileName;
             if (printing == true)
             {
                 if (!File.Exists(fullPath))

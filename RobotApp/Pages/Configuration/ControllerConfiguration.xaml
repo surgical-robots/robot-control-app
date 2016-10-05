@@ -30,9 +30,9 @@
                     <Button Content="{Binding UpdateText}" Command="{Binding UpdateCommand}" />
                     <Button Content="Home Selected Joints" Command="{Binding HomeAllCommand}" />
                     
-                    <TextBlock Text=" " />
+                    <!--<TextBlock Text=" " />
                     <TextBlock Text="Saved Configuration" />
-                    <ComboBox Name="ConfigFileBox" ItemsSource="{Binding ConfigList}" SelectedItem="{Binding ConfigPath}" />
+                    <ComboBox Name="ConfigFileBox" ItemsSource="{Binding ConfigList}" SelectedItem="{Binding ConfigPath}" />-->
                     <TextBlock Text=" " />
                     <mui:ModernButton IconData="{StaticResource LoadIconData}" 
                                   Content="Load From File" Command="{Binding LoadCommand}" />

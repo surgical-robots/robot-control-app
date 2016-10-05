@@ -68,12 +68,14 @@ namespace RobotControl
 
         public void StartUpdates()
         {
-            Com.RequestData = true;
+            if(Com != null)
+                Com.RequestData = true;
         }
 
         public void StopUpdates()
         {
-            Com.RequestData = false;
+            if(Com != null)
+                Com.RequestData = false;
         }
 
         void setpointTimer_Elapsed(object sender, EventArgs e)

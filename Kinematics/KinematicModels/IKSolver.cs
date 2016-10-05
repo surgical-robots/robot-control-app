@@ -6,24 +6,25 @@ namespace Kinematics
 {
     public class IKSolver : Kinematic
     {
-        private double[] radAngle;  // array of joint angles in radians
-        private Vector3D[,] frame;  // array of joint frame vectors
-        private Vector3D Pd;        // desired position vector
-        private Vector3D Ph;        // position of end effector
-        private Vector3D[] Rd;      // desired orientation of end effector
-        private Vector3D[] Rh;      // orientation of end effector
-        private Vector3D[] Pih;     // array of relative position of end effector with respect to each frame
-        private double Eo;          // orientation error
-        private double Ec;          // current error
-        private double Ep;          // previous error
+        private double[] radAngle;      // array of joint angles in radians
+        private double[] thetaOffset;   // array of theta offsets from DH parameters
+        private Vector3D[,] frame;      // array of joint frame vectors
+        private Vector3D Pd;            // desired position vector
+        private Vector3D Ph;            // position of end effector
+        private Vector3D[] Rd;          // desired orientation of end effector
+        private Vector3D[] Rh;          // orientation of end effector
+        private Vector3D[] Pih;         // array of relative position of end effector with respect to each frame
+        private double Eo;              // orientation error
+        private double Ec;              // current error
+        private double Ep;              // previous error
         private bool Initialized = false;
         private double maxForce = 4;
 
         const int IK_MAX_TRIES = 5000;
 
         /// <summary>
-        /// index = 0        1          2
-        /// alpha(i-1)     a(i-i)     d(i)
+        /// index = 0        1          2          3
+        /// alpha(i-1)     a(i-i)     d(i)      theta(i)
         /// </summary>
         public double[,] DHparameters { get; set; }
 
@@ -83,6 +84,14 @@ namespace Kinematics
             {
                 radAngle = new double[N + 1];
                 radAngle.Initialize();
+
+                thetaOffset = new double[N + 1];
+                thetaOffset[0] = 0;
+                for (int i = 1; i <= N; i++)
+                {
+                    thetaOffset[i] = DHparameters[i - 1, 3] * Math.PI / 180;
+                }
+
                 Initialized = true;
             }
             // create desired position vector
@@ -308,6 +317,14 @@ namespace Kinematics
             {
                 radAngle = new double[N + 1];
                 radAngle.Initialize();
+
+                thetaOffset = new double[N + 1];
+                thetaOffset[0] = 0;
+                for (int i = 1; i <= N; i++)
+                {
+                    thetaOffset[i] = DHparameters[i - 1, 3] * Math.PI / 180;
+                }
+
                 Initialized = true;
             }
             // create desired position vector
@@ -377,10 +394,10 @@ namespace Kinematics
                     frame[i, 3].Z = 0;
                 }
                 // forward recurrsion formulas for frame position and orientation
-                for (int i = 1; i < N + 1; i++)
+                for (int i = 1; i <= N; i++)
                 {
                     // x(i) orientation vector
-                    frame[i, 0] = Vector3D.Add((Vector3D.Multiply(Math.Cos(radAngle[i - 1]), frame[(i - 1), 0])), (Vector3D.Multiply(Math.Sin(radAngle[i - 1]), frame[(i - 1), 1])));
+                    frame[i, 0] = Vector3D.Add((Vector3D.Multiply((Math.Cos(radAngle[i - 1] + thetaOffset[i])), frame[(i - 1), 0])), (Vector3D.Multiply((Math.Sin(radAngle[i - 1] + thetaOffset[i])), frame[(i - 1), 1])));
                     // z(i) orientation vector
                     frame[i, 2] = Vector3D.Add((Vector3D.Multiply(Math.Cos(DHparameters[i - 1, 0] * Math.PI / 180), frame[(i - 1), 2])), Vector3D.Multiply(Math.Sin(DHparameters[(i - 1), 0] * Math.PI / 180), Vector3D.CrossProduct(frame[i, 0], frame[(i - 1), 2])));
                     // y(i) orientation vector

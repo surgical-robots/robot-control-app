@@ -238,15 +238,18 @@ namespace RobotApp.ViewModel
             BinaryFormatter ser = new BinaryFormatter();
             FileStream writer;
 
-            if( ConfigPath != null)
-                writer = new FileStream(ConfigPath, FileMode.Truncate);
-            else if(File.Exists("data.ControllerConfig"))
+            //if( ConfigPath != null)
+            //    writer = new FileStream(ConfigPath, FileMode.Truncate);
+            //else if(File.Exists("data.ControllerConfig"))
+            if(File.Exists(ConfigPath))
             {
-                writer = new FileStream("data.ControllerConfig", FileMode.Truncate);
+                writer = new FileStream(ConfigPath, FileMode.Truncate);
+                //writer = new FileStream("data.ControllerConfig", FileMode.Truncate);
             }
             else
             {
-                writer = new FileStream("data.ControllerConfig", FileMode.Create);
+                writer = new FileStream(ConfigPath, FileMode.Create);
+                //writer = new FileStream("data.ControllerConfig", FileMode.Create);
             }
 
             // Create a new ApplicationData and copy everything into it
