@@ -15,13 +15,15 @@ namespace path_generation
         public double needle_radius = 14; // radius of the needle
         public Vector3D entry_point;
         public Vector3D exit_point;
+        public Vector3D center;
+        public Vector3D normal;
         public int number_of_points = 20;
         public Coordinate local_coordinate;
         public Coordinate twisted_local_coordinate;
         public double incr { get; private set; }
 
-        private  static Vector3D needle_tip_position;
-        private double needle_tip_twist = 0;
+        public  static Vector3D needle_tip_position;
+        public double needle_tip_twist = 0;
 
         public Trajectory()
         {
@@ -62,6 +64,19 @@ namespace path_generation
             needle_tip_position = entry_point;
             needle_tip_twist = Math.Acos(Vector3D.DotProduct((needle_tip_position - local_coordinate.origin), local_coordinate.e_x) / ((needle_tip_position - local_coordinate.origin).Length * local_coordinate.e_x.Length));
             needle_tip_twist = Math.PI - needle_tip_twist;
+
+            center = new Vector3D();
+            center = local_coordinate.origin;
+            normal = new Vector3D();
+            normal = local_coordinate.e_z;
+            Console.Write("\nreal entry\n");
+            print_vector(entry_point);
+            Console.Write("\nreal exit\n");
+            print_vector(exit_point);
+            Console.Write("\ncenter\n");
+            print_vector(center);
+
+
         }
         public Vector3D get_needle_tip_position()
         {
@@ -80,10 +95,22 @@ namespace path_generation
             needle_tip_position.X = q_needle_tip_position.X + circle_center.X;
             needle_tip_position.Y = q_needle_tip_position.Y + circle_center.Y;
             needle_tip_position.Z = q_needle_tip_position.Z + circle_center.Z;
-
+            /*
+            needle_tip_position = rotateAboutAxis(normal, needle_tip_position - center, incr);
+            needle_tip_position = needle_tip_position + center;
+            */
             return needle_tip_position;
         }
+        private Vector3D rotateAboutAxis(Vector3D axis, Vector3D point, double angle)
+        {
+            Vector3D rotated = new Vector3D();
+            Matrix3D matrix = Matrix3D.Identity;
+            Quaternion q_axis = new Quaternion(Math.Sin(angle / 2) * axis.X, Math.Sin(angle / 2) * axis.Y, Math.Sin(angle / 2) * axis.Z, Math.Cos(angle / 2));
+            matrix.Rotate(q_axis);
+            rotated = matrix.Transform(point);
 
+            return rotated;
+        }
         public double get_needle_tip_twist()
         {
             needle_tip_twist = needle_tip_twist + incr;

@@ -15,7 +15,7 @@ namespace path_generation
         public Coordinate local_coordinate;
         public Coordinate twisted_local_coordinate;   
 
-        private static Vector3D needle_holder_position;
+        public  Vector3D needle_holder_position;
         private Vector3D needle_tip_position;
         private double needle_holder_twist = 0;
         private double needle_tip_twist;
@@ -49,11 +49,28 @@ namespace path_generation
             needle_holder_position = 2 * circle_center - needle_tip_position;
             return needle_holder_position;
         }
+        public Vector3D get_needle_holder_position(Matrix3D T35)
+        {
+            Vector3D tip = new Vector3D(needle_tip_position.X, needle_tip_position.Y, needle_tip_position.Z);
+            Vector3D needle = new Vector3D(0, 0, 0);
+            Vector3D grasper = new Vector3D();
+            
+            tip = NeedleKinematics.correctionBack(tip);
+            Vector3D rotated_needle = new Vector3D();
+            rotated_needle = NeedleKinematics.transform(T35, needle);
+            grasper = tip - rotated_needle;
+            grasper = NeedleKinematics.correction(grasper);
+            needle_holder_position.X = grasper.X;
+            needle_holder_position.Y = grasper.Y;
+            needle_holder_position.Z = grasper.Z;
+            return needle_holder_position;
+        }
         public double get_needle_holder_twist()
         {
             return needle_tip_twist;
 
         }
+        //after
 
         
 

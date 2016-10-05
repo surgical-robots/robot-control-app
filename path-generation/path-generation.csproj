@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Circle.cs" />
+    <Compile Include="NeedleKinematics.cs" />
     <Compile Include="math.cs" />
     <Compile Include="autoSuturing.cs" />
     <Compile Include="Print.cs" />
