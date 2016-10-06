@@ -27,7 +27,10 @@ namespace path_generation
         public Vector3D e_y;
         public Vector3D e_z;
     }
- 
+    public class math
+    {
+
+    }
 
 
 

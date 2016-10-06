@@ -16,9 +16,9 @@ namespace path_generation
         public Coordinate twisted_local_coordinate;   
 
         public  Vector3D needle_holder_position;
-        private Vector3D needle_tip_position;
-        private double needle_holder_twist = 0;
-        private double needle_tip_twist;
+        public Vector3D needle_tip_position;
+        public double needle_holder_twist;
+        public double needle_tip_twist;
 
         public Needle()
         {
@@ -30,26 +30,15 @@ namespace path_generation
             this.needle_tip_position = needle_tip_position;
             needle_holder_position = 2 * circle_center - needle_tip_position;
 
-            print_vector(needle_holder_position);
+            Print.print_vector(needle_holder_position);
         }
-
-
-        public void set_needle_tip_position(Vector3D needle_tip_position)
-        {
-            this.needle_tip_position = needle_tip_position;
-        }
-        public void set_needle_tip_twist(double needle_tip_twist)
-        {
-            this.needle_tip_twist = needle_tip_twist;
-        }
-        public Vector3D get_needle_holder_position()
+        public void update_needle_holder_position()
         {
             Vector3D circle_center = new Vector3D();
             circle_center = local_coordinate.origin;
             needle_holder_position = 2 * circle_center - needle_tip_position;
-            return needle_holder_position;
         }
-        public Vector3D get_needle_holder_position(Matrix3D T35)
+        public void update_needle_holder_position(Matrix3D T35)
         {
             Vector3D tip = new Vector3D(needle_tip_position.X, needle_tip_position.Y, needle_tip_position.Z);
             Vector3D needle = new Vector3D(0, 0, 0);
@@ -63,12 +52,10 @@ namespace path_generation
             needle_holder_position.X = grasper.X;
             needle_holder_position.Y = grasper.Y;
             needle_holder_position.Z = grasper.Z;
-            return needle_holder_position;
         }
-        public double get_needle_holder_twist()
+        public void update_needle_holder_twist()
         {
-            return needle_tip_twist;
-
+            needle_holder_twist = needle_tip_twist;
         }
         //after
 
@@ -129,18 +116,7 @@ namespace path_generation
         {
             func = -(x[0] * ideal_needle_orientation.X + x[1] * ideal_needle_orientation.Y + x[2] * ideal_needle_orientation.Z);
         }*/
-        public void print_quaternion(Quaternion q)
-        {
-            Console.Write("\n [{0}, {1}, {2}]\t w: {3}\n", q.X, q.Y, q.Z, q.W);
-        }
-        public void print_vector(Vector3D v)
-        {
-            Console.Write("\n [{0}, {1}, {2}]\n", v.X, v.Y, v.Z);
-        }
-        public void print_double(double d)
-        {
-            Console.Write("\n {0}\n", d);
-        }
+
         /*public point end_effector(Vector3D forearm_orientation, double t) //trajectory() in MATLAB; calculation position of end effector and ideal orientation of the needle
         {
             point DOF;

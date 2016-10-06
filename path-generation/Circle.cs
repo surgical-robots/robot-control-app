@@ -9,8 +9,8 @@ namespace path_generation
 {
     public class Circle
     {
-        public double radius;
-        public Coordinate local_coordinate;
+        public const double radius = 14;
+        /*public Coordinate local_coordinate;
         public Circle(double radius, Vector3D one_point)
         {
             double twist = 0; // assumed
@@ -47,6 +47,6 @@ namespace path_generation
             q_point = q_axis * q_point * q_axis_conjugate;
             Vector3D output = new Vector3D(q_point.X, q_point.Y, q_point.Z);
             return output;
-        }
+        }*/
     }
 }

@@ -22,8 +22,8 @@ namespace path_generation
         public Coordinate twisted_local_coordinate;
         public double incr { get; private set; }
 
-        public  static Vector3D needle_tip_position;
-        public double needle_tip_twist = 0;
+        public Vector3D needle_tip_position;
+        public double needle_tip_twist { get; private set; }
 
         public Trajectory()
         {
@@ -70,15 +70,14 @@ namespace path_generation
             normal = new Vector3D();
             normal = local_coordinate.e_z;
             Console.Write("\nreal entry\n");
-            print_vector(entry_point);
+            Print.print_vector(entry_point);
             Console.Write("\nreal exit\n");
-            print_vector(exit_point);
+            Print.print_vector(exit_point);
             Console.Write("\ncenter\n");
-            print_vector(center);
-
+            Print.print_vector(center);
 
         }
-        public Vector3D get_needle_tip_position()
+        public Vector3D update_needle_tip_position()
         {
             Vector3D circle_normal = new Vector3D();
             circle_normal = local_coordinate.e_z;
@@ -111,34 +110,14 @@ namespace path_generation
 
             return rotated;
         }
-        public double get_needle_tip_twist()
+        public double update_needle_tip_twist()
         {
             needle_tip_twist = needle_tip_twist + incr;
             return needle_tip_twist;
         }
 
-        public Vector3D get_normal()
-        {
-            return local_coordinate.e_z;
-        }
-
-        public Vector3D get_center()
-        {
-            return local_coordinate.origin;
-        }
 
 
-        public static void print_quaternion(Quaternion q)
-        {
-            Console.Write("\n [{0}, {1}, {2}]\t w: {3}\n", q.X, q.Y, q.Z, q.W);
-        }
-        public static void print_vector(Vector3D v)
-        {
-            Console.Write("\n [{0}, {1}, {2}]\n", v.X, v.Y, v.Z);
-        }
-        public void print_double(double d)
-        {
-            Console.Write("\n {0}\n", d);
-        }
+
     }
 }
