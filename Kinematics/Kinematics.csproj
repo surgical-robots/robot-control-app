@@ -64,6 +64,7 @@
     <Compile Include="KinematicModels\TwoArmCoupledShoulder.cs" />
     <Compile Include="Robots\IKSolver\FourDOFsolver.cs" />
     <Compile Include="Robots\IKSolver\FiveDOFsolver.cs" />
+    <Compile Include="Robots\IKSolver\FourDOF_needle.cs" />
     <Compile Include="Robots\SingleArm\LouBot.cs" />
     <Compile Include="Robots\SingleArm\LouBotWithCamera.cs" />
     <Compile Include="Robots\TwoArm\MarkBot.cs" />

@@ -15,7 +15,6 @@ namespace path_generation
         public double leftUpperBevel, leftLowerBevel, leftElbow; // for calculating orientation of forearm
         public Trajectory trajectory; // ideal trajectory; gives the needle tip at every moment
         public Needle needle; // the trajectory will initialize the needle, then will get updated based on new needle tip.
-        NeedleKinematics kinematics;
         double t = 0;
         public int state;
         public Suturing()
@@ -27,8 +26,6 @@ namespace path_generation
             Console.Write("\nSuturing satrted.\n");
             trajectory = new Trajectory();
             needle = new Needle();
-            kinematics = new NeedleKinematics();
-
             t = 0;
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
         }
@@ -88,8 +85,24 @@ namespace path_generation
             Console.Write("\n****************t: {0}\n", t);
             needle.needle_tip_position = trajectory.needle_tip_position;
             needle.needle_tip_twist = trajectory.needle_tip_twist;
-            kinematics.update_kinematics(leftUpperBevel, leftLowerBevel, leftElbow, trajectory.update_needle_tip_twist());
-            needle.update_needle_holder_position(kinematics.transformation_matrix(46));
+            
+            /* test
+            Matrix3D T4 = needle.kinematics.transformation_matrix(4);
+            Matrix3D T5 = needle.kinematics.transformation_matrix(5);
+            Matrix3D T6 = needle.kinematics.transformation_matrix(6);
+            Vector3D v = new Vector3D(-28, 0, 0);
+            Vector3D v0 = new Vector3D(0, 0, 0);
+            Vector3D v5, v6, v66;
+            
+            v5 = new Vector3D(T5.M14, T5.M24, T5.M34);
+            v6 = NeedleKinematics.transform(T6, v0);
+            v66 = NeedleKinematics.transform(T5, v);
+
+
+            v6 = NeedleKinematics.correction(v6);
+            v5 = NeedleKinematics.correction(v5);
+             * */
+            needle.update_needle_holder_position(needle.kinematics.transformation_matrix(46));
             //needle.update_needle_holder_position();
             needle.update_needle_holder_twist();
 

@@ -9,20 +9,13 @@ namespace path_generation
 {
     public class NeedleKinematics
     {
-        private double leftUpperBevel;
-        private double leftLowerBevel;
-        private double leftElbow;
-        private double twist;
+        public double leftUpperBevel;
+        public double leftLowerBevel;
+        public double leftElbow;
+        public double twist;
 
         public NeedleKinematics()
         {
-        }
-        public void update_kinematics(double leftUpperBevel, double leftLowerBevel, double leftElbow, double twist)
-        {
-            this.leftUpperBevel = leftUpperBevel;
-            this.leftLowerBevel = leftLowerBevel;
-            this.leftElbow = leftElbow;
-            this.twist = twist;
         }
         /*
         public Matrix3D transformation_matrix(int a) //4 DOF Lue's calculation
@@ -148,8 +141,8 @@ namespace path_generation
             double LengthForearm = 96.393;
             double r = 14;
             // calculate forward kinematics and haptic forces, assuming kineAngle[0] is leftUpperBevel and kineAngle[1] is leftLowerBevel
-            double theta1 = ((leftUpperBevel + leftLowerBevel) / 2) * Math.PI / 180;// theta1 = 0;
-            double theta2 = ((leftUpperBevel - leftLowerBevel) / 2) * Math.PI / 180;// theta2 = 0;
+            double theta1 = ((leftUpperBevel + leftLowerBevel) / 2) * Math.PI / 180; //theta1 = 0;
+            double theta2 = ((leftUpperBevel - leftLowerBevel) / 2) * Math.PI / 180; //theta2 = 0;
             double theta3 = leftElbow * Math.PI / 180 + Math.PI / 2; //theta3 = 0 + Math.PI / 2;
 
             double c1 = Math.Cos(theta1);
@@ -181,10 +174,10 @@ namespace path_generation
                                        s5, c5, 0, 0,
                                         0, 0, 1, 0,
                                         0, 0, 0, 1);
-            Matrix3D T6 = new Matrix3D(1, 0, 0, 2 * r,
+            Matrix3D T6 = new Matrix3D(1, 0, 0, -2 * r,
                                        0, 1, 0, 0,
                                         0, 0, 1, 0,
-                                        0, 0, 0, 1);
+                                        0, 0, 0, 1);// r is negative to place the needle on the right. It's appear on the left since X is inverted
             Matrix3D T = new Matrix3D();
             switch (a)
             {

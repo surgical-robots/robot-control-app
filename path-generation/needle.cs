@@ -20,8 +20,11 @@ namespace path_generation
         public double needle_holder_twist;
         public double needle_tip_twist;
 
+        public NeedleKinematics kinematics;
+
         public Needle()
         {
+            kinematics = new NeedleKinematics();
         }
         public Needle(Vector3D needle_tip_position)
         {
@@ -41,7 +44,7 @@ namespace path_generation
         public void update_needle_holder_position(Matrix3D T35)
         {
             Vector3D tip = new Vector3D(needle_tip_position.X, needle_tip_position.Y, needle_tip_position.Z);
-            Vector3D needle = new Vector3D(0, 0, 0);
+            Vector3D needle = new Vector3D(-28, 0, 0);
             Vector3D grasper = new Vector3D();
             
             tip = NeedleKinematics.correctionBack(tip);
