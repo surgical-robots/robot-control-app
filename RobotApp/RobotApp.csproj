@@ -252,6 +252,9 @@
     <Compile Include="Views\ControllerListItemView.xaml.cs">
       <DependentUpon>ControllerListItemView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\AutoSuture2.xaml.cs">
+      <DependentUpon>AutoSuture2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\AutoSuture.xaml.cs">
       <DependentUpon>AutoSuture.xaml</DependentUpon>
     </Compile>
@@ -435,6 +438,10 @@
     <Page Include="Views\ControllerListItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\AutoSuture2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\AutoSuture.xaml">
       <Generator>MSBuild:Compile</Generator>

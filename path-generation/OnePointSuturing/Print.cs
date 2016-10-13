@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
-namespace path_generation
+namespace path_generation.OnePointSuturing
 {
     public class Print
     {

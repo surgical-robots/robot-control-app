@@ -10,7 +10,7 @@ using System.Windows.Media.Media3D;
 
 namespace path_generation
 {
-    public class Needle
+    public class Needle0
     {
         public Coordinate local_coordinate;
         public Coordinate twisted_local_coordinate;   
@@ -20,20 +20,20 @@ namespace path_generation
         public double needle_holder_twist;
         public double needle_tip_twist;
 
-        public NeedleKinematics kinematics;
+        public NeedleKinematics0 kinematics;
 
-        public Needle()
+        public Needle0()
         {
-            kinematics = new NeedleKinematics();
+            kinematics = new NeedleKinematics0();
         }
-        public Needle(Vector3D needle_tip_position)
+        public Needle0(Vector3D needle_tip_position)
         {
             Vector3D circle_center = new Vector3D();
             circle_center = local_coordinate.origin;
             this.needle_tip_position = needle_tip_position;
             needle_holder_position = 2 * circle_center - needle_tip_position;
 
-            Print.print_vector(needle_holder_position);
+            Print0.print_vector(needle_holder_position);
         }
         public void update_needle_holder_position()
         {
@@ -47,11 +47,11 @@ namespace path_generation
             Vector3D needle = new Vector3D(-28, 0, 0);
             Vector3D grasper = new Vector3D();
             
-            tip = NeedleKinematics.correctionBack(tip);
+            tip = NeedleKinematics0.correctionBack(tip);
             Vector3D rotated_needle = new Vector3D();
-            rotated_needle = NeedleKinematics.transform(T35, needle);
+            rotated_needle = NeedleKinematics0.transform(T35, needle);
             grasper = tip - rotated_needle;
-            grasper = NeedleKinematics.correction(grasper);
+            grasper = NeedleKinematics0.correction(grasper);
             needle_holder_position.X = grasper.X;
             needle_holder_position.Y = grasper.Y;
             needle_holder_position.Z = grasper.Z;

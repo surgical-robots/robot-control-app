@@ -7,14 +7,14 @@ using System.Windows.Media.Media3D;
 
 namespace path_generation
 {
-    public class NeedleKinematics
+    public class NeedleKinematics0
     {
         public double leftUpperBevel;
         public double leftLowerBevel;
         public double leftElbow;
         public double twist;
 
-        public NeedleKinematics()
+        public NeedleKinematics0()
         {
         }
         /*

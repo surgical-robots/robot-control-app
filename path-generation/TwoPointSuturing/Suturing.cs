@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 using System.Windows.Forms;
 
-namespace path_generation
+namespace path_generation.TwoPointSuturing
 {
     public class Suturing
     {      

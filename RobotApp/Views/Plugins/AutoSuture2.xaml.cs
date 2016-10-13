@@ -2,7 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System.Threading;
-using path_generation.TwoPointSuturing;
+using path_generation.OnePointSuturing;
 using System.Windows.Media.Media3D;
 using System.Windows.Forms;
 namespace RobotApp.Views.Plugins
@@ -10,7 +10,7 @@ namespace RobotApp.Views.Plugins
     /// <summary>
     /// Interaction logic for Clutch.xaml
     /// </summary>
-    public partial class AutoSuture : PluginBase
+    public partial class AutoSuture2 : PluginBase
     {
         //private const double PICK_ENTRY = 1, PICK_EXIT = 2, INITIALIZE_SUTURING = 3, PRE_SUTURING = 4, DO_SUTURING = 5, END_SUTURING = 6;
         double x, y, z, twist;
@@ -50,15 +50,15 @@ namespace RobotApp.Views.Plugins
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftUpperBevel"].UniqueID, (message) =>
             {
-                suturing.needle.kinematics.leftUpperBevel = message.Value;
+                suturing.joints.UpperBevel = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftLowerBevel"].UniqueID, (message) =>
             {
-                suturing.needle.kinematics.leftLowerBevel = message.Value;
+                suturing.joints.LowerBevel = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftElbow"].UniqueID, (message) =>
             {
-                suturing.needle.kinematics.leftElbow = message.Value;
+                suturing.joints.Elbow = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Entry"].UniqueID, (message) =>
             {
@@ -77,7 +77,7 @@ namespace RobotApp.Views.Plugins
 
             base.PostLoadSetup();
         }
-        public AutoSuture()
+        public AutoSuture2()
         {
             this.TypeName = "AutoSuture";
             this.PluginInfo = "";
@@ -132,9 +132,8 @@ namespace RobotApp.Views.Plugins
             {
                 if(suturing.DO_SUTURING())
                     end_suturing();
-                //update_output(suturing.grasper.pos, suturing.grasper.twist);
-                update_grasper_output(suturing.needle.needle_holder_position, -suturing.needle.needle_holder_twist * 180 / Math.PI);
-                update_trajectori_output(suturing.trajectory.needle_tip_position);
+                update_grasper_output(NeedleKinematics.correction(NeedleKinematics.get_translation(suturing.needle.tail)), suturing.needle.kinematics.joint.twist);
+                //update_trajectori_output(suturing.trajectory.needle_tip_position);
             }
         }
 
@@ -185,128 +184,6 @@ namespace RobotApp.Views.Plugins
             Outputs["Trajectory_Y"].Value = pos_new.Y;
             Outputs["Trajectory_Z"].Value = pos_new.Z;
         }
-        /*
-
-
-        private Vector3D get_forearm_orientation()
-        {
-            double LengthUpperArm = 68.58;
-            double LengthForearm = 96.393;
-            // calculate forward kinematics and haptic forces, assuming kineAngle[0] is leftUpperBevel and kineAngle[1] is leftLowerBevel
-            double theta1 = ((leftUpperBevel + leftLowerBevel) / 2) * Math.PI / 180;
-            double theta2 = ((leftUpperBevel - leftLowerBevel) / 2) * Math.PI / 180;
-            double theta3 = leftElbow * Math.PI / 180;
-
-            // calculate forward kinematics and haptic forces
-            double shoulder_Z = LengthUpperArm * Math.Cos(theta1) * Math.Cos(theta2) - LengthForearm * (Math.Sin(theta1) * Math.Sin(theta3) - Math.Cos(theta1) * Math.Cos(theta2) * Math.Cos(theta3));
-            double shoulder_Y = LengthUpperArm * Math.Sin(theta2) + LengthForearm * Math.Sin(theta2) * Math.Cos(theta3);
-            double shoulder_X = LengthUpperArm * Math.Sin(theta1) * Math.Cos(theta2) + LengthForearm * (Math.Cos(theta1) * Math.Sin(theta3) + Math.Sin(theta1) * Math.Cos(theta2) * Math.Cos(theta3));
-
-            double elbow_Z = LengthUpperArm * Math.Cos(theta1) * Math.Cos(theta2);
-            double elbow_Y = LengthUpperArm * Math.Sin(theta2) ;
-            double elbow_X = LengthUpperArm * Math.Sin(theta1) * Math.Cos(theta2);
-
-            Vector3D forearm_orientation = new Vector3D(shoulder_X - elbow_X, shoulder_Y - elbow_Y, shoulder_Z - elbow_Z);
-            return forearm_orientation;
-        }*/
-        //private Vector3D find_grasper_location(Vector3D tip)
-        //{
-            /*Matrix3D T5 = new Matrix3D(1, 0,  0,  0,
-                                     0, 1, 0, 2 * trajectory.needle_radius,
-                                     0, 0,  1,  0,
-                                     0, 0,  0,  1);
-            T5.Invert();
-            Vector3D temp = new Vector3D();
-            temp = T5.Transform(tip);
-            return temp;*/
-            //Vector3D grasper = new Vector3D();
-            //Matrix3D T = transformation_matrix();
-            //Vector3D e_x = new Vector3D(T.M11, T.M12, T.M13);
-            //grasper = Vector3D.Add(tip, 2 * trajectory.needle_radius * e_x);
-            //return grasper;
-
-        //}
-        //private Vector3D find_tip_location(Vector3D grasper)
-        //{
-            /*Vector3D tip = new Vector3D(0,-1,0);
-            Vector3D rotated = 2 * trajectory.needle_radius * transformation_matrix().Transform(tip);
-            Vector3D corrected = new Vector3D(rotated.Y, -rotated.Z, rotated.X);
-            tip = grasper + corrected;
-            //tip = grasper + 2 * trajectory.needle_radius * transformation_matrix().Transform(tip);
-
-            NeedleKinematics kinematics = new NeedleKinematics();
-            kinematics.update_kinematics(leftUpperBevel, leftLowerBevel, leftElbow, twist);
-            Matrix3D M5 = kinematics.transformation_matrix(5);
-            Vector3D v5 = new Vector3D(M5.M14, M5.M24, M5.M34);
-            v5 = NeedleKinematics.correction(v5);
-            Matrix3D M4 = kinematics.transformation_matrix(4);
-            Vector3D v4 = new Vector3D(M4.M14, M4.M24, M4.M34);
-            v4 = NeedleKinematics.correction(v4);
-            Matrix3D M45 = kinematics.transformation_matrix(45);
-            Vector3D v45 = new Vector3D(M45.M14, M45.M24, M45.M34);
-            return tip;*/
-            //kinematics.update_kinematics(leftUpperBevel, leftLowerBevel, leftElbow, twist);
-
-            //Matrix3D M4 = kinematics.transformation_matrix(4);
-            //Vector3D v4 = new Vector3D(M4.M14, M4.M24, M4.M34);
-            //v4 = NeedleKinematics.correction(v4);
-            //Matrix3D M6 = kinematics.transformation_matrix(6);
-            //Matrix3D M5 = kinematics.transformation_matrix(5);
-            //Vector3D v5 = new Vector3D(M5.M14, M5.M24, M5.M34);
-            //Vector3D v6 = new Vector3D(M6.M14, M6.M24, M6.M34);
-
-            //v5 = NeedleKinematics.correction(v5);
-            //v6 = NeedleKinematics.correction(v6);
-
-            //return v6;
-        //}
-        /*private Matrix3D transformation_matrix()
-        {
-            double LengthUpperArm = 68.58;
-            double LengthForearm = 96.393;
-            // calculate forward kinematics and haptic forces, assuming kineAngle[0] is leftUpperBevel and kineAngle[1] is leftLowerBevel
-            double theta1 = ((leftUpperBevel + leftLowerBevel) / 2) * Math.PI / 180; //theta1 = 0;
-            double theta2 = ((leftUpperBevel - leftLowerBevel) / 2) * Math.PI / 180; //theta2 = 0;
-            double theta3 = leftElbow * Math.PI / 180;// theta3 = 0;
-            //Matrix3D temp = new Matrix3D(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-            //Vector3D v1 = new Vector3D(0, 0, 10);
-            //Vector3D v2 = new Vector3D();
-            double c1 = Math.Cos(theta1);
-            double s1 = Math.Sin(theta1);
-            double c2 = Math.Cos(theta2);
-            double s2 = Math.Sin(theta2);
-            double c3 = Math.Cos(theta3);
-            double s3 = Math.Sin(theta3); //twist = 90;
-            double theta4 = twist * Math.PI / 180;
-            double c4 = Math.Cos(theta4);
-            double s4 = Math.Sin(theta4);
-            Matrix3D T1 = new Matrix3D(c1,   -s1,   0,   0,
-                                       s1,   c1,    0,   0,
-                                        0,   0,     1,   0,
-                                        0,   0,     0,   1);
-            Matrix3D T2 = new Matrix3D(c2,  -s2,    0,      0,
-                                       0,   0,  -1,     0,
-                                       s2,  c2,  0,      0,
-                                        0,  0,   0,      1);
-            Matrix3D T3 = new Matrix3D(c3, -s3, 0, LengthUpperArm,
-                                       0, 0, 1, 0,
-                                       -s3, -c3, 0, 0,
-                                       0, 0, 0, 1);
-            Matrix3D T4 = new Matrix3D(1, 0, 0, LengthForearm,
-                                       0, c4, -s4, 0,
-                                        0, s4, c4, 0,
-                                        0, 0, 0, 1);
-            Matrix3D T = new Matrix3D();
-            T = Matrix3D.Multiply(T1, Matrix3D.Multiply(T2, Matrix3D.Multiply(T3, T4)));
-            ///Matrix3D T_rearranged = new Matrix3D(T.M21, T.M22, T.M23, T.M24,
-                                                 T.M31, T.M32, T.M33, T.M34,
-                                                 T.M11, T.M12, T.M13, T.M14,
-                                                 T.OffsetX, T.OffsetX, T.OffsetZ, T.M44);///
-            //T = T1 * T2 * T3 * T4;
-            //Vector3D e_x = new Vector3D(0,0,0);
-            //e_x = T.Transform(e_x);
-            return T;
-        }*/
 
         /// <summary>
         /// The <see cref="StartSuturingButtonText" /> property's name.

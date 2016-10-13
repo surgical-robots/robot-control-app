@@ -8,7 +8,7 @@ using MathWorks.MATLAB.NET.Utility;
 using minimizerNamespace;
 using System.Windows.Media.Media3D;
 
-namespace path_generation
+namespace path_generation.TwoPointSuturing
 {
     public class Trajectory
     {

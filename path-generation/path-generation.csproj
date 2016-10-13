@@ -59,22 +59,33 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Circle.cs" />
-    <Compile Include="NeedleKinematics.cs" />
+    <Compile Include="NeedleKinematics0.cs" />
     <Compile Include="math.cs" />
     <Compile Include="autoSuturing.cs" />
-    <Compile Include="Print.cs" />
+    <Compile Include="OnePointSuturing\Needle.cs" />
+    <Compile Include="OnePointSuturing\NeedleKinematics.cs" />
+    <Compile Include="OnePointSuturing\Optimizer.cs" />
+    <Compile Include="OnePointSuturing\Print.cs" />
+    <Compile Include="OnePointSuturing\Suturing.cs" />
+    <Compile Include="Print0.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Needle.cs" />
-    <Compile Include="Suturing.cs" />
-    <Compile Include="Trajectory.cs" />
+    <Compile Include="Needle0.cs" />
+    <Compile Include="Suturing0.cs" />
+    <Compile Include="Trajectory0.cs" />
     <Compile Include="trajectory_version3.cs" />
     <Compile Include="trajectory_version2.cs" />
+    <Compile Include="TwoPointSuturing\Needle.cs" />
+    <Compile Include="TwoPointSuturing\NeedleKinematics.cs" />
+    <Compile Include="TwoPointSuturing\Print.cs" />
+    <Compile Include="TwoPointSuturing\Suturing.cs" />
+    <Compile Include="TwoPointSuturing\Trajectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
