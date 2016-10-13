@@ -40,7 +40,7 @@ namespace path_generation.OnePointSuturing
             double s2 = Math.Sin(theta2);
             double c3 = Math.Cos(theta3);
             double s3 = Math.Sin(theta3); //twist = 0;
-            double theta4 = joint.twist;
+            double theta4 = joint.twist * Math.PI / 180;
             double c4 = Math.Cos(theta4);
             double s4 = Math.Sin(theta4);
             Matrix3D T1 = new Matrix3D(c1, -s1, 0, 0,

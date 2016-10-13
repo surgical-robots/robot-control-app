@@ -133,7 +133,7 @@ namespace RobotApp.Views.Plugins
                 if(suturing.DO_SUTURING())
                     end_suturing();
                 update_grasper_output(NeedleKinematics.correction(NeedleKinematics.get_translation(suturing.needle.tail)), suturing.needle.kinematics.joint.twist);
-                //update_trajectori_output(suturing.trajectory.needle_tip_position);
+                update_trajectori_output(NeedleKinematics.correction(NeedleKinematics.get_translation(suturing.needle.head)));
             }
         }
 
