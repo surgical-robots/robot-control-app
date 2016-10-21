@@ -12,7 +12,7 @@ namespace path_generation.OnePointSuturing
     {
         // needle constants
         public double radius = 14;
-        const int n = 20;
+        public int n = 20;
 
         // needle variables
         public Matrix3D center;
@@ -64,6 +64,18 @@ namespace path_generation.OnePointSuturing
             this.tail = Matrix3D.Multiply(center, this.tail0);
             // update the points
         
+        }
+        public void update_needle(Matrix3D desired)
+        {
+            Optimizer optimizer = new Optimizer();
+            optimizer.T_taget = desired;
+            optimizer.x = new double[4] { kinematics.joint.UpperBevel, kinematics.joint.LowerBevel, kinematics.joint.Elbow, kinematics.joint.twist };
+            Joints optimized_joints = optimizer.minimize_error();
+            kinematics.joint.UpperBevel = optimized_joints.UpperBevel;
+            kinematics.joint.LowerBevel = optimized_joints.LowerBevel;
+            kinematics.joint.Elbow = optimized_joints.Elbow;
+            kinematics.joint.twist = optimized_joints.twist;
+            update_needle();
         }
         public void update_points()
         {

@@ -27,12 +27,26 @@ namespace path_generation.OnePointSuturing
         }
         public void SELECT_ENTRY(Joints joints)
         {
-            /*
+            
             needle.kinematics.joint.UpperBevel = joints.UpperBevel;
             needle.kinematics.joint.LowerBevel = joints.LowerBevel;
             needle.kinematics.joint.Elbow = joints.Elbow;
             needle.kinematics.joint.twist = joints.twist;
-            needle.update_needle();* */
+            needle.update_needle();
+
+
+            Optimizer optimizer = new Optimizer();
+            optimizer.T_taget = needle.kinematics.transformation_matrix(55);
+            optimizer.x = new double[4] { joints.UpperBevel, joints.LowerBevel, joints.Elbow, joints.twist };
+            Joints optimized_joints = optimizer.minimize_error();
+            Needle n = new Needle();
+            n.kinematics.joint.UpperBevel = optimized_joints.UpperBevel;
+            n.kinematics.joint.LowerBevel = optimized_joints.LowerBevel;
+            n.kinematics.joint.Elbow = optimized_joints.Elbow;
+            n.kinematics.joint.twist = optimized_joints.twist;
+            n.kinematics.transformation_matrix(55);
+            Matrix3D ti = needle.kinematics.transformation_matrix(55);
+            Matrix3D te = n.kinematics.transformation_matrix(55);
             state++;
              
             state++;
@@ -55,13 +69,13 @@ namespace path_generation.OnePointSuturing
         }
         public bool INITIALIZE_SUTURING()
         {//-60,-60,80,0
-            
+            /*
             needle.kinematics.joint.UpperBevel = 40;
             needle.kinematics.joint.LowerBevel = 30;
             needle.kinematics.joint.Elbow = -70;
             needle.kinematics.joint.twist = 0;
             needle.update_needle();
-            
+            */
             state++;
             return true;
         }
@@ -70,17 +84,9 @@ namespace path_generation.OnePointSuturing
         }
         public bool DO_SUTURING()
         {
-            Optimizer optimizer = new Optimizer();
-            optimizer.T_taget = needle.moved_head;
-
-            Joints optimized_joints=optimizer.minimize_error();
-            needle.kinematics.joint.UpperBevel = optimized_joints.UpperBevel;
-            needle.kinematics.joint.LowerBevel = optimized_joints.LowerBevel;
-            needle.kinematics.joint.Elbow = optimized_joints.Elbow;
-            needle.kinematics.joint.twist = optimized_joints.twist;
-            needle.update_needle();
-
-            if (t >= 2 * Math.PI)
+            needle.update_needle(needle.moved_head);
+            t = t + Math.PI / (needle.n - 1);
+            if (t >= 1 * Math.PI)
             {
                 END_SUTURING();
                 Console.Write("\nAutomatically ended\n");

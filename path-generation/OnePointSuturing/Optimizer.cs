@@ -13,14 +13,18 @@ namespace path_generation.OnePointSuturing
         public NeedleKinematics kinematics;
         public Matrix3D T_taget;
         private Matrix3D T_FK;
-        
+        public double[] x;
         public Optimizer()
         {
             kinematics = new NeedleKinematics();
+            //x = new double[] { 0, 0, 0, 0 };
         }
         public Joints minimize_error()
         {
-            double[] x = new double[] { 0, 0, 0, 0 };
+            //double[] x = new double[] { 0, 0, 0, 0 };
+
+            double[] bndl = new double[] { -90, -90, 0, -180 };
+            double[] bndu = new double[] { 90, 90, 180, 180 };
             double epsg = 0.0000000000001;
             double epsf = 0;
             double epsx = 0;
@@ -29,6 +33,7 @@ namespace path_generation.OnePointSuturing
             alglib.minlmreport rep;
 
             alglib.minlmcreatev(16, x, 0.0000000001, out state);
+            alglib.minlmsetbc(state, bndl, bndu);
             alglib.minlmsetcond(state, epsg, epsf, epsx, maxits);
             alglib.minlmoptimize(state, function_fvec, null, null);
             alglib.minlmresults(state, out x, out rep);

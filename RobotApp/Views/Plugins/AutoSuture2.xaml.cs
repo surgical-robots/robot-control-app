@@ -14,6 +14,7 @@ namespace RobotApp.Views.Plugins
     {
         //private const double PICK_ENTRY = 1, PICK_EXIT = 2, INITIALIZE_SUTURING = 3, PRE_SUTURING = 4, DO_SUTURING = 5, END_SUTURING = 6;
         double x, y, z, twist;
+        Joints joints;
         double x_clutchOffset = 0, y_clutchOffset = 0, z_clutchOffset = 0, twist_clutchOffset = 0;
         Suturing suturing = new Suturing();
         System.Windows.Forms.Timer stepTimer = new System.Windows.Forms.Timer();
@@ -46,25 +47,30 @@ namespace RobotApp.Views.Plugins
             {
                 twist = message.Value;
                 if (suturing.state < 3)
-                    Outputs["Twist"].Value = twist + twist_clutchOffset;
+                {
+                    Outputs["Twist"].Value =
+                    joints.twist = twist + twist_clutchOffset;
+                }
+                    
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftUpperBevel"].UniqueID, (message) =>
             {
-                //suturing.joints.UpperBevel = message.Value;
+                joints.UpperBevel = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftLowerBevel"].UniqueID, (message) =>
             {
-                //suturing.joints.LowerBevel = message.Value;
+                joints.LowerBevel = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftElbow"].UniqueID, (message) =>
             {
-                //suturing.joints.Elbow = message.Value;
+                joints.Elbow = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Entry"].UniqueID, (message) =>
             {
                 if (suturing.state == 1)// select entry point
                 {
-                    suturing.SELECT_ENTRY(x, y, z);
+                    //suturing.SELECT_ENTRY(x, y, z); // two-point
+                    suturing.SELECT_ENTRY(joints); // one-point
                 }
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Exit"].UniqueID, (message) =>
