@@ -50,15 +50,15 @@ namespace RobotApp.Views.Plugins
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftUpperBevel"].UniqueID, (message) =>
             {
-                suturing.joints.UpperBevel = message.Value;
+                //suturing.joints.UpperBevel = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftLowerBevel"].UniqueID, (message) =>
             {
-                suturing.joints.LowerBevel = message.Value;
+                //suturing.joints.LowerBevel = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["leftElbow"].UniqueID, (message) =>
             {
-                suturing.joints.Elbow = message.Value;
+                //suturing.joints.Elbow = message.Value;
             });
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Entry"].UniqueID, (message) =>
             {
