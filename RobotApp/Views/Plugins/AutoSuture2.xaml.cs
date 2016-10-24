@@ -77,7 +77,8 @@ namespace RobotApp.Views.Plugins
             {
                 if (suturing.state == 2)// select entry point
                 {
-                    suturing.SELECT_EXIT(x, y, z);
+                    //suturing.SELECT_EXIT(x, y, z);
+                    suturing.SELECT_EXIT(joints); // two-point suturing
                 }
             });
 
@@ -140,6 +141,7 @@ namespace RobotApp.Views.Plugins
                     end_suturing();
                 update_grasper_output(NeedleKinematics.correction(NeedleKinematics.get_translation(suturing.needle.tail)), suturing.needle.kinematics.joint.twist);
                 update_trajectori_output(NeedleKinematics.correction(NeedleKinematics.get_translation(suturing.needle.head)));
+                Print.print_vector(NeedleKinematics.get_translation(suturing.needle.head));
             }
         }
 

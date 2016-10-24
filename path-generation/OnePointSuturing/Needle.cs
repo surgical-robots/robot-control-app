@@ -19,7 +19,8 @@ namespace path_generation.OnePointSuturing
         public Matrix3D head, head0;
         public Matrix3D tail, tail0;
         public Matrix3D moved_head, moved_head0;
-        public Vector3D[] points;
+        public Vector3D[] real_half; // points that composes the physical part of needle
+        public Vector3D[] imag_half; // points that are not physically on the needle but are along the are of the needle
 
         // needle kinematics
         public NeedleKinematics kinematics;
@@ -37,14 +38,19 @@ namespace path_generation.OnePointSuturing
             tail0 = new Matrix3D();
             tail0.SetIdentity();
             tail0.M14 = radius;
-            points = new Vector3D[n];
+            real_half = new Vector3D[n];
+            imag_half = new Vector3D[n];
 
             // initializing points
             for (int i = 0; i < n; i++)
             {
-                points[i].X = radius * Math.Cos((double)i / (n-1) * Math.PI);
-                points[i].Y = -radius * Math.Sin((double)i / (n - 1) * Math.PI);
-                points[i].Z = 0;
+                real_half[i].X = radius * Math.Cos((double)i / (n - 1) * Math.PI);
+                real_half[i].Y = -radius * Math.Sin((double)i / (n - 1) * Math.PI);
+                real_half[i].Z = 0;
+
+                imag_half[i].X = -radius * Math.Cos((double)i / (n - 1) * Math.PI);
+                imag_half[i].Y = radius * Math.Sin((double)i / (n - 1) * Math.PI);
+                imag_half[i].Z = 0;
             }
 
             // initializing the moved head
@@ -55,15 +61,20 @@ namespace path_generation.OnePointSuturing
                                         0, 0, 0, 1);
             moved_head0 = Matrix3D.Multiply(rotZ, head0);
         }
-        public void update_needle()
+        public void update_needle() // joints of kinematic must be upadated beforehand
         {
             // update the center, head, tail and moved head
             this.center = kinematics.transformation_matrix(5);
             this.head = Matrix3D.Multiply(center, this.head0);
             this.moved_head = Matrix3D.Multiply(center, this.moved_head0);
             this.tail = Matrix3D.Multiply(center, this.tail0);
+            
             // update the points
-        
+            for (int i = 0; i < n; i++)
+            {
+                real_half[i] = NeedleKinematics.transform(center, this.real_half[i]);
+                imag_half[i] = NeedleKinematics.transform(center, this.imag_half[i]);
+            }
         }
         public void update_needle(Matrix3D desired)
         {
@@ -77,12 +88,10 @@ namespace path_generation.OnePointSuturing
             kinematics.joint.twist = optimized_joints.twist;
             update_needle();
         }
-        public void update_points()
+        public Vector3D get_normal()
         {
-            for (int i = 0; i < n; i++)
-            {
-                points[i] = NeedleKinematics.transform(center, points[i]);
-            }
+            Vector3D normal = new Vector3D(center.M13, center.M23, center.M33);
+            return normal;
         }
     }
 }

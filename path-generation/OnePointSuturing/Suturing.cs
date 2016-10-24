@@ -12,8 +12,11 @@ namespace path_generation.OnePointSuturing
     {
         //public Joints joints;
         public Needle needle; // the trajectory will initialize the needle, then will get updated based on new needle tip.
+        public Trajectory trajectory;
         double t = 0;
         public int state;
+        //public enum mode { one_point_suturing, two_point_suturing };
+        int mode = 1;
         public Suturing()
         {
             state = 0;
@@ -22,6 +25,7 @@ namespace path_generation.OnePointSuturing
         {
             Console.Write("\nSuturing satrted.\n");
             needle = new Needle();
+            trajectory = new Trajectory(); // mode 2
             t = 0;
             state = 1; // state initialization: state 1 indicates entry, state 2 exit and state 3 the suturing
         }
@@ -32,26 +36,48 @@ namespace path_generation.OnePointSuturing
             needle.kinematics.joint.LowerBevel = joints.LowerBevel;
             needle.kinematics.joint.Elbow = joints.Elbow;
             needle.kinematics.joint.twist = joints.twist;
+            needle.update_needle(); // one-point suturing
+
+            switch (mode)
+            {
+                case 1: // mode.one_point_suturing
+                    state++;
+                    state++;
+                    break;
+                case 2: //mode.two_point_suturing
+                    trajectory.entry_point = NeedleKinematics.get_translation(needle.head);
+                    //trajectory.set_entry_needle(joints);
+                    state++;
+                    break;
+            }
+        }
+        public void SELECT_EXIT(Joints joints)
+        {
+
+            needle.kinematics.joint.UpperBevel = joints.UpperBevel;
+            needle.kinematics.joint.LowerBevel = joints.LowerBevel;
+            needle.kinematics.joint.Elbow = joints.Elbow;
+            needle.kinematics.joint.twist = joints.twist;
             needle.update_needle();
 
 
-            Optimizer optimizer = new Optimizer();
-            optimizer.T_taget = needle.kinematics.transformation_matrix(55);
-            optimizer.x = new double[4] { joints.UpperBevel, joints.LowerBevel, joints.Elbow, joints.twist };
-            Joints optimized_joints = optimizer.minimize_error();
-            Needle n = new Needle();
-            n.kinematics.joint.UpperBevel = optimized_joints.UpperBevel;
-            n.kinematics.joint.LowerBevel = optimized_joints.LowerBevel;
-            n.kinematics.joint.Elbow = optimized_joints.Elbow;
-            n.kinematics.joint.twist = optimized_joints.twist;
-            n.kinematics.transformation_matrix(55);
-            Matrix3D ti = needle.kinematics.transformation_matrix(55);
-            Matrix3D te = n.kinematics.transformation_matrix(55);
+            trajectory.exit_point = NeedleKinematics.get_translation(needle.head);//mode.two_point_suturing
+            trajectory.set_entry_needle(joints);
+            trajectory.set_exit_needle(joints);
             state++;
-             
-            state++;
+
+            // delete late
+            /*
+            Joints traj_joint = trajectory.update_trajectory(joints);
+            needle.kinematics.joint.UpperBevel = traj_joint.UpperBevel;
+            needle.kinematics.joint.LowerBevel = traj_joint.LowerBevel;
+            needle.kinematics.joint.Elbow = traj_joint.Elbow;
+            needle.kinematics.joint.twist = traj_joint.twist;
+            needle.update_needle();
+             * */
+            //
         }
-        public void SELECT_ENTRY(double x, double y, double z)
+        public void SELECT_ENTRY(double x, double y, double z)// delete later
         {
             Console.Write("\nState 1: ENTRY POINT selected\n");
             Vector3D entry_point = new Vector3D(x, y, z);
@@ -59,7 +85,7 @@ namespace path_generation.OnePointSuturing
             Print.print_vector(entry_point);
             state++;
         }
-        public void SELECT_EXIT(double x, double y, double z)
+        public void SELECT_EXIT(double x, double y, double z)// delete later
         {
             Console.Write("\nState 2 EXIT POINT selected\n");
             Vector3D exit_point = new Vector3D(x, y, z);
@@ -84,7 +110,15 @@ namespace path_generation.OnePointSuturing
         }
         public bool DO_SUTURING()
         {
-            needle.update_needle(needle.moved_head);
+            switch(mode)
+            {
+                case 1: // mode.one_point_suturing
+                    needle.update_needle(needle.moved_head);
+                    break;
+                case 2: //mode.two_point_suturing
+                    needle = trajectory.needle_entry;
+                    break;
+            }
             t = t + Math.PI / (needle.n - 1);
             if (t >= 1 * Math.PI)
             {
