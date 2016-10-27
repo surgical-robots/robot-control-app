@@ -35,9 +35,12 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="abacus">
+      <HintPath>..\packages\Abacus.0.9.2\lib\abacus.dll</HintPath>
+    </Reference>
     <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\alglibnet2.0.0.0\lib\alglibnet2.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="minimizerNamespace, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -62,6 +65,7 @@
     <Compile Include="NeedleKinematics0.cs" />
     <Compile Include="math.cs" />
     <Compile Include="autoSuturing.cs" />
+    <Compile Include="OnePointSuturing\Interpolation.cs" />
     <Compile Include="OnePointSuturing\Needle.cs" />
     <Compile Include="OnePointSuturing\NeedleKinematics.cs" />
     <Compile Include="OnePointSuturing\Optimizer.cs" />
