@@ -76,7 +76,7 @@ namespace path_generation.OnePointSuturing
                 imag_half[i] = NeedleKinematics.transform(center, this.imag_half[i]);
             }
         }
-        public void update_needle(Matrix3D desired)
+        public void update_needle(Matrix3D desired) //based on head frame
         {
             Optimizer optimizer = new Optimizer();
             optimizer.T_taget = desired;

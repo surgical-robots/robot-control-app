@@ -7,7 +7,7 @@ using System.Windows.Media.Media3D;
 
 namespace path_generation.OnePointSuturing
 {
-    public class Trajectory
+    public class Trajectory // Description: entry and exit needles are calculated, mid needels are interpolated 
     {
         // needle constants
         double radius = 14;
@@ -15,19 +15,24 @@ namespace path_generation.OnePointSuturing
 
         // trajectory variables
         //Matrix3D center;
-        public Matrix3D head;
+        public Matrix3D head; // not used
         public Vector3D entry_point;
         public Vector3D exit_point;
         Matrix3D[] points;
 
         // defines needle instants
-        public Needle needle_entry, needle_exit;
+        public Needle needle_entry, needle_exit, needle_mid;
+
+        // define interpolation tool
+        private Interpolation interpolation;
 
         public Trajectory()
         {
             head = new Matrix3D();
             needle_entry = new Needle();
             needle_exit = new Needle();
+            Needle needle_mid = new Needle();
+            interpolation = new Interpolation();
         }
         public void set_exit_needle(Joints joint)
         {
@@ -58,9 +63,24 @@ namespace path_generation.OnePointSuturing
             needle_entry.kinematics.joint.Elbow = optimized.Elbow;
             needle_entry.kinematics.joint.twist = optimized.twist;
             needle_entry.update_needle();
+
+            // setup needle_mid
+            needle_mid = needle_entry;
+        }
+        public Needle update_trajectory()
+        {
+            //interpolation.M_initial = needle_entry.head;
+            //interpolation.M_target = needle_exit.head;
+            interpolation.initialize(needle_entry.head, needle_exit.head);
+            Matrix3D head = interpolation.update(); // head of next needle (mid needle)
+            // need to find the needle based on a head
+            // calculate the joints for the head
+            
+            needle_mid.update_needle(head);
+            return needle_mid;
         }
         public Joints update_trajectory(Joints joint) // needle center for the needle frame and a point
-        {
+        {// not used
             double central_angle = get_central_angle();
             Optimizer optimizer = new Optimizer();
             Point4D target = new Point4D(entry_point.X, entry_point.Y, entry_point.Z, central_angle);
@@ -72,7 +92,7 @@ namespace path_generation.OnePointSuturing
             //Matrix3D head = calculate_needle_tip(entry_point, projected_exit_point, needle_normal);
         }
         public Matrix3D calculate_needle_tip(Vector3D entry_point, Vector3D exit_point, Vector3D normal) // check if entry_point and exit_point are on the same plane
-        {
+        {// not used
             Vector3D center=calculate_center(entry_point, exit_point);
 
             Vector3D ux, uy, uz;
@@ -86,7 +106,7 @@ namespace path_generation.OnePointSuturing
                                          0, 0, 0, 1);
             return head;
         }
-        private Vector3D calculate_center(Vector3D entry_point, Vector3D exit_point)
+        private Vector3D calculate_center(Vector3D entry_point, Vector3D exit_point) // not used
         {
             Coordinate local_coordinate;
             Coordinate twisted_local_coordinate;
@@ -114,7 +134,7 @@ namespace path_generation.OnePointSuturing
             twisted_local_coordinate.e_z = local_coordinate.e_z;
             return local_coordinate.origin;
         }
-        public static Vector3D project_point(Vector3D point, Vector3D normal, Vector3D plane_point)
+        public static Vector3D project_point(Vector3D point, Vector3D normal, Vector3D plane_point) // not used
         {
             double d = normal.X * (point.X - plane_point.X) + normal.Y * (point.Y - plane_point.Y) + normal.Z * (point.Z - plane_point.Z);
             return point - d * normal;
