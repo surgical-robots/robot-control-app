@@ -26,13 +26,21 @@ namespace path_generation.OnePointSuturing
         // define interpolation tool
         private Interpolation interpolation;
 
+        // define the trajectory vaiable
+        static double t;
+
+        // define optimizer for center
+        Optimizer optimizer;
         public Trajectory()
         {
+            t = 0;
             head = new Matrix3D();
             needle_entry = new Needle();
             needle_exit = new Needle();
             Needle needle_mid = new Needle();
-            interpolation = new Interpolation();
+            interpolation = new Interpolation(); // might be deleted
+            optimizer = new Optimizer();
+
         }
         public void set_exit_needle(Joints joint)
         {
@@ -71,11 +79,22 @@ namespace path_generation.OnePointSuturing
         {
             //interpolation.M_initial = needle_entry.head;
             //interpolation.M_target = needle_exit.head;
-            interpolation.initialize(needle_entry.head, needle_exit.head);
-            Matrix3D head = interpolation.update(); // head of next needle (mid needle)
-            // need to find the needle based on a head
-            // calculate the joints for the head
-            
+            interpolation.initialize(needle_entry.head, needle_exit.head);// might not needed
+            Matrix3D head = interpolation.update(needle_mid.moved_head); //might not needed// head of next needle (mid needle)
+
+
+
+            Vector3D center_mid = interpolation.interpolate_center(needle_entry, needle_exit);
+            Matrix3D M_target = needle_mid.moved_head;
+            M_target.M14 = center_mid.X;
+            M_target.M24 = center_mid.Y;
+            M_target.M34 = center_mid.Z;
+            optimizer.T_taget = M_target;
+            optimizer.x = new double[4] { needle_mid.kinematics.joint.UpperBevel, needle_mid.kinematics.joint.LowerBevel, needle_mid.kinematics.joint.Elbow, needle_mid.kinematics.joint.twist };
+            Joints optimized=optimizer.minimize_center();
+            needle_mid.kinematics.joint = optimized;
+            needle_mid.update_needle();
+            t = t + .1;
             needle_mid.update_needle(head);
             return needle_mid;
         }

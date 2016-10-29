@@ -116,7 +116,7 @@ namespace path_generation.OnePointSuturing
                     needle.update_needle(needle.moved_head);
                     break;
                 case 2: //mode.two_point_suturing
-                    needle = trajectory.needle_entry; //for test
+                    //needle = trajectory.needle_entry; //for test
                     needle = trajectory.update_trajectory();
                     break;
             }

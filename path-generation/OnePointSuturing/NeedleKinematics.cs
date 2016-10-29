@@ -116,6 +116,11 @@ namespace path_generation.OnePointSuturing
             Vector3D vector = new Vector3D(matrix.M14, matrix.M24, matrix.M34);
             return vector;
         }
+        public static Vector3D get_ez(Matrix3D matrix) // needle y axis, needle orientation
+        {
+            Vector3D vector = new Vector3D(matrix.M12, matrix.M22, matrix.M32);
+            return vector;
+        }
     }
 
 }

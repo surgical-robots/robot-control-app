@@ -65,6 +65,7 @@
     <Compile Include="NeedleKinematics0.cs" />
     <Compile Include="math.cs" />
     <Compile Include="autoSuturing.cs" />
+    <Compile Include="OnePointSuturing\BezierInterpolation.cs" />
     <Compile Include="OnePointSuturing\Interpolation.cs" />
     <Compile Include="OnePointSuturing\Needle.cs" />
     <Compile Include="OnePointSuturing\NeedleKinematics.cs" />
