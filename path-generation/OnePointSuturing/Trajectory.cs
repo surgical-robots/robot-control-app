@@ -21,7 +21,7 @@ namespace path_generation.OnePointSuturing
         Matrix3D[] points;
 
         // defines needle instants
-        public Needle needle_entry, needle_exit, needle_mid;
+        private Needle needle_entry, needle_exit, needle_mid;
 
         // define interpolation tool
         private Interpolation interpolation;
@@ -37,7 +37,7 @@ namespace path_generation.OnePointSuturing
             head = new Matrix3D();
             needle_entry = new Needle();
             needle_exit = new Needle();
-            Needle needle_mid = new Needle();
+            needle_mid = new Needle();
             interpolation = new Interpolation(); // might be deleted
             optimizer = new Optimizer();
 
@@ -73,7 +73,11 @@ namespace path_generation.OnePointSuturing
             needle_entry.update_needle();
 
             // setup needle_mid
-            needle_mid = needle_entry;
+            needle_mid.kinematics.joint.UpperBevel = needle_entry.kinematics.joint.UpperBevel;
+            needle_mid.kinematics.joint.LowerBevel = needle_entry.kinematics.joint.LowerBevel;
+            needle_mid.kinematics.joint.Elbow = needle_entry.kinematics.joint.Elbow;
+            needle_mid.kinematics.joint.twist = needle_entry.kinematics.joint.twist;
+            needle_mid.update_needle();
         }
         public Needle update_trajectory()
         {
@@ -84,8 +88,9 @@ namespace path_generation.OnePointSuturing
             Matrix3D head = interpolation.update(needle_mid.moved_head); //might not needed// head of next needle (mid needle)
             needle_mid.update_needle(head);
             */
-            
+
             Vector3D center_mid = interpolation.interpolate_center(needle_entry, needle_exit);
+            
             Matrix3D M_target = needle_mid.moved_head;
             M_target.M14 = center_mid.X;
             M_target.M24 = center_mid.Y;
@@ -95,9 +100,9 @@ namespace path_generation.OnePointSuturing
             Joints optimized=optimizer.minimize_center();
             needle_mid.kinematics.joint = optimized;
             needle_mid.update_needle();
-            t = t + .1; // needed?
+            //t = t + .1; // needed?
 
-            
+
             return needle_mid;
         }
         public Joints update_trajectory(Joints joint) // needle center for the needle frame and a point

@@ -35,7 +35,8 @@ namespace path_generation.OnePointSuturing
 
             Vector3 v_mid = Vector3.Lerp(v1, v2, t);
             t = t + .1;
-
+            if (t > 1)
+                t = 1;
             System.Windows.Media.Media3D.Vector3D output = new System.Windows.Media.Media3D.Vector3D(v_mid.X, v_mid.Y, v_mid.Z);
             return output;
         }
