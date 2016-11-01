@@ -77,13 +77,14 @@ namespace path_generation.OnePointSuturing
         }
         public Needle update_trajectory()
         {
+            /*
             //interpolation.M_initial = needle_entry.head;
             //interpolation.M_target = needle_exit.head;
             interpolation.initialize(needle_entry.head, needle_exit.head);// might not needed
             Matrix3D head = interpolation.update(needle_mid.moved_head); //might not needed// head of next needle (mid needle)
-
-
-
+            needle_mid.update_needle(head);
+            */
+            
             Vector3D center_mid = interpolation.interpolate_center(needle_entry, needle_exit);
             Matrix3D M_target = needle_mid.moved_head;
             M_target.M14 = center_mid.X;
@@ -94,8 +95,9 @@ namespace path_generation.OnePointSuturing
             Joints optimized=optimizer.minimize_center();
             needle_mid.kinematics.joint = optimized;
             needle_mid.update_needle();
-            t = t + .1;
-            needle_mid.update_needle(head);
+            t = t + .1; // needed?
+
+            
             return needle_mid;
         }
         public Joints update_trajectory(Joints joint) // needle center for the needle frame and a point
