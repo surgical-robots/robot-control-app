@@ -72,6 +72,7 @@
     <Compile Include="OnePointSuturing\Optimizer.cs" />
     <Compile Include="OnePointSuturing\Print.cs" />
     <Compile Include="OnePointSuturing\Suturing.cs" />
+    <Compile Include="OnePointSuturing\Test.cs" />
     <Compile Include="OnePointSuturing\Trajectory.cs" />
     <Compile Include="Print0.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -16,7 +16,7 @@ namespace path_generation.OnePointSuturing
         double t = 0;
         public int state;
         //public enum mode { one_point_suturing, two_point_suturing };
-        int mode = 2;
+        int mode = 1;
         public Suturing()
         {
             state = 0;
@@ -114,13 +114,20 @@ namespace path_generation.OnePointSuturing
             {
                 case 1: // mode.one_point_suturing
                     needle.update_needle(needle.moved_head);
+                    Print.PrintMatrixOnFile(needle.center);
                     break;
                 case 2: //mode.two_point_suturing
                     //needle = trajectory.needle_entry; //for test
                     needle = trajectory.update_trajectory();
+                    Print.PrintMatrixOnFile(needle.center);
                     break;
             }
+
             t = t + Math.PI / (needle.n - 1);
+
+            // for test and can be deleted
+            Test.specified_pos(needle);
+            //
             if (t >= 1 * Math.PI)
             {
                 END_SUTURING();

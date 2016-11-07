@@ -78,6 +78,8 @@ namespace path_generation.OnePointSuturing
             needle_mid.kinematics.joint.Elbow = needle_entry.kinematics.joint.Elbow;
             needle_mid.kinematics.joint.twist = needle_entry.kinematics.joint.twist;
             needle_mid.update_needle();
+
+
         }
         public Needle update_trajectory()
         {

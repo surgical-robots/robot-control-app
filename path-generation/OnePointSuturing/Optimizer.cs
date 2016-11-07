@@ -166,5 +166,46 @@ namespace path_generation.OnePointSuturing
             fi[10] = Math.Pow(T_taget.M33 - T_FK.M33, 2);
             fi[11] = Math.Pow(T_taget.M34 - T_FK.M34, 2);
         }
+        public Joints minimize_postionNtwist() // find a needle with given position and twist
+        {
+            //double[] x = new double[] { 0, 0, 0, 0 };
+
+            double[] bndl = new double[] { -90, -90, 0, -180 };
+            double[] bndu = new double[] { 90, 90, 180, 180 };
+            double epsg = 0.0000000000001;
+            double epsf = 0;
+            double epsx = 0;
+            int maxits = 0;
+            alglib.minlmstate state;
+            alglib.minlmreport rep;
+
+            alglib.minlmcreatev(3, x, 0.0000000001, out state);
+            alglib.minlmsetbc(state, bndl, bndu);
+            alglib.minlmsetcond(state, epsg, epsf, epsx, maxits);
+            alglib.minlmoptimize(state, function_fvec4, null, null);
+            alglib.minlmresults(state, out x, out rep);
+
+            Joints joints;
+            joints.UpperBevel = x[0];
+            joints.LowerBevel = x[1];
+            joints.Elbow = x[2];
+            joints.twist = point_target.W;
+            return joints;
+        }
+
+        private void function_fvec4(double[] x, double[] fi, object obj)
+        {
+            // updating joints
+            kinematics.joint.UpperBevel = x[0];
+            kinematics.joint.LowerBevel = x[1];
+            kinematics.joint.Elbow = x[2];
+            kinematics.joint.twist = point_target.W;
+            // calculating the forward kinematics for the given joints value
+            T_FK = kinematics.transformation_matrix(55);
+            // calculating errors fi s
+            fi[0] = Math.Pow(point_target.X - T_FK.M14, 2);
+            fi[1] = Math.Pow(point_target.Y - T_FK.M24, 2);
+            fi[2] = Math.Pow(point_target.Z - T_FK.M34, 2);
+        }
     }
 }
