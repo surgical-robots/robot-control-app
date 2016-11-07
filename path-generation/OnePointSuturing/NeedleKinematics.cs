@@ -91,7 +91,7 @@ namespace path_generation.OnePointSuturing
         }
         public static Vector3D correction(Vector3D input)
         {
-            Vector3D output = new Vector3D(input.Y, -input.Z, input.X);
+            Vector3D output = new Vector3D(input.Y, input.Z, input.X);
             return output;
         }
         public static Vector3D correctionBack(Vector3D input)

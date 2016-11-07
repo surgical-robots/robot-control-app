@@ -126,7 +126,7 @@ namespace path_generation.OnePointSuturing
             t = t + Math.PI / (needle.n - 1);
 
             // for test and can be deleted
-            Test.specified_pos(needle);
+            //Test.specified_pos(needle);
             //
             if (t >= 1 * Math.PI)
             {
