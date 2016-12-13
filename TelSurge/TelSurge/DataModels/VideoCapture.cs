@@ -29,6 +29,7 @@ namespace TelSurge
         public bool IsStreaming { get; set; }
         public string CaptureDevice { get; set; }
         public string PTZAddress { get; set; }
+        private DataModels.VFrame recFrame = new DataModels.VFrame();
         /*
         private bool _captureInProgress = false;
         
@@ -111,15 +112,19 @@ namespace TelSurge
         {
             IPEndPoint masterEP = new IPEndPoint(IPAddress.Parse(Main.Surgery.Master.MyIPAddress), videoPort);
             byte[] arry = videoListener.EndReceive(Ar, ref masterEP);
-            Image<Bgr, Byte> receivedImg = Image<Bgr, Byte>.FromRawImageData(arry);
+            recFrame.BufferSubFrame(arry);
+
+            if (IsListeningForVideo)
+                ListenForVideo();
+        }
+        public void DisplayRecImg(byte[] frame)
+        {
+            Image<Bgr, Byte> receivedImg = Image<Bgr, Byte>.FromRawImageData(frame);
             //Image<Bgr, Byte> resizedImg = receivedImg.Resize(((double)captureImageBox.Width / (double)receivedImg.Width), Emgu.CV.CvEnum.INTER.CV_INTER_AREA);
             receivedImg = addMarkup(receivedImg);
             //myMarkings.OffsetX = receivedImg.Width - resizedImg.Width;
             //myMarkings.OffsetY = receivedImg.Height - resizedImg.Height;
             Main.CaptureImageBox.Image = receivedImg;
-
-            if (IsListeningForVideo)
-                ListenForVideo();
         }
         private void sendVideoStream(IImage Frame) 
         {
@@ -130,16 +135,17 @@ namespace TelSurge
                 EncoderParameters myEncoderParameters = new EncoderParameters(1);
                 EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 20L);
                 myEncoderParameters.Param[0] = myEncoderParameter;
-                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                
 
                 Bitmap imgToSend = Frame.Bitmap;
                 MemoryStream ms = new MemoryStream();
                 imgToSend.Save(ms, jpgEncoder, myEncoderParameters);
                 byte[] arry = ms.ToArray();
+                DataModels.VFrame frame = new DataModels.VFrame();
 
                 foreach (User usr in Main.Surgery.ConnectedClients)
                 {
-                    s.SendTo(arry, new IPEndPoint(IPAddress.Parse(usr.MyIPAddress), videoPort));
+                    frame.Send(arry, usr.MyIPAddress, videoPort);
                 }
             }
         }

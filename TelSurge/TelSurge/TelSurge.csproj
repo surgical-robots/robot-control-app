@@ -106,6 +106,7 @@
     </Compile>
     <Compile Include="DataModels\Figure.cs" />
     <Compile Include="DataModels\IPCamera.cs" />
+    <Compile Include="DataModels\VFrame.cs" />
     <Compile Include="IPCameras.cs">
       <SubType>Form</SubType>
     </Compile>
