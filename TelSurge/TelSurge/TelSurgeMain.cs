@@ -57,7 +57,6 @@ namespace TelSurge
         //OUTPUTS
         public OmniPosition OutputPosition { get; set; }
         private Point videoClickPoint = new Point();
-        public int messageCount { get; set; }
 
         /*
         double forceOffset_LX = 0;
@@ -105,7 +104,6 @@ namespace TelSurge
                 fillAudioDeviceDDL();
                 HapticForces = new OmniPosition();
                 SendFrozen = false;
-                messageCount = 0;
 
                 //Set Force Trackbar
                 //want force divider between 20 and 220
@@ -815,7 +813,6 @@ namespace TelSurge
                     {
                         //Only send data to Master while InControl
                         SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
-                        messageCount++;
                     }
                     //Check for freeze button press
                     if (telSurgeOnly && this.User.CheckForFreeze(currentPos))
@@ -1129,64 +1126,62 @@ namespace TelSurge
                     byte[] arry = new byte[50000];
                     s.Read(arry, 0, arry.Length);
                     SocketMessage sm = SocketData.DeserializeObject<SocketMessage>(arry);
-                    if(sm != null)
+
+                    int connectedUserIndex = -1;
+                    for (int i = 0; i < Surgery.ConnectedClients.Count; i++) 
                     {
-                        int connectedUserIndex = -1;
-                        for (int i = 0; i < Surgery.ConnectedClients.Count; i++)
+                        if (Surgery.ConnectedClients[i].MyIPAddress.Equals(sm.User.MyIPAddress)) 
                         {
-                            if (Surgery.ConnectedClients[i].MyIPAddress.Equals(sm.User.MyIPAddress))
-                            {
-                                connectedUserIndex = i;
-                                break;
-                            }
+                            connectedUserIndex = i;
+                            break;
                         }
-                        if (connectedUserIndex > -1)
+                    }
+                    if (connectedUserIndex > -1)
+                    {
+                        Surgery.ConnectedClients[connectedUserIndex].LastHeardFrom = DateTime.Now;
+                    }
+                    else
+                    {
+                        if (lbl_Connections.Text.Equals("Connections: None"))
+                            lbl_Connections.Text = "Connections: ";
+
+                        if (!sm.User.HasOmnis)
                         {
-                            Surgery.ConnectedClients[connectedUserIndex].LastHeardFrom = DateTime.Now;
+                            //If client does not have Omnis, don't allow control to be given
+                            lbl_Connections.Text += sm.User.MyName;
                         }
                         else
                         {
-                            if (lbl_Connections.Text.Equals("Connections: None"))
-                                lbl_Connections.Text = "Connections: ";
-
-                            if (!sm.User.HasOmnis)
-                            {
-                                //If client does not have Omnis, don't allow control to be given
-                                lbl_Connections.Text += sm.User.MyName;
-                            }
-                            else
-                            {
-                                string dir = Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"..\..\Content\pc.png");
-                                Image clientImg = Image.FromFile(dir);
-                                ToolStripItem newItem = new ToolStripButton(sm.User.MyName, clientImg, sendClientGrantReq, "btn_" + sm.User.MyName);
-                                newItem.ToolTipText = sm.User.MyIPAddress;
-                                ss_Connections.Items.Add(newItem);
-                            }
-
-                            if (Surgery.ConnectedClients.Count == 0)
-                            {
-                                Thread sendVideoThread = new Thread(new ThreadStart(MasterSendVideo));
-                                sendVideoThread.IsBackground = true;
-                                sendVideoThread.Start();
-
-                                Markup.IsListeningForMarkup = true;
-                                Thread listenForNewMarkings = new Thread(new ThreadStart(Markup.ListenForMarkup));
-                                listenForNewMarkings.IsBackground = true;
-                                listenForNewMarkings.Start();
-
-                                Thread listenForControlReq = new Thread(new ThreadStart(listenForGrantReq));
-                                listenForControlReq.IsBackground = true;
-                                listenForControlReq.Start();
-
-                                //Thread readFromDataBuffer = new Thread(new ThreadStart(readDataBuffer));
-                                //readFromDataBuffer.IsBackground = true;
-                                //readFromDataBuffer.Start();
-                            }
-                            Surgery.ConnectedClients.Add(sm.User);
-
-                            //Log Connection
-                            LogMessage("Connection successfully made to " + sm.User.MyName + ".", "A client successfully connected to this machine with the name " + sm.User.MyName + " and address " + sm.User.MyIPAddress + " .", Logging.StatusTypes.Running);
+                            string dir = Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"..\..\Content\pc.png");
+                            Image clientImg = Image.FromFile(dir);
+                            ToolStripItem newItem = new ToolStripButton(sm.User.MyName, clientImg, sendClientGrantReq, "btn_" + sm.User.MyName);
+                            newItem.ToolTipText = sm.User.MyIPAddress;
+                            ss_Connections.Items.Add(newItem);
                         }
+
+                        if (Surgery.ConnectedClients.Count == 0)
+                        {
+                            Thread sendVideoThread = new Thread(new ThreadStart(MasterSendVideo));
+                            sendVideoThread.IsBackground = true;
+                            sendVideoThread.Start();
+
+                            Markup.IsListeningForMarkup = true;
+                            Thread listenForNewMarkings = new Thread(new ThreadStart(Markup.ListenForMarkup));
+                            listenForNewMarkings.IsBackground = true;
+                            listenForNewMarkings.Start();
+
+                            Thread listenForControlReq = new Thread(new ThreadStart(listenForGrantReq));
+                            listenForControlReq.IsBackground = true;
+                            listenForControlReq.Start();
+
+                            //Thread readFromDataBuffer = new Thread(new ThreadStart(readDataBuffer));
+                            //readFromDataBuffer.IsBackground = true;
+                            //readFromDataBuffer.Start();
+                        }
+                        Surgery.ConnectedClients.Add(sm.User);
+
+                        //Log Connection
+                        LogMessage("Connection successfully made to " + sm.User.MyName + ".", "A client successfully connected to this machine with the name " + sm.User.MyName + " and address " + sm.User.MyIPAddress + " .", Logging.StatusTypes.Running);
                     }
                 }
             }

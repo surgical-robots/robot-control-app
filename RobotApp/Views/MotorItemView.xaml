@@ -71,8 +71,8 @@
             
             <TextBlock Text="Jog Speed"/>
             <TextBox Text="{Binding JogSpeed}"/>
-            <TextBlock Text="Encoder Counts Per Revolution"/>
-            <TextBox Text="{Binding EncoderCountsPerRevolution}" />
+            <TextBlock Text="Gear Ratio"/>
+            <TextBox Text="{Binding GearRatio}" />
 
             <TextBlock Text="Kp"/>
             <TextBox Text="{Binding Kp}" />

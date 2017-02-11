@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media.Media3D;
 
@@ -20,7 +21,7 @@ namespace Kinematics
         private bool Initialized = false;
         private double maxForce = 4;
 
-        const int IK_MAX_TRIES = 5000;
+        const int IK_MAX_TRIES = 15000;
 
         /// <summary>
         /// index = 0        1          2          3
@@ -383,6 +384,7 @@ namespace Kinematics
 
             int link = N;
             int tries = 0;
+            bool solved = false;
             // begin Cyclic Coordinate Descent loop
             do
             {
@@ -436,44 +438,48 @@ namespace Kinematics
                     }
                 }
                 // calculate current position error
-                Ec = Eo + Math.Pow(Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph)), 2);
+                Ec = Eo + Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph));
 
-                //if ((Ec > IK_POS_THRESH) && (Ec < BETA) && (Ec > Math.Pow(Ep, 2))) // begin BFGS optimization
-                //{
-                //    double epsg = 0.0000000001;
-                //    double epsf = 0;
-                //    double epsx = 0;
-                //    int maxits = 0;             // maximum number of iterations, for unlimited = 0
-                //    double stpmax = 0;
-                //    double[] scale = new double[N];
-                //    double[] optiAngle = new double[N];
-                //    for (int i = 0; i < N; i++)
-                //    {
-                //        scale[i] = 2;
-                //        optiAngle[i] = radAngle[i + 1];
-                //    }
-                //    alglib.minlbfgsstate state;
-                //    alglib.minlbfgsreport rep;
+                if (solved)
+                    break;
 
-                //    alglib.minlbfgscreate(4, optiAngle, out state);         // create optimizer with current joint angles for initial values
-                //    alglib.minlbfgssetcond(state, epsg, epsf, epsx, maxits);        // set optimizer options
-                //    alglib.minlbfgssetstpmax(state, stpmax);
-                //    //alglib.minlbfgssetprecscale(state);
-                //    //alglib.minlbfgssetscale(state, scale);
-                //    //alglib.minlbfgssetgradientcheck(state, 1);
-                //    alglib.minlbfgsoptimize(state, function1_grad, null, null);     // optimize
-                //    alglib.minlbfgsresults(state, out optiAngle, out rep);           // get results
-                //    for (int i = 0; i < N; i++)
-                //    {
-                //        radAngle[i + 1] = optiAngle[i];
-                //        // adjust angle based on joint limits
-                //        if (radAngle[i + 1] < (MinMax[i].X * Math.PI / 180))
-                //            radAngle[i + 1] = MinMax[i].X * Math.PI / 180;
-                //        else if (radAngle[i + 1] > (MinMax[i].Y * Math.PI / 180))
-                //            radAngle[i + 1] = MinMax[i].Y * Math.PI / 180;
-                //    }
-                //}
-                if (Ec > IK_POS_THRESH) // begin Cyclic Coordinate Descent loop
+                if ((Ec > IK_POS_THRESH) && (Ec < BETA) && (Ec > Math.Pow(Ep, 2))) // begin BFGS optimization
+                {
+                    double epsg = 0.0000000001;
+                    double epsf = 0;
+                    double epsx = 0;
+                    int maxits = 0;             // maximum number of iterations, for unlimited = 0
+                    double stpmax = 0;
+                    double[] scale = new double[N];
+                    double[] optiAngle = new double[N];
+                    for (int i = 0; i < N; i++)
+                    {
+                        scale[i] = 2;
+                        optiAngle[i] = radAngle[i + 1];
+                    }
+                    alglib.minlbfgsstate state;
+                    alglib.minlbfgsreport rep;
+
+                    alglib.minlbfgscreate(4, optiAngle, out state);         // create optimizer with current joint angles for initial values
+                    alglib.minlbfgssetcond(state, epsg, epsf, epsx, maxits);        // set optimizer options
+                    alglib.minlbfgssetstpmax(state, stpmax);
+                    //alglib.minlbfgssetprecscale(state);
+                    //alglib.minlbfgssetscale(state, scale);
+                    //alglib.minlbfgssetgradientcheck(state, 1);
+                    alglib.minlbfgsoptimize(state, function1_grad, null, null);     // optimize
+                    alglib.minlbfgsresults(state, out optiAngle, out rep);           // get results
+                    for (int i = 0; i < N; i++)
+                    {
+                        radAngle[i + 1] = optiAngle[i];
+                        // adjust angle based on joint limits
+                        if (radAngle[i + 1] < (MinMax[i].X * Math.PI / 180))
+                            radAngle[i + 1] = MinMax[i].X * Math.PI / 180;
+                        else if (radAngle[i + 1] > (MinMax[i].Y * Math.PI / 180))
+                            radAngle[i + 1] = MinMax[i].Y * Math.PI / 180;
+                    }
+                    solved = true;
+                }
+                else if (Ec > IK_POS_THRESH) // begin Cyclic Coordinate Descent loop
                 {
 
                     // create target effector position vector
@@ -527,6 +533,11 @@ namespace Kinematics
                 Ep = Ec;
             }
             while (tries++ < IK_MAX_TRIES && Ec > IK_POS_THRESH);
+
+            if (solved)
+                Debug.WriteLine("BFGS");
+            Debug.WriteLine("Error: "+Convert.ToString(Ec));
+            Debug.WriteLine("Iterations: " + Convert.ToString(tries));
 
             double[] angles;
             // check if we are outputting workspace forces
@@ -593,10 +604,10 @@ namespace Kinematics
                 frame[i, 3].Z = 0;
             }
             // forward recurrsion formulas for frame position and orientation
-            for (int i = 1; i < N + 1; i++)
+            for (int i = 1; i <= N; i++)
             {
                 // x(i) orientation vector
-                frame[i, 0] = Vector3D.Add((Vector3D.Multiply(Math.Cos(radAngle[i - 1]), frame[(i - 1), 0])), (Vector3D.Multiply(Math.Sin(radAngle[i - 1]), frame[(i - 1), 1])));
+                frame[i, 0] = Vector3D.Add((Vector3D.Multiply((Math.Cos(radAngle[i - 1] + thetaOffset[i])), frame[(i - 1), 0])), (Vector3D.Multiply((Math.Sin(radAngle[i - 1] + thetaOffset[i])), frame[(i - 1), 1])));
                 // z(i) orientation vector
                 frame[i, 2] = Vector3D.Add((Vector3D.Multiply(Math.Cos(DHparameters[i - 1, 0] * Math.PI / 180), frame[(i - 1), 2])), Vector3D.Multiply(Math.Sin(DHparameters[(i - 1), 0] * Math.PI / 180), Vector3D.CrossProduct(frame[i, 0], frame[(i - 1), 2])));
                 // y(i) orientation vector
@@ -635,7 +646,7 @@ namespace Kinematics
                 }
             }
             // function to be minimized
-            func = Eo + Math.Pow(Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph)), 2);
+            func = Eo + Vector3D.DotProduct(Vector3D.Subtract(Pd, Ph), Vector3D.Subtract(Pd, Ph));
             // declare gradient vector elements for each joint
             for (int i = 0; i < N-1; i++)
             {

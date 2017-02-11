@@ -166,7 +166,7 @@ namespace RobotApp.Views.Plugins
                     p =>
                     {
                         string startupPath = System.IO.Directory.GetCurrentDirectory();
-                        startupPath = startupPath + "\\";
+                        startupPath = startupPath + "\\RobotPathFiles\\";
                         string FullPath = startupPath + PathFile;
 
                         pathData = File.ReadLines(FullPath).Select(line => line.Split('\t')).ToArray();

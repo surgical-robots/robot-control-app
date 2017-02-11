@@ -10,9 +10,9 @@
                                                    {  90,      0,      0,  90 }, 
                                                    {  90,      0,  68.58,  90 },
                                                    {  90,      0,      0, 180 },
-                                                   {  90,      0, 96.393,   0 } };
+                                                   {  90,      0, 96.393, 180 } };
             this.N = 6;
-            this.Sigma = new bool[3] { true, true, false };
+            this.Sigma = new bool[3] { false, false, false };
             this.MinMax = new System.Windows.Point[N];
             this.MinMax[0] = new System.Windows.Point(-90, 90);
             this.MinMax[1] = new System.Windows.Point(-90, 45);
@@ -25,8 +25,8 @@
             this.OutputWorkspace = false;
             this.InvertForces = new bool[3] { false, false, false };
             this.OutputStrings = new string[6] { "Joint1", "Joint2", "Joint3", "Joint4", "Joint5", "Joint6" };
-            this.IK_POS_THRESH = 1;
-            this.BETA = 10;
+            this.IK_POS_THRESH = 0.01;
+            this.BETA = 0.5;
         }
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MathWorks.MATLAB.NET.Arrays;
-using MathWorks.MATLAB.NET.Utility;
-using minimizerNamespace;
+//using MathWorks.MATLAB.NET.Arrays;
+//using MathWorks.MATLAB.NET.Utility;
+//using minimizerNamespace;
 using System.Windows.Media.Media3D;
 
 namespace path_generation

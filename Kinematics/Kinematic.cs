@@ -12,7 +12,8 @@ namespace Kinematics
         {
             None,
             ShoulderTwoDOF,
-            ShoulderThreeDOF
+            ShoulderThreeDOF,
+            FrankenBot
         }
 
         /// <summary>
@@ -30,6 +31,11 @@ namespace Kinematics
             return (getJointAngles(PositionL, PositionR));
         }
 
+        public double[] GetJointAngles(Point3D Position, Point3D Orientation, double[,] RotM)
+        {
+            return (getJointAngles(Position, Orientation, RotM));
+        }
+
         public virtual string[] OutputNames { get { return new string[0]; } }
 
         /// <summary>
@@ -43,6 +49,11 @@ namespace Kinematics
         }
 
         protected virtual double[] getJointAngles(Point3D PositionL, Point3D PositionR)
+        {
+            return new double[0];
+        }
+
+        protected virtual double[] getJointAngles(Point3D Position, Point3D Orientation, double[,] RotM)
         {
             return new double[0];
         }

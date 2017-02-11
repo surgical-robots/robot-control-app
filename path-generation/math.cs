@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
+
 namespace path_generation
 {
 
@@ -19,14 +20,9 @@ namespace path_generation
         public double twist;
     }
 
-    public struct Coordinate
-    {
-        public Vector3D origin;
-        public Vector3D e_x;
-        public Vector3D e_y;
-        public Vector3D e_z;
-    }
-    public class math
-    {
-    }
+
+ 
+
+
+
 }

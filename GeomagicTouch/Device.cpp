@@ -66,6 +66,51 @@ namespace GeomagicTouch {
 		return theta3;
 	}
 
+	double Device::R00::get()
+	{
+		return r00;
+	}
+
+	double Device::R01::get()
+	{
+		return r01;
+	}
+
+	double Device::R02::get()
+	{
+		return r02;
+	}
+
+	double Device::R10::get()
+	{
+		return r10;
+	}
+
+	double Device::R11::get()
+	{
+		return r11;
+	}
+
+	double Device::R12::get()
+	{
+		return r12;
+	}
+
+	double Device::R20::get()
+	{
+		return r20;
+	}
+
+	double Device::R21::get()
+	{
+		return r21;
+	}
+
+	double Device::R22::get()
+	{
+		return r22;
+	}
+	
 	bool Device::IsInInkwell::get()
 	{
 		return isInInkwell;
@@ -272,6 +317,60 @@ namespace GeomagicTouch {
 			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("Theta3"));
 		}
 
+		if (device->R00 != r00)
+		{
+			r00 = device->R00;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R00"));
+		}
+
+		if (device->R01 != r01)
+		{
+			r01 = device->R01;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R01"));
+		}
+
+		if (device->R02 != r02)
+		{
+			r02 = device->R02;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R02"));
+		}
+
+		if (device->R10 != r10)
+		{
+			r10 = device->R10;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R10"));
+		}
+
+		if (device->R11 != r11)
+		{
+			r11 = device->R11;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R11"));
+		}
+
+		if (device->R12 != r12)
+		{
+			r12 = device->R12;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R12"));
+		}
+
+		if (device->R20 != r20)
+		{
+			r20 = device->R20;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R20"));
+		}
+
+		if (device->R21 != r21)
+		{
+			r21 = device->R21;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R21"));
+		}
+
+		if (device->R22 != r22)
+		{
+			r22 = device->R22;
+			this->PropertyChanged(this, gcnew PropertyChangedEventArgs("R22"));
+		}
+		
 		if (device->Button1 != button1)
 		{
 			button1 = device->Button1;

@@ -164,14 +164,14 @@ namespace RobotApp.ViewModel
         {
             if (Id != 1) return;
             ShaftCounter = newValue;
-            Outputs["MotorPositon"].Value = (newValue/EncoderCountsPerRevolution) * 360;
+            Outputs["MotorPositon"].Value = (newValue / GearRatio / 2) * 360;
         }
 
         void controller_Motor1CounterChanged(int newValue)
         {
             if (Id != 0) return;
             ShaftCounter = newValue;
-            Outputs["MotorPositon"].Value = (newValue / EncoderCountsPerRevolution) * 360;
+            Outputs["MotorPositon"].Value = (newValue / GearRatio / 2) * 360;
         }
 
         void controller_Motor1PotChanged(int newValue)
@@ -517,24 +517,24 @@ namespace RobotApp.ViewModel
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
         [DataMember]
-        private double encoderCountsPerRevolution = 1;
+        private double gearRatio = 1;
 
-        public double EncoderCountsPerRevolution
+        public double GearRatio
         {
             get
             {
-                return encoderCountsPerRevolution;
+                return gearRatio;
             }
 
             set
             {
-                if (encoderCountsPerRevolution == value)
+                if (gearRatio == value)
                 {
                     return;
                 }
-                encoderCountsPerRevolution = value;
-                Motor.EncoderClicksPerRevolution = encoderCountsPerRevolution;
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("EncoderCountsPerRevolution"));
+                gearRatio = value;
+                Motor.EncoderClicksPerRevolution = gearRatio * 2;
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("GearRatio"));
             }
         }
         

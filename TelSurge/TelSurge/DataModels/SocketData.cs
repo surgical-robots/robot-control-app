@@ -104,17 +104,8 @@ namespace TelSurge
         }
         public static T DeserializeObject<T>(byte[] Arry)
         {
-            T obj = default(T);
             string json = Encoding.ASCII.GetString(Arry);
-            try
-            {
-                obj = JsonConvert.DeserializeObject<T>(json);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message, ex.ToString());
-            }
-            return obj;
+            return JsonConvert.DeserializeObject<T>(json);
         }
         public void ListenForData()
         {
@@ -148,38 +139,33 @@ namespace TelSurge
 
 
                 SocketMessage dataMsg = DeserializeObject<SocketMessage>(arry);
-                if(dataMsg != null)
+                Main.Surgery.Merge(dataMsg.Surgery, Main.User.IsInControl, Main.User.IsMaster);
+                if (dataMsg.sendToggleFrozen)
                 {
-                    Main.Surgery.Merge(dataMsg.Surgery, Main.User.IsInControl, Main.User.IsMaster);
-                    if (Main.User.IsMaster)
-                        Main.messageCount++;
-                    if (dataMsg.sendToggleFrozen)
-                    {
-                        if (Main.User.IsFrozen)
-                            Main.UnFreeze();
-                        else
-                            Main.Freeze();
-                    }
-                    if (Main.User.IsInControl && dataMsg.Forces != null)
-                    {
-                        Main.SetForceX(dataMsg.Forces.LeftX, true);
-                        Main.SetForceY(dataMsg.Forces.LeftY, true);
-                        Main.SetForceZ(dataMsg.Forces.LeftZ, true);
-                        Main.SetForceX(dataMsg.Forces.RightX, false);
-                        Main.SetForceY(dataMsg.Forces.RightY, false);
-                        Main.SetForceZ(dataMsg.Forces.RightZ, false);
-                    }
-                    //dataBuffer.Enqueue(dataMsg);
-                    //dataAvailable = true;
-                    //if (networkDataDelayChanged && Main.User.NetworkDelay > 0 && !dataWatch.IsRunning)
-                    //{
-                    //    networkDataDelayChanged = false;
-                    //    dataWatch.Start();
-                    //}
-                    if (dataMsg.ClearMarkingsReq)
-                    {
-                        Main.ClearMarkup();
-                    }
+                    if (Main.User.IsFrozen)
+                        Main.UnFreeze();
+                    else
+                        Main.Freeze();
+                }
+                if (Main.User.IsInControl && dataMsg.Forces != null)
+                {
+                    Main.SetForceX(dataMsg.Forces.LeftX, true);
+                    Main.SetForceY(dataMsg.Forces.LeftY, true);
+                    Main.SetForceZ(dataMsg.Forces.LeftZ, true);
+                    Main.SetForceX(dataMsg.Forces.RightX, false);
+                    Main.SetForceY(dataMsg.Forces.RightY, false);
+                    Main.SetForceZ(dataMsg.Forces.RightZ, false);
+                }
+                //dataBuffer.Enqueue(dataMsg);
+                //dataAvailable = true;
+                //if (networkDataDelayChanged && Main.User.NetworkDelay > 0 && !dataWatch.IsRunning)
+                //{
+                //    networkDataDelayChanged = false;
+                //    dataWatch.Start();
+                //}
+                if (dataMsg.ClearMarkingsReq)
+                {
+                    Main.ClearMarkup();
                 }
             }
             catch (Exception ex)

@@ -172,7 +172,6 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("ExButton5", new OutputSignalViewModel("ExButton5"));
             Outputs.Add("ExButton6", new OutputSignalViewModel("ExButton6"));
             TypeName = "TelSurge";
-            Outputs.Add("MessageCount", new OutputSignalViewModel("Message Count"));
 
             Inputs.Add("LX", new ViewModel.InputSignalViewModel("LX", this.InstanceName));
             Inputs.Add("LY", new ViewModel.InputSignalViewModel("LY", this.InstanceName));
@@ -218,6 +217,7 @@ namespace RobotApp.Views.Plugins
                 Outputs["LButton1"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsLeft.Equals(1));
                 Outputs["LButton2"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsLeft.Equals(2));
 
+
                 Outputs["RX"].Value = telSurge.OutputPosition.RightX;
                 Outputs["RY"].Value = telSurge.OutputPosition.RightY;
                 Outputs["RZ"].Value = telSurge.OutputPosition.RightZ;
@@ -227,7 +227,6 @@ namespace RobotApp.Views.Plugins
                 Outputs["RInkwell"].Value = telSurge.OutputPosition.InkwellRight;
                 Outputs["RButton1"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsRight.Equals(1));
                 Outputs["RButton2"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsRight.Equals(2));
-                Outputs["MessageCount"].Value = Convert.ToDouble(telSurge.messageCount);
 
                 //Update output for any external buttons
                 for (int i = 1; i <= telSurge.OutputPosition.ExtraButtons.Length; i++)

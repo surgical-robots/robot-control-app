@@ -40,7 +40,7 @@ namespace RobotApp.Views.Plugins
                             sw.Write("\t");
                             foreach (MotorViewModel motor in controller.Motors)
                             {
-                                sw.Write(motor.EncoderCountsPerRevolution);
+                                sw.Write(motor.GearRatio);
                                 sw.Write("\t");
                                 sw.Write(motor.CurrentMax);
                                 sw.Write("\t");

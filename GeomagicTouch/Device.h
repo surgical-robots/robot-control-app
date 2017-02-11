@@ -22,6 +22,15 @@ namespace GeomagicTouch {
 		property double Theta1 { double get();  }
 		property double Theta2 { double get();  }
 		property double Theta3 { double get();  }
+		property double R00 { double get(); }
+		property double R01 { double get(); }
+		property double R02 { double get(); }
+		property double R10 { double get(); }
+		property double R11 { double get(); }
+		property double R12 { double get(); }
+		property double R20 { double get(); }
+		property double R21 { double get(); }
+		property double R22 { double get(); }
 		property bool Button1 { bool get();  }
 		property bool Button2 { bool get();  }
 		property bool Button3 { bool get();  }
@@ -47,6 +56,15 @@ namespace GeomagicTouch {
 		double theta1;
 		double theta2;
 		double theta3;
+		double r00;
+		double r01;
+		double r02;
+		double r10;
+		double r11;
+		double r12;
+		double r20;
+		double r21;
+		double r22;
 		bool button1;
 		bool button2;
 		bool button3;

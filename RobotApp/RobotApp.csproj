@@ -17,7 +17,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <NuGetPackageImportStamp>664563bd</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>79b5d865</NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -124,6 +124,14 @@
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpDX.3.1.1\lib\net45\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XInput, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpDX.XInput.3.1.1\lib\net45\SharpDX.XInput.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -252,8 +260,8 @@
     <Compile Include="Views\ControllerListItemView.xaml.cs">
       <DependentUpon>ControllerListItemView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Plugins\AutoSuture2.xaml.cs">
-      <DependentUpon>AutoSuture2.xaml</DependentUpon>
+    <Compile Include="Views\Plugins\AlphaAngle.xaml.cs">
+      <DependentUpon>AlphaAngle.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Plugins\AutoSuture.xaml.cs">
       <DependentUpon>AutoSuture.xaml</DependentUpon>
@@ -279,8 +287,17 @@
     <Compile Include="Views\Plugins\EnableDisablePluginView.xaml.cs">
       <DependentUpon>EnableDisablePluginView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\ForceDimension.xaml.cs">
+      <DependentUpon>ForceDimension.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\ForwardKinematics.xaml.cs">
       <DependentUpon>ForwardKinematics.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugins\FrankenForearm.xaml.cs">
+      <DependentUpon>FrankenForearm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugins\FrankenShoulder.xaml.cs">
+      <DependentUpon>FrankenShoulder.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Plugins\GeomagicTouch.xaml.cs">
       <DependentUpon>GeomagicTouch.xaml</DependentUpon>
@@ -299,9 +316,6 @@
     </Compile>
     <Compile Include="Views\Plugins\HapticWorkspace.xaml.cs">
       <DependentUpon>HapticWorkspace.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Plugins\HololensConnector.xaml.cs">
-      <DependentUpon>HololensConnector.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Plugins\IKSolver.xaml.cs">
       <DependentUpon>IKSolver.xaml</DependentUpon>
@@ -363,6 +377,9 @@
     <Compile Include="Views\Plugins\TwoArmKinematics.xaml.cs">
       <DependentUpon>TwoArmKinematics.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\VICamera.xaml.cs">
+      <DependentUpon>VICamera.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\VideoInterface.xaml.cs">
       <DependentUpon>VideoInterface.xaml</DependentUpon>
     </Compile>
@@ -372,8 +389,14 @@
     <Compile Include="Views\Plugins\VirtualRobotWindow.xaml.cs">
       <DependentUpon>VirtualRobotWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\VREPconnect.xaml.cs">
+      <DependentUpon>VREPconnect.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\WriteControllerFile.xaml.cs">
       <DependentUpon>WriteControllerFile.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugins\XBoxController.xaml.cs">
+      <DependentUpon>XBoxController.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SerialTransportView.xaml.cs">
       <DependentUpon>SerialTransportView.xaml</DependentUpon>
@@ -442,7 +465,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Plugins\AutoSuture2.xaml">
+    <Page Include="Views\Plugins\AlphaAngle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -478,7 +501,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Plugins\ForceDimension.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Plugins\ForwardKinematics.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Plugins\FrankenForearm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Plugins\FrankenShoulder.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -503,10 +538,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Plugins\HapticWorkspace.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Plugins\HololensConnector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -582,6 +613,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Plugins\VICamera.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Plugins\VideoInterface.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -594,9 +629,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Plugins\VREPconnect.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Plugins\WriteControllerFile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\XBoxController.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SerialTransportView.xaml">
       <SubType>Designer</SubType>
@@ -685,6 +728,10 @@
     <Content Include="x64\opencv_videostab2410.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ForceDimension\ForceDimension.vcxproj">
+      <Project>{322b3b8f-7c48-46ab-a821-245c02a0549f}</Project>
+      <Name>ForceDimension</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GeomagicTouch\GeomagicTouch.vcxproj">
       <Project>{bd2fd765-4d8e-462b-b1fd-f1f793bd8416}</Project>
       <Name>GeomagicTouch</Name>
@@ -692,6 +739,10 @@
     <ProjectReference Include="..\Kinematics\Kinematics.csproj">
       <Project>{e7f48141-a2f7-4bc4-9098-1bab46b0c659}</Project>
       <Name>Kinematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\remoteApiNETWrapper-master\remoteApiNETWrapper.csproj">
+      <Project>{df9bf2bc-87a1-4a15-88b2-98baa68aba65}</Project>
+      <Name>remoteApiNETWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\RobotControl\RobotControl.csproj">
       <Project>{d6319095-4a9f-409c-8d46-2e77a6c49d29}</Project>

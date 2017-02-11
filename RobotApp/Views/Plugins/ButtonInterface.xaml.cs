@@ -36,12 +36,13 @@ namespace RobotApp.Views.Plugins
 
         public void FindPorts()
         {
-            bool[] removeIndex = new bool[5] { false, false, false, false, false };
             int removeCount = 0;
             int i = 0;
             SerialPort currentPort;
             string[] ports = SerialPort.GetPortNames();
             PortList = new List<string>(ports);
+            bool[] removeIndex = new bool[ports.Length];
+            removeIndex.Initialize();
             foreach (string port in PortList)
             {
                 currentPort = new SerialPort(port, baudRate);

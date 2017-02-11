@@ -48,6 +48,15 @@ public:
 	double Theta1;
 	double Theta2;
 	double Theta3;
+	double R00;
+	double R01;
+	double R02;
+	double R10;
+	double R11;
+	double R12;
+	double R20;
+	double R21;
+	double R22;
 	bool Button1;
 	bool Button2;
 	bool Button3;

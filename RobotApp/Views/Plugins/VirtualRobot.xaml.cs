@@ -54,7 +54,6 @@ namespace RobotApp.Views.Plugins
         public ModelVisual3D rightSpaceVisual = new ModelVisual3D();
         public ModelVisual3D leftSpaceVisual = new ModelVisual3D();
         public ModelVisual3D staticVisual = new ModelVisual3D();
-        public ModelVisual3D needleVisual = new ModelVisual3D();
 
         public ModelVisual3D wholeModel2 = new ModelVisual3D();
         public ModelVisual3D rightVisual2 = new ModelVisual3D();
@@ -72,7 +71,6 @@ namespace RobotApp.Views.Plugins
         public ModelVisual3D yolkVisual2 = new ModelVisual3D();
         public ModelVisual3D rightSpaceVisual2 = new ModelVisual3D();
         public ModelVisual3D leftSpaceVisual2 = new ModelVisual3D();
-        public ModelVisual3D needleVisual2 = new ModelVisual3D();
 
         public ModelVisual3D wholeModel3 = new ModelVisual3D();
         public ModelVisual3D rightVisual3 = new ModelVisual3D();
@@ -90,7 +88,6 @@ namespace RobotApp.Views.Plugins
         public ModelVisual3D yolkVisual3 = new ModelVisual3D();
         public ModelVisual3D rightSpaceVisual3 = new ModelVisual3D();
         public ModelVisual3D leftSpaceVisual3 = new ModelVisual3D();
-        public ModelVisual3D needleVisual3 = new ModelVisual3D();
 
         public VirtualRobotWindow newWindow = new VirtualRobotWindow();
         public GraphicalView graphicView;
@@ -198,7 +195,6 @@ namespace RobotApp.Views.Plugins
             string jaw2Path = startupPath + "grasperJaw2.stl";
             string rightSpacePath = startupPath + "RightWorkspace.stl";
             string leftSpacePath = startupPath + "LeftWorkspace.stl";
-            string needlePath = startupPath + "needle2.stl";
 
             // Import *.stl files
             var up = new ModelImporter();
@@ -213,7 +209,6 @@ namespace RobotApp.Views.Plugins
             var grasperJaw2 = up.Load(jaw2Path, this.dispatcher);
             var rightSpace = up.Load(rightSpacePath, this.dispatcher);
             var leftSpace = up.Load(leftSpacePath, this.dispatcher);
-            var needle = up.Load(needlePath, this.dispatcher);
 
             // Convert to GeometryModel3d so we can rotate models
             GeometryModel3D SHmodel = shoulder.Children[0] as GeometryModel3D;
@@ -227,7 +222,6 @@ namespace RobotApp.Views.Plugins
             GeometryModel3D GJ2model = grasperJaw2.Children[0] as GeometryModel3D;
             GeometryModel3D RWSmodel = rightSpace.Children[0] as GeometryModel3D;
             GeometryModel3D LWSmodel = leftSpace.Children[0] as GeometryModel3D;
-            GeometryModel3D Nmodel = needle.Children[0] as GeometryModel3D;
 
             // GHOST WHITE // Set model color
             DiffuseMaterial material = new DiffuseMaterial(new SolidColorBrush(Colors.GhostWhite));
@@ -243,7 +237,6 @@ namespace RobotApp.Views.Plugins
             material = new DiffuseMaterial(new SolidColorBrush(Colors.DarkRed));
             URmodel.Material = material;
             URmodel.BackMaterial = material;
-            Nmodel.Material = material;
             // GREEN // Set model color
             material = new DiffuseMaterial(new SolidColorBrush(Colors.Green));
             // BLUE // Set model color
@@ -361,38 +354,30 @@ namespace RobotApp.Views.Plugins
             // Left grasper open/close
             jawOneVisual.Content = GJ1model;
             jawTwoVisual.Content = GJ2model;
-            needleVisual.Content = Nmodel;
 
             jawOneVisual2.Content = GJ1model;
             jawTwoVisual2.Content = GJ2model;
-            needleVisual2.Content = Nmodel;
 
             jawOneVisual3.Content = GJ1model;
             jawTwoVisual3.Content = GJ2model;
-            needleVisual3.Content = Nmodel;
-
             // Define grasper group
             yolkVisual.Content = GYmodel;
             grasperVisual.Children.Clear();
             grasperVisual.Children.Add(yolkVisual);
             grasperVisual.Children.Add(jawOneVisual);
             grasperVisual.Children.Add(jawTwoVisual);
-            grasperVisual.Children.Add(needleVisual);
 
             yolkVisual2.Content = GYmodel;
             grasperVisual2.Children.Clear();
             grasperVisual2.Children.Add(yolkVisual2);
             grasperVisual2.Children.Add(jawOneVisual2);
             grasperVisual2.Children.Add(jawTwoVisual2);
-            grasperVisual2.Children.Add(needleVisual2);
 
             yolkVisual3.Content = GYmodel;
             grasperVisual3.Children.Clear();
             grasperVisual3.Children.Add(yolkVisual3);
             grasperVisual3.Children.Add(jawOneVisual3);
             grasperVisual3.Children.Add(jawTwoVisual3);
-            grasperVisual3.Children.Add(needleVisual3);
-
             // Define left forearm group
             leftForeBodyVisual.Content = FLmodel;
             leftForeVisual.Children.Clear();
@@ -426,7 +411,6 @@ namespace RobotApp.Views.Plugins
             // workspace
             rightSpaceVisual.Content = RWSmodel;
             leftSpaceVisual.Content = LWSmodel;
-            needleVisual.Content = Nmodel;
             staticVisual.Children.Clear();
             staticVisual.Children.Add(rightSpaceVisual);
             staticVisual.Children.Add(leftSpaceVisual);

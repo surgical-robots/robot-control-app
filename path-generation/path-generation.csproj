@@ -35,25 +35,13 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="abacus">
-      <HintPath>..\packages\Abacus.0.9.2\lib\abacus.dll</HintPath>
-    </Reference>
     <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\alglibnet2.0.0.0\lib\alglibnet2.dll</HintPath>
-    </Reference>
-    <Reference Include="minimizerNamespace, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Dropbox\Lab\Project\Automated_Suturing\TATRC\C#\dll\minimizerNamespace\for_testing\minimizerNamespace.dll</HintPath>
-    </Reference>
-    <Reference Include="MWArray, Version=2.15.1.0, Culture=neutral, PublicKeyToken=e1d84a0da19db86f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files\MATLAB\R2015b\toolbox\dotnetbuilder\bin\win64\v2.0\MWArray.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -61,38 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Circle.cs" />
-    <Compile Include="NeedleKinematics0.cs" />
     <Compile Include="math.cs" />
     <Compile Include="autoSuturing.cs" />
-    <Compile Include="OnePointSuturing\BezierInterpolation.cs" />
-    <Compile Include="OnePointSuturing\Interpolation.cs" />
-    <Compile Include="OnePointSuturing\Needle.cs" />
-    <Compile Include="OnePointSuturing\NeedleKinematics.cs" />
-    <Compile Include="OnePointSuturing\Optimizer.cs" />
-    <Compile Include="OnePointSuturing\Print.cs" />
-    <Compile Include="OnePointSuturing\Suturing.cs" />
-    <Compile Include="OnePointSuturing\Test.cs" />
-    <Compile Include="OnePointSuturing\Trajectory.cs" />
-    <Compile Include="Print0.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Needle0.cs" />
-    <Compile Include="Suturing0.cs" />
-    <Compile Include="Trajectory0.cs" />
+    <Compile Include="trajectory_version3 - Copy.cs" />
     <Compile Include="trajectory_version3.cs" />
     <Compile Include="trajectory_version2.cs" />
-    <Compile Include="TwoPointSuturing\Needle.cs" />
-    <Compile Include="TwoPointSuturing\NeedleKinematics.cs" />
-    <Compile Include="TwoPointSuturing\Print.cs" />
-    <Compile Include="TwoPointSuturing\Suturing.cs" />
-    <Compile Include="TwoPointSuturing\Trajectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
