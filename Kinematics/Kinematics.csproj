@@ -65,10 +65,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="KinematicModels\TwoArmCoupledShoulder.cs" />
     <Compile Include="Robots\IKSolver\FiveDOFcheater.cs" />
+    <Compile Include="Robots\IKSolver\FrankenVREP.cs" />
     <Compile Include="Robots\IKSolver\FiveDOFcheaterVREP.cs" />
     <Compile Include="Robots\IKSolver\FourDOFsolver.cs" />
     <Compile Include="Robots\IKSolver\FiveDOFsolver.cs" />
-    <Compile Include="Robots\SingleArm\Frankie.cs" />
     <Compile Include="Robots\SingleArm\LouBot.cs" />
     <Compile Include="Robots\SingleArm\LouBotWithCamera.cs" />
     <Compile Include="Robots\TwoArm\MarkBot.cs" />

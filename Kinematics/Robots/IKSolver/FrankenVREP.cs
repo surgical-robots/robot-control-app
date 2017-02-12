@@ -1,8 +1,8 @@
 ﻿namespace Kinematics.Robots
 {
-    class FiveDOFcheaterVREP : IKSolver5DOF
+    class FrankenVREP : FrankenBot
     {
-        public FiveDOFcheaterVREP()
+        public FrankenVREP()
         {
             /// alpha(i-1)     a(i-i)     d(i)      theta(i)
             this.DHparameters = new double[6, 4] { {   0,      0,      0,   0 },
@@ -14,7 +14,7 @@
             this.N = 6;
             this.Sigma = new bool[3] { false, true, false };
             this.MinMax = new System.Windows.Point[N];
-            this.MinMax[0] = new System.Windows.Point(-180, 0);
+            this.MinMax[0] = new System.Windows.Point(-180, 45);
             this.MinMax[1] = new System.Windows.Point(-90, 30);
             this.MinMax[2] = new System.Windows.Point(-180, 180);
             this.MinMax[3] = new System.Windows.Point(0, 140);

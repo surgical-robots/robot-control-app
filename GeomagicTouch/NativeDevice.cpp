@@ -208,7 +208,7 @@ void NativeDevice::UpdateTransform()
 	R11 = CallbackDataObject->Transform[5];
 	R21 = CallbackDataObject->Transform[6];
 	R02 = CallbackDataObject->Transform[8];
-	R12 = CallbackDataObject->Transform[9];
+	R12 = -CallbackDataObject->Transform[9];
 	R22 = CallbackDataObject->Transform[10];
 
 	Button1 = CallbackDataObject->Buttons & HD_DEVICE_BUTTON_1;
