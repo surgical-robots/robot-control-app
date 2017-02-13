@@ -11,8 +11,8 @@ namespace RobotApp.Views.Plugins
     /// </summary>
     public partial class AlphaAngle : PluginBase
     {
-        Vector3D Position, Rx, Ry, Rz;
-        double[,] rotm = new double[3, 3];
+        Vector3D Position, Rx, Ry, Rz, Force;
+        double[,] rotm = new double[3, 3];        
 
         public override void PostLoadSetup()
         {
@@ -94,6 +94,24 @@ namespace RobotApp.Views.Plugins
                 RotateAlpha();
             });
 
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceX"].UniqueID, (message) =>
+            {
+                Force.X = message.Value;
+                RotateAlpha();
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceY"].UniqueID, (message) =>
+            {
+                Force.Y = message.Value;
+                RotateAlpha();
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceZ"].UniqueID, (message) =>
+            {
+                Force.Z = message.Value;
+                RotateAlpha();
+            });
+
             base.PostLoadSetup();
         }
 
@@ -115,6 +133,9 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("R20", new ViewModel.OutputSignalViewModel("R20"));
             Outputs.Add("R21", new ViewModel.OutputSignalViewModel("R21"));
             Outputs.Add("R22", new ViewModel.OutputSignalViewModel("R22"));
+            Outputs.Add("ForceX", new ViewModel.OutputSignalViewModel("Force X"));
+            Outputs.Add("ForceY", new ViewModel.OutputSignalViewModel("Force Y"));
+            Outputs.Add("ForceZ", new ViewModel.OutputSignalViewModel("Force Z"));
 
             // INPUTS
             Inputs.Add("Alpha", new ViewModel.InputSignalViewModel("Alpha", this.InstanceName));
@@ -130,6 +151,9 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("R20", new ViewModel.InputSignalViewModel("R20", this.InstanceName));
             Inputs.Add("R21", new ViewModel.InputSignalViewModel("R21", this.InstanceName));
             Inputs.Add("R22", new ViewModel.InputSignalViewModel("R22", this.InstanceName));
+            Inputs.Add("ForceX", new ViewModel.InputSignalViewModel("Force X", this.InstanceName));
+            Inputs.Add("ForceY", new ViewModel.InputSignalViewModel("Force Y", this.InstanceName));
+            Inputs.Add("ForceZ", new ViewModel.InputSignalViewModel("Force Z", this.InstanceName));
 
             rotm.Initialize();
             rotm[1, 1] = 1;
@@ -159,6 +183,15 @@ namespace RobotApp.Views.Plugins
             Outputs["R20"].Value = rotm[0, 0] * Rz.X + rotm[0, 2] * Rz.Z;
             Outputs["R21"].Value = Rz.Y;
             Outputs["R22"].Value = rotm[2, 0] * Rz.X + rotm[2, 2] * Rz.Z;
+
+            //rotm[0, 0] = Math.Cos(-(90 - Alpha) * Math.PI / 180);
+            //rotm[0, 2] = Math.Sin(-(90 - Alpha) * Math.PI / 180);
+            //rotm[2, 0] = -Math.Sin(-(90 - Alpha) * Math.PI / 180);
+            //rotm[2, 2] = Math.Cos(-(90 - Alpha) * Math.PI / 180);
+
+            Outputs["ForceX"].Value = rotm[0, 0] * Force.X + rotm[0, 2] * Force.Z;
+            Outputs["ForceY"].Value = Force.Y;
+            Outputs["ForceZ"].Value = rotm[2, 0] * Force.X + rotm[2, 2] * Force.Z;
         }
 
         /// <summary>

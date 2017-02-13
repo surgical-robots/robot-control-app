@@ -98,7 +98,7 @@ namespace Kinematics
         /// </summary>
         /// <param name="Position"></param>
         /// <returns></returns>
-        protected override double[] getJointAngles(Point3D Position, Point3D Orientation, double[,] RotM)
+        protected override double[] getJointAngles(Vector3D Position, Vector3D Orientation, double[,] RotM)
 //        void KinInverse(double[,] Hd, double[] qcOut)        {
             if (!Initialized)
             {

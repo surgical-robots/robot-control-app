@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace RobotApp.Views.Plugins
@@ -378,11 +379,11 @@ namespace RobotApp.Views.Plugins
             // Only update the output if we've set our kinematic model
             if (model == null)
                 return;
-            Point3D point = new Point3D();
+            Vector3D point = new Vector3D();
             point.X = InvertX ? -ix : ix;
             point.Y = InvertY ? -iy : iy;
             point.Z = InvertZ ? -iz : iz;
-            Point3D orient = new Point3D();
+            Vector3D orient = new Vector3D();
             orient.X = iroll;
             orient.Y = ipitch;
             orient.Z = iyaw;

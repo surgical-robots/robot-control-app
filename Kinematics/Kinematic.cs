@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
 
 namespace Kinematics
 {
@@ -31,7 +32,7 @@ namespace Kinematics
             return (getJointAngles(PositionL, PositionR));
         }
 
-        public double[] GetJointAngles(Point3D Position, Point3D Orientation, double[,] RotM)
+        public double[] GetJointAngles(Vector3D Position, Vector3D Orientation, double[,] RotM)
         {
             return (getJointAngles(Position, Orientation, RotM));
         }
@@ -53,7 +54,7 @@ namespace Kinematics
             return new double[0];
         }
 
-        protected virtual double[] getJointAngles(Point3D Position, Point3D Orientation, double[,] RotM)
+        protected virtual double[] getJointAngles(Vector3D Position, Vector3D Orientation, double[,] RotM)
         {
             return new double[0];
         }

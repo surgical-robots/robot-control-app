@@ -88,7 +88,7 @@ namespace Kinematics
         /// </summary>
         public double BETA { get; set; }
 
-        protected override double[] getJointAngles(Point3D Position, Point3D Orientation, double[,] RotM)
+        protected override double[] getJointAngles(Vector3D Position, Vector3D Orientation, double[,] RotM)
         {
             if (!Initialized)
             {
@@ -106,8 +106,33 @@ namespace Kinematics
                 Initialized = true;
             }
             hiLoFac = eps / 10;
+
             // create desired position vector
             Pd = new Vector3D(Position.X, Position.Y, Position.Z);
+
+            double LengthUpperArm = 50;
+            double LengthForearm = 83.3;
+            double pad = 1.5;
+            double Lmax = LengthUpperArm + LengthForearm - pad;
+            double Lmin = Math.Sqrt(Math.Pow(LengthUpperArm, 2) + Math.Pow(LengthForearm, 2) - 2 * LengthUpperArm * LengthForearm * Math.Cos(Math.PI - MinMax[3].Y / 180 * Math.PI)) + pad;
+            double L12 = Math.Sqrt(Math.Pow(Position.X, 2) + Math.Pow(Position.Y, 2) + Math.Pow(Position.Z, 2));
+            double Lratio = Lmax / L12;
+
+            // bound desired position by min and max workspace spheres
+            if (L12 > Lmax)
+            {
+                Pd.X = Position.X * Lratio;
+                Pd.Y = Position.Y * Lratio;
+                Pd.Z = Position.Z * Lratio;
+            }
+            else if (L12 < Lmin)
+            {
+                Lratio = Lmin / L12;
+                Pd.X = Position.X * Lratio;
+                Pd.Y = Position.Y * Lratio;
+                Pd.Z = Position.Z * Lratio;
+            }
+
             // create desired orientation vector from roll, pitch, yaw
             Rd = new Vector3D[3];
 
@@ -142,6 +167,7 @@ namespace Kinematics
 
             int tries = 0;
             minError = 10;
+
             // begin Cyclic Coordinate Descent loop
             do
             {
@@ -313,36 +339,9 @@ namespace Kinematics
                 }
             }
 
-            double[] angles;
-            // check if we are outputting workspace forces
-            if (OutputWorkspace)
-            {
-                double forceGain = 0.5;
-                angles = new double[N + 1];
-                // calculate workspace forces if our position error is greater than the threshold
-                if (Ec > eps)
-                {
-                    Vector3D forces = Vector3D.Multiply(forceGain, Vector3D.Subtract(Pd, Ph));
-                    // invert forces if desired
-                    angles[N - 1] = InvertForces[0] ? -forces.X : forces.X;
-                    angles[N] = InvertForces[1] ? -forces.Y : forces.Y;
-                    angles[N + 1] = InvertForces[2] ? -forces.Z : forces.Z;
-                    for (int i = N - 1; i < N + 2; i++)
-                    {
-                        if (angles[i] > maxForce) angles[i] = maxForce;
-                        else if (angles[i] < -maxForce) angles[i] = -maxForce;
-                    }
-                }
-                else
-                {
-                    // no workspace force if we can reach desired point
-                    angles[N - 1] = 0;
-                    angles[N] = 0;
-                    angles[N + 1] = 0;
-                }
-            }
-            else
-                angles = new double[N - 2];
+            int outputNum = OutputStrings.Length;
+            double[] angles = new double[outputNum];
+
             // change output angles based on joint coupling
             switch (Coupling)
             {
@@ -369,9 +368,28 @@ namespace Kinematics
                     angles[1] = angles[1] + (angles[0] / 2.868);
                     break;
             }
+
+            // check if we are outputting workspace forces
+            if (OutputWorkspace)
+            {
+                double forceGain = 0.5;
+                // calculate workspace forces if our position error is greater than the threshold
+                Vector3D forces = Vector3D.Multiply(forceGain, Vector3D.Subtract(Pd, Position));
+                // invert forces if desired
+                angles[outputNum - 3] = InvertForces[0] ? -forces.X : forces.X;
+                angles[outputNum - 2] = InvertForces[1] ? -forces.Y : forces.Y;
+                angles[outputNum - 1] = InvertForces[2] ? -forces.Z : forces.Z;
+                for (int i = (outputNum - 3); i < outputNum; i++)
+                {
+                    if (angles[i] > maxForce) angles[i] = maxForce;
+                    else if (angles[i] < -maxForce) angles[i] = -maxForce;
+                }
+            }
+
             return angles;
         }
 
+        // uses forward recurrsion formulas and DH paramenters to calculate positions and orientations for each kinematic frame
         void ForwardKine()
         {
             Vector3D[] Pstar = new Vector3D[N];
@@ -411,6 +429,16 @@ namespace Kinematics
             Rh[0] = frame[N, 0];
             Rh[1] = frame[N, 1];
             Rh[2] = frame[N, 2];
+        }
+
+        double DegToRad(double deg)
+        {
+            return deg / 180 * Math.PI;
+        }
+        
+        double RadToDeg(double rad)
+        {
+            return rad / Math.PI * 180;
         }
 
         public override string[] OutputNames
