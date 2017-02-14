@@ -18,6 +18,9 @@ class NativeDevice
 public:
 	NativeDevice();
 	NativeDevice(char DeviceIndex);
+	void Start();
+	void Stop();
+	void Brake();
 	void UpdateDevice();
 	void UpdateForces(double fx, double fy, double fz);
 	int GetDeviceCount();
@@ -63,4 +66,5 @@ private:
 	static double forceZ;
 	static char deviceID;
 	static int deviceCount;
+	bool brakesOn;
 };

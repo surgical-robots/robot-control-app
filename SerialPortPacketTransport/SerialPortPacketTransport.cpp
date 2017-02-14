@@ -35,7 +35,7 @@ SerialPortPacketTransport::SerialPortPacketTransport(String^ comPort, Robot^ rob
 		wasOpen = true;
 	}
 	Port->PortName = comPort;
-	Port->BaudRate = 230400;
+	Port->BaudRate = 115200;
 	Port->Parity = Parity::None;
 	Port->DataBits = 8;
 	Port->StopBits = StopBits::One;

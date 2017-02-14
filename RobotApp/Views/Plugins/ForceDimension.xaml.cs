@@ -3,6 +3,7 @@ using System.IO.Ports;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
+using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Command;
 using RobotApp.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
@@ -25,33 +26,59 @@ namespace RobotApp.Views.Plugins
         int deviceCount = 0;
         sbyte selsectedDeviceID = 0;
         bool forceEnabled = false;
+        bool locked = false;
+        Vector3D holdPos = new Vector3D();
 
         public override void PostLoadSetup()
         {
             Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceX"].UniqueID, (message) =>
             {
-                if (device != null)
+                if (device != null && !locked)
                 {
-                    forceX = message.Value;
-                    UpdateForces();
+                    if(forceEnabled)
+                    {
+                        forceX = message.Value;
+                        UpdateForces();
+                    }
+                    else
+                    {
+                        forceX = 0;
+                        UpdateForces();
+                    }
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceY"].UniqueID, (message) =>
             {
-                if (device != null)
+                if (device != null && !locked)
                 {
-                    forceY = message.Value;
-                    UpdateForces();
+                    if (forceEnabled)
+                    {
+                        forceY = message.Value;
+                        UpdateForces();
+                    }
+                    else
+                    {
+                        forceY = 0;
+                        UpdateForces();
+                    }
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["ForceZ"].UniqueID, (message) =>
             {
-                if (device != null)
+                if (device != null && !locked)
                 {
-                    forceZ = message.Value;
-                    UpdateForces();
+                    if (forceEnabled)
+                    {
+                        forceY = message.Value;
+                        UpdateForces();
+                    }
+                    else
+                    {
+                        forceY = 0;
+                        UpdateForces();
+                    }
                 }
             });
 
@@ -63,6 +90,25 @@ namespace RobotApp.Views.Plugins
                         forceEnabled = true;
                     else
                         forceEnabled = false;
+                }
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Lock"].UniqueID, (message) =>
+            {
+                if(message.Value > 0.5 && !locked)
+                {
+                    holdPos = new Vector3D(device.X, device.Y, device.Z);
+                    locked = true;
+                    //device.Brake();
+                }
+                else if (message.Value > 0.5 && locked)
+                {
+                    locked = false;
+                    forceX = 0;
+                    forceY = 0;
+                    forceZ = 0;
+                    UpdateForces();
+                    //device.Brake();
                 }
             });
 
@@ -96,10 +142,11 @@ namespace RobotApp.Views.Plugins
 
             Outputs.Add("GripperPos", new OutputSignalViewModel("Gripper"));
 
-            Inputs.Add("ForceX", new ViewModel.InputSignalViewModel("ForceX", this.InstanceName));
-            Inputs.Add("ForceY", new ViewModel.InputSignalViewModel("ForceY", this.InstanceName));
-            Inputs.Add("ForceZ", new ViewModel.InputSignalViewModel("ForceZ", this.InstanceName));
-            Inputs.Add("HapticsEnabled", new ViewModel.InputSignalViewModel("HapticsEnabled", this.InstanceName));
+            Inputs.Add("ForceX", new ViewModel.InputSignalViewModel("Force X", this.InstanceName));
+            Inputs.Add("ForceY", new ViewModel.InputSignalViewModel("Force Y", this.InstanceName));
+            Inputs.Add("ForceZ", new ViewModel.InputSignalViewModel("Force Z", this.InstanceName));
+            Inputs.Add("HapticsEnabled", new ViewModel.InputSignalViewModel("Haptics Enabled", this.InstanceName));
+            Inputs.Add("Lock", new ViewModel.InputSignalViewModel("Lock", this.InstanceName));
 
             device = new Device();
             deviceCount = device.GetDeviceCount();
@@ -142,6 +189,7 @@ namespace RobotApp.Views.Plugins
                 device = Devices[SelectedDeviceIndex];
             if (device.IsInitialized)
             {
+                device.Start();
                 UpdateThread = new Thread(new ThreadStart(UpdateState));
                 UpdateThread.Start();
             }
@@ -156,11 +204,14 @@ namespace RobotApp.Views.Plugins
                 Outputs["X"].Value = device.X * 1000;
                 Outputs["Y"].Value = device.Y * 1000;
                 Outputs["Z"].Value = device.Z * 1000;
-                Outputs["ThetaX"].Value = device.Theta1;
+                Outputs["ThetaX"].Value = -device.Theta1;
                 Outputs["ThetaY"].Value = device.Theta2;
                 Outputs["ThetaZ"].Value = device.Theta3;
                 Outputs["R00"].Value = device.R00;
-                Outputs["R01"].Value = device.R01;
+                if(device.IsLeft)
+                    Outputs["R01"].Value = device.R01;
+                else
+                    Outputs["R01"].Value = -device.R01;
                 Outputs["R02"].Value = device.R02;
                 Outputs["R10"].Value = device.R10;
                 Outputs["R11"].Value = device.R11;
@@ -169,6 +220,21 @@ namespace RobotApp.Views.Plugins
                 Outputs["R21"].Value = device.R21;
                 Outputs["R22"].Value = device.R22;
                 Outputs["GripperPos"].Value = device.GripperPos;
+
+                double spring = 5000;
+                if(locked)
+                {
+                    forceX = (holdPos.X - device.X) * spring;
+                    forceY = (holdPos.Y - device.Y) * spring;
+                    forceZ = (holdPos.Z - device.Z) * spring;
+                    if (forceX > 20) forceX = 20;
+                    else if (forceX < -20) forceX = -20;
+                    if (forceY > 20) forceY = 20;
+                    else if (forceY < -20) forceY = -20;
+                    if (forceZ > 20) forceZ = 20;
+                    else if (forceZ < -20) forceZ = -20;
+                    UpdateForces();
+                }
             }
         }
 

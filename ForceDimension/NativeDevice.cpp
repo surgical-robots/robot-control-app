@@ -24,13 +24,14 @@ NativeDevice::NativeDevice(char DeviceIndex)
 	else
 		deviceInitialized = true;
 
-	dhdGetSerialNumber(&SerialNum, DeviceID);
-	IsLeft = dhdIsLeftHanded(DeviceID);
-
 	dhdEnableExpertMode();
 
-	dhdEnableForce(DHD_ON, DeviceID);
-	dhdSetForceAndTorqueAndGripperForce(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	brakesOn = false;
+	dhdGetSerialNumber(&SerialNum, DeviceID);
+	IsLeft = dhdIsLeftHanded(DeviceID);
+	dhdClose(DeviceID);
+	//dhdEnableForce(DHD_ON, DeviceID);
+	//dhdSetForceAndTorqueAndGripperForce(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	//dhdSetGravityCompensation(DHD_ON, DeviceID);
 
 	switch (dhdGetSystemType()) {
@@ -54,6 +55,27 @@ NativeDevice::NativeDevice(char DeviceIndex)
 		encCount = 8;
 		break;
 	}
+}
+
+void NativeDevice::Start()
+{
+	dhdOpenID(DeviceID);
+	dhdEnableForce(DHD_ON, DeviceID);
+	dhdSetForceAndTorqueAndGripperForce(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	ForceEnabled = true;
+}
+
+void NativeDevice::Stop()
+{
+	dhdClose(DeviceID);
+}
+
+void NativeDevice::Brake()
+{
+	if (brakesOn)
+		dhdSetBrakes(DHD_OFF, DeviceID);
+	else
+		dhdSetBrakes(DHD_ON, DeviceID);
 }
 
 void NativeDevice::UpdateDevice()
@@ -95,10 +117,10 @@ void NativeDevice::UpdateDevice()
 
 void NativeDevice::UpdateForces(double fx, double fy, double fz)
 {
-	if (ForceEnabled)
-	{
+	//if (ForceEnabled)
+	//{
 		dhdSetForce(fx, fy, fz, DeviceID);
-	}
+	//}
 }
 
 int NativeDevice::GetDeviceCount()

@@ -7,6 +7,9 @@ namespace ForceDimension {
 	public:
 		Device();
 		Device(char DeviceID);
+		void Start();
+		void Stop();
+		void Brake();
 		void UpdateDevice();
 		void UpdateForces(double fx, double fy, double fz);
 		int GetDeviceCount();

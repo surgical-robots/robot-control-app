@@ -15,14 +15,14 @@ namespace RobotApp.Views.Plugins
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Actuation"].UniqueID, (message) =>
             {
                 act = message.Value * 1200 / 30;
-                Outputs["Actuation"].Value = act + roll;
+                Outputs["Actuation"].Value = act - roll;
                 Outputs["Roll"].Value = roll;
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll"].UniqueID, (message) =>
             {
                 roll = message.Value;
-                Outputs["Actuation"].Value = act + roll;
+                Outputs["Actuation"].Value = act - roll;
                 Outputs["Roll"].Value = roll;
             });
 

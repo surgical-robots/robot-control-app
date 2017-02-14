@@ -12,7 +12,8 @@
     <plugins:PluginBase.PluginContent>
         <StackPanel>
             <UniformGrid Columns="3">
-                <ComboBox Name="DeviceNamesBox" ItemsSource="{Binding DeviceNames}" SelectedIndex="{Binding SelectedDeviceIndex}" />
+                <TextBox Text="{Binding SelectedDeviceIndex}" />
+                <!--<ComboBox Name="DeviceNamesBox" ItemsSource="{Binding DeviceNames}" SelectedIndex="{Binding SelectedDeviceIndex}" />-->
                 <mui:ModernButton IconData="{StaticResource RefreshIconData}" 
                                   Content="Refresh Controller" Command="{Binding DetectControllerCommand}" HorizontalAlignment="Left" />
             </UniformGrid>

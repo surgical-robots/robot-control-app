@@ -13,6 +13,21 @@ namespace ForceDimension
 		this->device = new NativeDevice(DeviceID);
 	}
 
+	void Device::Start()
+	{
+		this->device->Start();
+	}
+
+	void Device::Stop()
+	{
+		this->device->Stop();
+	}
+
+	void Device::Brake()
+	{
+		this->device->Brake();
+	}
+
 	void Device::UpdateDevice()
 	{
 		this->device->UpdateDevice();
