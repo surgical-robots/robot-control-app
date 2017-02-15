@@ -17,6 +17,10 @@ namespace path_generation.OnePointSuturing
         public int state;
         //public enum mode { one_point_suturing, two_point_suturing };
         int mode = 1;
+
+        // for test and score the accuracy
+        Needle needle_new = null;
+        Needle needle_old = null;
         public Suturing()
         {
             state = 0;
@@ -31,13 +35,13 @@ namespace path_generation.OnePointSuturing
         }
         public void SELECT_ENTRY(Joints joints)
         {
-            
-            needle.kinematics.joint.UpperBevel = joints.UpperBevel;
-            needle.kinematics.joint.LowerBevel = joints.LowerBevel;
-            needle.kinematics.joint.Elbow = joints.Elbow;
-            needle.kinematics.joint.twist = joints.twist;
-            needle.update_needle(); // one-point suturing
 
+            needle.kinematics.joint.UpperBevel = joints.UpperBevel;//-60; //joints.UpperBevel;
+            needle.kinematics.joint.LowerBevel = joints.LowerBevel;//-50;// joints.LowerBevel;
+            needle.kinematics.joint.Elbow = joints.Elbow;//80;// joints.Elbow;
+            needle.kinematics.joint.twist = joints.twist;//0;// joints.twist;
+            needle.update_needle(); // one-point suturing
+            Print.PrintJointOnFile(joints); // print joints at the entry time
             switch (mode)
             {
                 case 1: // mode.one_point_suturing
@@ -110,11 +114,16 @@ namespace path_generation.OnePointSuturing
         }
         public bool DO_SUTURING()
         {
+            needle_old = needle_new;
             switch(mode)
             {
                 case 1: // mode.one_point_suturing
                     needle.update_needle(needle.moved_head);
-                    Print.PrintMatrixOnFile(needle.center);
+                    //Print.PrintMatrixOnFile(needle.center);
+                    Print.PrintMatrixOnFile(needle.center, "_center.txt");
+                    Print.PrintMatrixOnFile(needle.head, "_head.txt");
+                    Print.PrintMatrixOnFile(needle.tail, "_tail.txt");
+                    Print.PrintJointOnFile(needle.kinematics.joint, "_jointsforNeedles.txt");
                     break;
                 case 2: //mode.two_point_suturing
                     //needle = trajectory.needle_entry; //for test
@@ -122,11 +131,13 @@ namespace path_generation.OnePointSuturing
                     Print.PrintMatrixOnFile(needle.center);
                     break;
             }
-
+            needle_new = needle;
             t = t + Math.PI / (needle.n - 1);
 
             // for test and can be deleted
             //Test.specified_pos(needle);
+            //Test.optimization_test();
+            //Test.score_accuracy(needle_old, needle_new);
             //
             if (t >= 1 * Math.PI)
             {
