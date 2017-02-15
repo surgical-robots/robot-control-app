@@ -300,6 +300,9 @@
     <Compile Include="Views\Plugins\HapticWorkspace.xaml.cs">
       <DependentUpon>HapticWorkspace.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\HololensConnector.xaml.cs">
+      <DependentUpon>HololensConnector.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\IKSolver.xaml.cs">
       <DependentUpon>IKSolver.xaml</DependentUpon>
     </Compile>
@@ -500,6 +503,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Plugins\HapticWorkspace.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\HololensConnector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
