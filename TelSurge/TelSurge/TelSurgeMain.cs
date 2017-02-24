@@ -813,9 +813,9 @@ namespace TelSurge
                         Surgery.InControlPosition = currentPos;
                     if (!User.IsMaster)
                     {
+                        messageCount++;                        
                         //Only send data to Master while InControl
-                        SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend());
-                        messageCount++;
+                        SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend(messageCount));
                     }
                     //Check for freeze button press
                     if (telSurgeOnly && this.User.CheckForFreeze(currentPos))
@@ -845,7 +845,10 @@ namespace TelSurge
                 {
                     //Master always sends data
                     if (Surgery.ConnectedClients.Count > 0)
-                        SocketData.MasterSendData();
+                    {
+                        messageCount++;
+                        SocketData.MasterSendData(messageCount);
+                    }
                     //Check for "stay alive" from clients
                     foreach (User u in Surgery.ConnectedClients)
                     {

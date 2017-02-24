@@ -12,6 +12,7 @@ namespace TelSurge.DataModels
 {
     public class SocketMessage
     {
+        public int MessageIndex { get; set; }
         public OmniPosition OmniPosition { get; set; }
         public OmniPosition PositionOffset { get; set; }
 

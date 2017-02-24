@@ -35,7 +35,7 @@ namespace TelSurge
             this.dataPort = DataPort;
             this.IsListeningForData = false;
         }
-        public void MasterSendData()
+        public void MasterSendData(int index)
         {
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             try
@@ -43,7 +43,7 @@ namespace TelSurge
                 foreach (User user in Main.Surgery.ConnectedClients)
                 {
                     if (!user.MyIPAddress.Equals(Main.User.MyIPAddress))
-                        s.SendTo(CreateMessageToSend(), new IPEndPoint(IPAddress.Parse(user.MyIPAddress), dataPort));
+                        s.SendTo(CreateMessageToSend(index), new IPEndPoint(IPAddress.Parse(user.MyIPAddress), dataPort));
                 }
             }
             catch (Exception ex)
@@ -75,12 +75,13 @@ namespace TelSurge
                 Main.ShowError(ex.Message, ex.ToString());
             }
         }
-        public byte[] CreateMessageToSend() 
+        public byte[] CreateMessageToSend(int index) 
         {
             SocketMessage sm = new SocketMessage(Main.Surgery, Main.User);
             byte[] arry = { };
             try
             {
+                sm.MessageIndex = index;
                 sm.ClearMarkingsReq = Main.Markup.ClearMarkingsReq;
                 Main.Markup.ClearMarkingsReq = false;
                 sm.sendToggleFrozen = sendToggleFrozen;
