@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "remoteApiNETWrapper", "remo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ForceDimension", "ForceDimension\ForceDimension.vcxproj", "{322B3B8F-7C48-46AB-A821-245C02A0549F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RazerHydra", "RazerHydra\RazerHydra.vcxproj", "{774EFB9C-AA0B-4527-9546-0356CF425409}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -304,6 +306,34 @@ Global
 		{322B3B8F-7C48-46AB-A821-245C02A0549F}.Release|Win32.ActiveCfg = Release|Win32
 		{322B3B8F-7C48-46AB-A821-245C02A0549F}.Release|Win32.Build.0 = Release|Win32
 		{322B3B8F-7C48-46AB-A821-245C02A0549F}.Release|x64.ActiveCfg = Release|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Debug|Win32.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Debug|Win32.Build.0 = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Debug|x64.ActiveCfg = Debug|x64
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Debug|x64.Build.0 = Debug|x64
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugMono|Any CPU.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugMono|Mixed Platforms.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugMono|Mixed Platforms.Build.0 = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugMono|Win32.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugMono|Win32.Build.0 = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugMono|x64.ActiveCfg = Debug|x64
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugMono|x64.Build.0 = Debug|x64
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugWin32|Any CPU.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugWin32|Mixed Platforms.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugWin32|Mixed Platforms.Build.0 = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugWin32|Win32.ActiveCfg = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugWin32|Win32.Build.0 = Debug|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugWin32|x64.ActiveCfg = Debug|x64
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.DebugWin32|x64.Build.0 = Debug|x64
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Release|Any CPU.ActiveCfg = Release|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Release|Win32.ActiveCfg = Release|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Release|Win32.Build.0 = Release|Win32
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Release|x64.ActiveCfg = Release|x64
+		{774EFB9C-AA0B-4527-9546-0356CF425409}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
