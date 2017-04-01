@@ -818,15 +818,15 @@ namespace TelSurge
                         SocketData.SendUDPDataTo(IPAddress.Parse(Surgery.Master.MyIPAddress), SocketData.CreateMessageToSend(messageCount));
                     }
                     //Check for freeze button press
-                    if(telSurgeOnly)
-                    {
+                    //if(telSurgeOnly)
+                    //{
                         bool freezePressed;
                         freezePressed = this.User.CheckForFreeze(currentPos);
                         if (freezePressed && !User.IsFrozen)
                             Freeze();
                         else if (freezePressed && User.IsFrozen)
                             UnFreeze();
-                    }
+                    //}
                     //Display Frozen status
                     if (User.IsFrozen)
                         tb_InControl.Text = "You are frozen.";
