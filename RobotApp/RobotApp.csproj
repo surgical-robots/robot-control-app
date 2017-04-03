@@ -341,6 +341,9 @@
     <Compile Include="Views\Plugins\LoadHapticObject.xaml.cs">
       <DependentUpon>LoadHapticObject.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\LouShoulder.xaml.cs">
+      <DependentUpon>LouShoulder.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\PerformanceEvaluator.xaml.cs">
       <DependentUpon>PerformanceEvaluator.xaml</DependentUpon>
     </Compile>
@@ -576,6 +579,10 @@
     <Page Include="Views\Plugins\LoadHapticObject.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\LouShoulder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\PerformanceEvaluator.xaml">
       <Generator>MSBuild:Compile</Generator>
