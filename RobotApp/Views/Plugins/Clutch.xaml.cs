@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using System.Threading.Tasks;
+using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace RobotApp.Views.Plugins
@@ -12,6 +13,7 @@ namespace RobotApp.Views.Plugins
         double offsetX, offsetY, offsetZ, offsetPitch, offsetYaw, offsetRoll;
         double clutchStartPositionX, clutchStartPositionY, clutchStartPositionZ, clutchStartPitch, clutchStartYaw, clutchStartRoll;
         bool clutchIsEnabled;
+        double lastVal = 0;
 
         public override void PostLoadSetup()
         {
@@ -61,6 +63,18 @@ namespace RobotApp.Views.Plugins
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Clutch"].UniqueID, (message) =>
             {
                 ClutchIsEnabled = message.Value > 0.5 ? true : false;
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["ClutchToggle"].UniqueID, (message) =>
+            {
+                if (message.Value > 0.5)
+                {
+                    //var delay = Task.Delay(200).ContinueWith(_ =>
+                    //{
+                        ClutchIsEnabled = !ClutchIsEnabled;
+                    //});
+                }
+                //lastVal = message.Value;
             });
 
             base.PostLoadSetup();
@@ -145,6 +159,7 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("Yaw", new ViewModel.InputSignalViewModel("Yaw", this.InstanceName));
             Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
             Inputs.Add("Clutch", new ViewModel.InputSignalViewModel("Clutch", this.InstanceName));
+            Inputs.Add("ClutchToggle", new ViewModel.InputSignalViewModel("ClutchToggle", this.InstanceName));
 
             PostLoadSetup();
         }
