@@ -27,7 +27,7 @@ namespace Kinematics
 
         const int IK_MAX_TRIES = 500;      // max number of CCD iterations
         private double wp = 1;              // position weight
-        private double wo = 3;            // orientation weight
+        private double wo = 2;            // orientation weight
         private double hiErrThresh = 0.01;  // High error threshold, use factored rptCheck for errors beyond this magnitude
         private double hiLoFac = 10000;     // factor between high and low rptCheck
         private int rptCt = 0;              // counter for repeated error
@@ -88,6 +88,16 @@ namespace Kinematics
         /// </summary>
         public double BETA { get; set; }
 
+        /// <summary>
+        /// Maximum reach of robotic arm
+        /// </summary>
+        public double Lmax { get; set; }
+
+        /// <summary>
+        /// Minimum reach of robotic arm
+        /// </summary>
+        public double Lmin { get; set; }
+
         protected override double[] getJointAngles(Vector3D Position, Vector3D Orientation, double[,] RotM)
         {
             if (!Initialized)
@@ -110,11 +120,11 @@ namespace Kinematics
             // create desired position vector
             Pd = new Vector3D(Position.X, Position.Y, Position.Z);
 
-            double LengthUpperArm = 50;
-            double LengthForearm = 83.3;
-            double pad = 1.5;
-            double Lmax = LengthUpperArm + LengthForearm - pad;
-            double Lmin = Math.Sqrt(Math.Pow(LengthUpperArm, 2) + Math.Pow(LengthForearm, 2) - 2 * LengthUpperArm * LengthForearm * Math.Cos(Math.PI - MinMax[3].Y / 180 * Math.PI)) + pad;
+            //double LengthUpperArm = 87.57;
+            //double LengthForearm = 70;
+            //double pad = 1.5;
+            //double Lmax = LengthUpperArm + LengthForearm - pad;
+            //double Lmin = Math.Sqrt(Math.Pow(LengthUpperArm, 2) + Math.Pow(LengthForearm, 2) - 2 * LengthUpperArm * LengthForearm * Math.Cos(Math.PI - MinMax[3].Y / 180 * Math.PI)) + pad;
             double L12 = Math.Sqrt(Math.Pow(Position.X, 2) + Math.Pow(Position.Y, 2) + Math.Pow(Position.Z, 2));
             double Lratio = Lmax / L12;
 
@@ -366,6 +376,12 @@ namespace Kinematics
                         angles[i] = radAngle[i + 1] * 180 / Math.PI;
                     }
                     angles[1] = angles[1] + (angles[0] / 2.868);
+                    break;
+                case CouplingType.LouShoulder:
+                    angles[0] = (radAngle[1] - radAngle[2]) * 180 / Math.PI;
+                    angles[1] = (radAngle[1] + radAngle[2]) * 180 / Math.PI;
+                    angles[2] = (radAngle[3] - radAngle[1] + radAngle[2]) * 180 / Math.PI;
+                    angles[3] = radAngle[4] * 180 / Math.PI;
                     break;
             }
 

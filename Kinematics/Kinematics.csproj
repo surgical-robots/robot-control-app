@@ -69,6 +69,7 @@
     <Compile Include="Robots\IKSolver\FiveDOFcheaterVREP.cs" />
     <Compile Include="Robots\IKSolver\FourDOFsolver.cs" />
     <Compile Include="Robots\IKSolver\FiveDOFsolver.cs" />
+    <Compile Include="Robots\IKSolver\LouBizzle.cs" />
     <Compile Include="Robots\SingleArm\LouBot.cs" />
     <Compile Include="Robots\SingleArm\LouBotWithCamera.cs" />
     <Compile Include="Robots\TwoArm\MarkBot.cs" />

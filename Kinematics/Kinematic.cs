@@ -14,7 +14,8 @@ namespace Kinematics
             None,
             ShoulderTwoDOF,
             ShoulderThreeDOF,
-            FrankenBot
+            FrankenBot,
+            LouShoulder
         }
 
         /// <summary>
