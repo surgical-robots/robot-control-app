@@ -17,6 +17,8 @@ namespace RobotApp.Views.Plugins
 
         public ObservableCollection<string> DeviceNames { get; set; }
 
+        private bool isLeft = false;
+
         /// <summary>
         /// This function is manually called at the end of the constructor (below) as well as automatically getting called after deserialization.
         /// Place any code in here that you want executed after deserialization or construction.
@@ -165,15 +167,25 @@ namespace RobotApp.Views.Plugins
                 Device.UpdateTransform();
             else
                 Device.Update();
-            Outputs["X"].Value = Device.X;
+
+            if(isLeft)
+                Outputs["X"].Value = Device.X;
+            else
+                Outputs["X"].Value = -Device.X;
+
             Outputs["Y"].Value = Device.Y;
-            Outputs["Z"].Value = Device.Z;
+            Outputs["Z"].Value = -Device.Z;
             Outputs["Theta1"].Value = Device.Theta1;// *(180 / Math.PI);
             Outputs["Theta2"].Value = Device.Theta2;// *(180 / Math.PI);
             Outputs["Theta3"].Value = Device.Theta3;// *(180 / Math.PI);
             Outputs["R00"].Value = Device.R00;
             Outputs["R01"].Value = Device.R01;
-            Outputs["R02"].Value = Device.R02;
+
+            if(isLeft)
+                Outputs["R02"].Value = -Device.R02;
+            else
+                Outputs["R02"].Value = Device.R02;
+
             Outputs["R10"].Value = Device.R10;
             Outputs["R11"].Value = Device.R11;
             Outputs["R12"].Value = Device.R12;
@@ -211,6 +223,11 @@ namespace RobotApp.Views.Plugins
                 }
 
                 selectedDevice = value;
+                if (selectedDevice.Contains("left") || selectedDevice.Contains("Left"))
+                    isLeft = true;
+                else
+                    isLeft = false;
+
                 RaisePropertyChanged(SelectedDeviceNamePropertyName);
                 ConnectCommand.RaiseCanExecuteChanged();
             }

@@ -27,7 +27,7 @@ namespace Kinematics
 
         const int IK_MAX_TRIES = 500;      // max number of CCD iterations
         private double wp = 1;              // position weight
-        private double wo = 2;            // orientation weight
+        private double wo = 3;            // orientation weight
         private double hiErrThresh = 0.01;  // High error threshold, use factored rptCheck for errors beyond this magnitude
         private double hiLoFac = 10000;     // factor between high and low rptCheck
         private int rptCt = 0;              // counter for repeated error

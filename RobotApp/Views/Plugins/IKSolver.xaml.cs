@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Media.Media3D;
@@ -15,8 +16,9 @@ namespace RobotApp.Views.Plugins
     public partial class IKSolver : PluginBase
     {
         public ObservableCollection<Type> KinematicTypes { get; set; }
-        public Thread solverThread;
         private Kinematic model;
+
+        public BackgroundWorker workerThread;
 
         private Type selectedKinematic;
         public Type SelectedKinematic
@@ -46,7 +48,8 @@ namespace RobotApp.Views.Plugins
             Messenger.Default.Register<Messages.Signal>(this, Inputs["X"].UniqueID, (message) =>
             {
                 x = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -54,15 +57,16 @@ namespace RobotApp.Views.Plugins
                     ipitch = pitch;
                     iroll = roll;
                     iyaw = yaw;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    irotm = rotm;
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Y"].UniqueID, (message) =>
             {
                 y = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -70,15 +74,16 @@ namespace RobotApp.Views.Plugins
                     ipitch = pitch;
                     iroll = roll;
                     iyaw = yaw;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    irotm = rotm;
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Z"].UniqueID, (message) =>
             {
                 z = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -86,15 +91,16 @@ namespace RobotApp.Views.Plugins
                     ipitch = pitch;
                     iroll = roll;
                     iyaw = yaw;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    irotm = rotm;
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll"].UniqueID, (message) =>
             {
                 roll = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -102,15 +108,16 @@ namespace RobotApp.Views.Plugins
                     ipitch = pitch;
                     iroll = roll;
                     iyaw = yaw;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    irotm = rotm;
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Pitch"].UniqueID, (message) =>
             {
                 pitch = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -118,15 +125,16 @@ namespace RobotApp.Views.Plugins
                     ipitch = pitch;
                     iroll = roll;
                     iyaw = yaw;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    irotm = rotm;
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Yaw"].UniqueID, (message) =>
             {
                 yaw = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -134,15 +142,16 @@ namespace RobotApp.Views.Plugins
                     ipitch = pitch;
                     iroll = roll;
                     iyaw = yaw;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    irotm = rotm;
+                    workerThread.RunWorkerAsync();
                 }
             }); 
             
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R00"].UniqueID, (message) =>
             {
                 rotm[0,0] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -151,15 +160,15 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R01"].UniqueID, (message) =>
             {
                 rotm[0, 1] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -168,15 +177,15 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R02"].UniqueID, (message) =>
             {
                 rotm[0, 2] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -185,15 +194,15 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R10"].UniqueID, (message) =>
             {
                 rotm[1, 0] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -202,15 +211,15 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R11"].UniqueID, (message) =>
             {
                 rotm[1, 1] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -219,15 +228,15 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R12"].UniqueID, (message) =>
             {
                 rotm[1, 2] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -236,15 +245,15 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R20"].UniqueID, (message) =>
             {
                 rotm[2, 0] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+                
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -253,15 +262,15 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R21"].UniqueID, (message) =>
             {
                 rotm[2, 1] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -270,15 +279,15 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["R22"].UniqueID, (message) =>
             {
                 rotm[2, 2] = message.Value;
-                if (!solverThread.IsAlive && model != null)
+
+                if (!workerThread.IsBusy && model != null)
                 {
                     ix = x;
                     iy = y;
@@ -287,8 +296,7 @@ namespace RobotApp.Views.Plugins
                     iroll = roll;
                     iyaw = yaw;
                     irotm = rotm;
-                    solverThread = new Thread(new ThreadStart(UpdateOutput));
-                    solverThread.Start();
+                    workerThread.RunWorkerAsync();
                 }
             });
 
@@ -369,9 +377,15 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("R22", new ViewModel.InputSignalViewModel("R22", this.InstanceName));
 
             InitializeComponent();
-            solverThread = new Thread(new ThreadStart(UpdateOutput));
+            workerThread = new BackgroundWorker();
+            workerThread.DoWork += workerThread_DoWork;
 
             PostLoadSetup();
+        }
+
+        void workerThread_DoWork(object sender, DoWorkEventArgs e)
+        {
+            UpdateOutput();
         }
 
         public void UpdateOutput()
@@ -389,11 +403,13 @@ namespace RobotApp.Views.Plugins
             orient.Z = iyaw;
             //double[] angles = model.GetJointAngles(point, orient);
             double[] angles = model.GetJointAngles(point, orient, irotm);
-
-            for (int i = 0; i < angles.Length; i++)
+            RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate() 
             {
-                Outputs[model.OutputNames[i]].Value = angles[i];
-            }
+                for (int i = 0; i < angles.Length; i++)
+                {
+                    Outputs[model.OutputNames[i]].Value = angles[i];
+                }
+            });
         }
 
         public override void Dispose()

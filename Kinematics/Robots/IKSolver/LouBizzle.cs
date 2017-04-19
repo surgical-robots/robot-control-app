@@ -15,9 +15,9 @@
             this.Sigma = new bool[3] { false, true, false };
             this.MinMax = new System.Windows.Point[N];
             this.MinMax[0] = new System.Windows.Point(-90, 10);
-            this.MinMax[1] = new System.Windows.Point(-180, 30);
+            this.MinMax[1] = new System.Windows.Point(-90, 30);
             this.MinMax[2] = new System.Windows.Point(-180, 180);
-            this.MinMax[3] = new System.Windows.Point(0, 145);
+            this.MinMax[3] = new System.Windows.Point(0, 155);
             this.MinMax[4] = new System.Windows.Point(-180, 180);
             this.MinMax[5] = new System.Windows.Point(-180, 180);
 
@@ -27,7 +27,7 @@
             this.OutputStrings = new string[4] { "Joint1", "Joint2", "Joint3", "Joint4" };
             this.eps = 0.0001;
             this.BETA = 10;
-            this.Lmin = 80;
+            this.Lmin = 70;
             this.Lmax = 179.57;
         }
     }
