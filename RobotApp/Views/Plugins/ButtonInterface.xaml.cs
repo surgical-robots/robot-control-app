@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Ports;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using GalaSoft.MvvmLight.Command;
 using RobotApp.ViewModel;
@@ -12,7 +13,7 @@ namespace RobotApp.Views.Plugins
     /// </summary>
     public partial class ButtonInterface : PluginBase
     {
-        public Thread ListenThread;
+        public BackgroundWorker workerThread;
         public SerialPort connectPort;
         public int baudRate = 57600;
 
@@ -31,7 +32,15 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("Button2", new OutputSignalViewModel("Button 2"));
             Outputs.Add("Button3", new OutputSignalViewModel("Button 3"));
 
+            workerThread = new BackgroundWorker();
+            workerThread.DoWork += workerThread_DoWork;
+
             FindPorts();
+        }
+
+        void workerThread_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Listen();
         }
 
         public void FindPorts()
@@ -143,13 +152,14 @@ namespace RobotApp.Views.Plugins
                             ConnectText = "Connected... Click to Disconnect";
                             connected = true;
                             listen = true;
-                            ListenThread = new Thread(new ThreadStart(Listen));
-                            ListenThread.Start();
+                            if (!workerThread.IsBusy)
+                                workerThread.RunWorkerAsync();
                         }
                         else
                         {
                             listen = false;
-                            ListenThread.Abort();
+                            if(workerThread.IsBusy)
+                                workerThread.CancelAsync();
                             if (connectPort.IsOpen)
                                 connectPort.Close();
                             ConnectText = "Connect to Selected Device";
@@ -181,19 +191,22 @@ namespace RobotApp.Views.Plugins
                     }
                     if (returnMessage != "")
                     {
-                        if (outputNum == 1)
-                            Outputs["Button1"].Value = (int)Char.GetNumericValue(returnMessage[0]);
-                        else if (outputNum == 2)
+                        RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate()
                         {
-                            Outputs["Button1"].Value = (int)Char.GetNumericValue(returnMessage[0]);
-                            Outputs["Button2"].Value = (int)Char.GetNumericValue(returnMessage[1]);
-                        }
-                        else if (outputNum > 2)
-                        {
-                            Outputs["Button1"].Value = (int)Char.GetNumericValue(returnMessage[0]);
-                            Outputs["Button2"].Value = (int)Char.GetNumericValue(returnMessage[1]);
-                            Outputs["Button3"].Value = (int)Char.GetNumericValue(returnMessage[2]);
-                        }
+                            if (outputNum == 1)
+                                Outputs["Button1"].Value = (int)Char.GetNumericValue(returnMessage[0]);
+                            else if (outputNum == 2)
+                            {
+                                Outputs["Button1"].Value = (int)Char.GetNumericValue(returnMessage[0]);
+                                Outputs["Button2"].Value = (int)Char.GetNumericValue(returnMessage[1]);
+                            }
+                            else if (outputNum > 2)
+                            {
+                                Outputs["Button1"].Value = (int)Char.GetNumericValue(returnMessage[0]);
+                                Outputs["Button2"].Value = (int)Char.GetNumericValue(returnMessage[1]);
+                                Outputs["Button3"].Value = (int)Char.GetNumericValue(returnMessage[2]);
+                            }
+                        });
                     }
                 }
             }
