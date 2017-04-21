@@ -56,7 +56,7 @@ namespace RobotApp.Views.Plugins
             try
             {
                 udpServer = new UdpClient(1236);
-                remoteEP = new IPEndPoint(IPAddress.Any, 1236);
+                remoteEP = new IPEndPoint(IPAddress.Any, 1236);// UDP server and port
             }
             catch (Exception e)
             {
@@ -77,11 +77,11 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("LOpen", new ViewModel.InputSignalViewModel("LOpen", this.InstanceName));
             Inputs.Add("LClose", new ViewModel.InputSignalViewModel("LClose", this.InstanceName));
         }
-        void holoTimer_Tick(object sender, EventArgs e)
+        void holoTimer_Tick(object sender, EventArgs e) //send data
         {
             if (connected)
             {
-                PostLoadSetup();//when two program run, it will be freeze
+                PostLoadSetup();
                 jsonstring = JsonConvert.SerializeObject(virtualRobotPos);
                 byte[] msg = Encoding.UTF8.GetBytes(jsonstring);
                 udpServer.Send(msg, msg.Length, remoteEP); // send
@@ -155,10 +155,10 @@ namespace RobotApp.Views.Plugins
 
         }
 
-        void StartSendingData(object sender, RoutedEventArgs e)
+        void StartSendingData(object sender, RoutedEventArgs e)// button's function, start server
         {
             Byte[] dataold = data;
-            data = udpServer.Receive(ref remoteEP); //receive
+            data = udpServer.Receive(ref remoteEP); //receive data from hololens, then start send data to hololens
             if (data != dataold)
             {
                 MessageBox.Show("hololens connected and start sending");
