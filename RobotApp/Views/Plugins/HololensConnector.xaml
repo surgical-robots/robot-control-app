@@ -10,11 +10,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <plugins:PluginBase.PluginContent>
         <StackPanel>
-            <UniformGrid Columns="2">
-                <TextBlock Text="Hololens Address"/>
-                <TextBox Text="{Binding HololensAddress}"/>
-            </UniformGrid>
-            <Button Content="Connect Hololens" Command="{Binding ConnectHololens}" />
+            <Button Name="button1" Click="StartSendingData">Send data!</Button>
         </StackPanel>
     </plugins:PluginBase.PluginContent>
 </plugins:PluginBase>

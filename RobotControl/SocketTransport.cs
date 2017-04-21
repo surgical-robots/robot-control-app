@@ -9,6 +9,7 @@ namespace RobotControl
 {
     class SocketTransport : IPacketTransport
     {
+
         TcpClient client;
 
         public string IpAddress { get; set; }

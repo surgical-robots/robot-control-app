@@ -13,7 +13,9 @@ namespace RobotControl
     /// <summary>
     /// This interface describes a generic packet transport to the 
     /// individual motor control boards. This allows protocol-agonstic communication
-    /// over serial, TCP/IP, USB HID, RF, or any other communication interface that
+    /// over serial, 
+    /// 
+    /// /IP, USB HID, RF, or any other communication interface that
     /// can be modeled as a packet device
     /// </summary>
     public interface IPacketTransport
