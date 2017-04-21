@@ -158,7 +158,7 @@ namespace RobotApp.Views.Plugins
         void StartSendingData(object sender, RoutedEventArgs e)// button's function, start server
         {
             Byte[] dataold = data;
-            data = udpServer.Receive(ref remoteEP); //receive data from hololens, then start send data to hololens
+            data = udpServer.Receive(ref remoteEP); //receive data from hololens, then start sending data to hololens
             if (data != dataold)
             {
                 MessageBox.Show("hololens connected and start sending");
