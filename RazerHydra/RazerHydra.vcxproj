@@ -71,13 +71,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\SixenseSDK_102215\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SixenseSDK_102215\lib\x64\VS2013\debug_dll;C:\SixenseSDK_102215\lib\win32\VS2013\debug_dll;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\SixenseSDK_102215\include;C:\SixenseSDK_102215\include\sixense_utils;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SixenseSDK_102215\lib\x64\VS2013\debug_dll;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\Force Dimension\sdk-3.6.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Force Dimension\sdk-3.6.0\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\SixenseSDK_102215\include;C:\SixenseSDK_102215\include\sixense_utils;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SixenseSDK_102215\lib\x64\VS2013\debug_dll;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -89,7 +89,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
@@ -106,7 +106,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>dhdms.lib;dhdms64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sixense_utilsd_x64.lib;sixensed_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ForceSymbolReferences>_DllMainCRTStartup</ForceSymbolReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

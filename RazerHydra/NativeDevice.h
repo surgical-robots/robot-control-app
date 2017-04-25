@@ -35,9 +35,8 @@ public:
 
 	bool deviceInitialized;
 
-	bool ForceEnabled;
-
 	sixenseAllControllerData controllerData;
+	// left controller
 	double X_L;
 	double Y_L;
 	double Z_L;
@@ -54,6 +53,14 @@ public:
 	double R20_L;
 	double R21_L;
 	double R22_L;
+	double JoystickX_L;
+	double JoystickY_L;
+	double Bumper_L;
+	double Button1_L;
+	double Button2_L;
+	double Button3_L;
+	double Button4_L;
+	// right controller
 	double X_R;
 	double Y_R;
 	double Z_R;
@@ -70,7 +77,14 @@ public:
 	double R20_R;
 	double R21_R;
 	double R22_R;
-	char DeviceID;
+	double JoystickX_R;
+	double JoystickY_R;
+	double Bumper_R;
+	double Button1_R;
+	double Button2_R;
+	double Button3_R;
+	double Button4_R;
+
 	bool IsLeft;
 	int DeviceCount;
 	int encCount;
@@ -86,9 +100,6 @@ private:
 	static double theta3;
 	float rotM[3][3];
 	static double gripperDeg;
-	static double forceX;
-	static double forceY;
-	static double forceZ;
 	static char deviceID;
 	static int deviceCount;
 	bool brakesOn;

@@ -18,6 +18,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <NuGetPackageImportStamp>79b5d865</NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,7 +31,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -365,6 +365,9 @@
     <Compile Include="Views\Plugins\Forwarder.xaml.cs">
       <DependentUpon>Forwarder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\RazerHydra.xaml.cs">
+      <DependentUpon>RazerHydra.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\Scale.xaml.cs">
       <DependentUpon>Scale.xaml</DependentUpon>
     </Compile>
@@ -600,6 +603,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Plugins\RazerHydra.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Plugins\Scale.xaml">
       <SubType>Form</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -746,6 +753,10 @@
     <ProjectReference Include="..\Kinematics\Kinematics.csproj">
       <Project>{e7f48141-a2f7-4bc4-9098-1bab46b0c659}</Project>
       <Name>Kinematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RazerHydra\RazerHydra.vcxproj">
+      <Project>{774efb9c-aa0b-4527-9546-0356cf425409}</Project>
+      <Name>RazerHydra</Name>
     </ProjectReference>
     <ProjectReference Include="..\remoteApiNETWrapper-master\remoteApiNETWrapper.csproj">
       <Project>{df9bf2bc-87a1-4a15-88b2-98baa68aba65}</Project>

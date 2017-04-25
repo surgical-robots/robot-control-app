@@ -11,11 +11,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute(L"ForceDimension")];
+[assembly:AssemblyTitleAttribute(L"RazerHydra")];
 [assembly:AssemblyDescriptionAttribute(L"")];
 [assembly:AssemblyConfigurationAttribute(L"")];
 [assembly:AssemblyCompanyAttribute(L"")];
-[assembly:AssemblyProductAttribute(L"ForceDimension")];
+[assembly:AssemblyProductAttribute(L"RazerHydra")];
 [assembly:AssemblyCopyrightAttribute(L"Copyright (c)  2017")];
 [assembly:AssemblyTrademarkAttribute(L"")];
 [assembly:AssemblyCultureAttribute(L"")];

@@ -1,29 +1,20 @@
 // This is the main DLL file.
-#define _USE_MATH_DEFINES
-#include <cmath>
 #include "stdafx.h"
+#include <cmath>
 #include "NativeDevice.h"
+#define _USE_MATH_DEFINES
 
 NativeDevice::NativeDevice()
 {
-
-}
-
-NativeDevice::NativeDevice(char DeviceIndex)
-{
-	DeviceID = DeviceIndex;
 	deviceInitialized = false;
 
 	// Init sixense
 	if (sixenseInit() == SIXENSE_SUCCESS)
 	{
-		if (sixenseGetNumActiveControllers > 0)
-		{
-			deviceInitialized = true;
-			//sixenseSetActiveBase(0);
-			//sixenseUtils::getTheControllerManager()->setGameType(sixenseUtils::ControllerManager::ONE_PLAYER_TWO_CONTROLLER);
-			//sixenseUtils::getTheControllerManager()->registerSetupCallback(controller_manager_setup_callback);
-		}
+		deviceInitialized = true;
+		sixenseSetActiveBase(0);
+		//sixenseUtils::getTheControllerManager()->setGameType(sixenseUtils::ControllerManager::ONE_PLAYER_TWO_CONTROLLER);
+		//sixenseUtils::getTheControllerManager()->registerSetupCallback(controller_manager_setup_callback);
 	}
 
 }
@@ -82,6 +73,15 @@ void NativeDevice::UpdateDevice()
 		Theta3_L = 0;
 	}
 
+	GripperDeg_L = LeftController.trigger;
+	JoystickX_L = LeftController.joystick_x;
+	JoystickY_L = LeftController.joystick_y;
+	Bumper_L = ((LeftController.buttons & SIXENSE_BUTTON_BUMPER) > 0) ? 1.0 : 0.0;
+	Button1_L = ((LeftController.buttons & SIXENSE_BUTTON_1) > 0) ? 1.0 : 0.0;
+	Button2_L = ((LeftController.buttons & SIXENSE_BUTTON_2) > 0) ? 1.0 : 0.0;
+	Button3_L = ((LeftController.buttons & SIXENSE_BUTTON_3) > 0) ? 1.0 : 0.0;
+	Button4_L = ((LeftController.buttons & SIXENSE_BUTTON_4) > 0) ? 1.0 : 0.0;
+
 	// Right Controller Data
 	X_R = RightController.pos[0];
 	Y_R = RightController.pos[1];
@@ -113,6 +113,15 @@ void NativeDevice::UpdateDevice()
 		Theta2_R = atan2(-R20_R, sy) * 180 / M_PI;
 		Theta3_R = 0;
 	}
+
+	GripperDeg_R = RightController.trigger;
+	JoystickX_R = RightController.joystick_x;
+	JoystickY_R = RightController.joystick_y;
+	Bumper_R = ((RightController.buttons & SIXENSE_BUTTON_BUMPER) > 0) ? 1.0 : 0.0;
+	Button1_R = ((RightController.buttons & SIXENSE_BUTTON_1) > 0) ? 1.0 : 0.0;
+	Button2_R = ((RightController.buttons & SIXENSE_BUTTON_2) > 0) ? 1.0 : 0.0;
+	Button3_R = ((RightController.buttons & SIXENSE_BUTTON_3) > 0) ? 1.0 : 0.0;
+	Button4_R = ((RightController.buttons & SIXENSE_BUTTON_4) > 0) ? 1.0 : 0.0;
 }
 
 int NativeDevice::GetDeviceCount()
