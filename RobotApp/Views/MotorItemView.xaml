@@ -76,18 +76,23 @@
 
             <TextBlock Text="Kp"/>
             <TextBox Text="{Binding Kp}" />
+            <TextBlock Text="Kd"/>
+            <TextBox Text="{Binding Kd}" />
+            
             <TextBlock Text="Angle Setpoint"/>
             <TextBox Text="{Binding AngleSetpoint}" />
-
             <TextBlock Text="Max Speed"/>
             <TextBox Text="{Binding SpeedMax}" />
+            
             <TextBlock Text="Max Current"/>
             <TextBox Text="{Binding CurrentMax}" />
-
             <TextBlock Text="Pot ZERO Value"/>
             <TextBox Text="{Binding PotZero}" />
+            
             <TextBlock Text="Pot ADC Value"/>
             <TextBlock Text="{Binding Pot}" />
+
+
 
             <TextBlock Text="Refresh Pot" DockPanel.Dock="Right" />
             <mui:ModernButton Margin="0, 0, 10, 0" DockPanel.Dock="Left" Command="{Binding ReadPots}" IconData="{StaticResource RefreshIconData}" />

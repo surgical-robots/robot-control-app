@@ -93,6 +93,21 @@ namespace RobotControl
             }
         }
 
+        private float kd;
+
+        public float Kd
+        {
+            get { return kd; }
+            set
+            {
+                if (value != kd)
+                {
+                    kd = value;
+                    this.UpdateConfiguration();
+                }
+            }
+        }
+
         private byte speedMax;
 
         public byte SpeedMax
@@ -144,6 +159,7 @@ namespace RobotControl
             {
                 // convert variables for fixed-point math
                 Int32 sendKp = (Int32)(kp * 10000);
+                Int32 sendKd = (Int32)(kd * 10000);
                 Int16 clicksPerRev = (Int16)Math.Round(encoderClicksPerRevolution);
                 // setup configuration message
                 byte[] configMsg = new byte[16];

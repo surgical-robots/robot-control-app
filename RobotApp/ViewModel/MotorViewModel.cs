@@ -126,6 +126,39 @@ namespace RobotApp.ViewModel
         }
 
         /// <summary>
+        /// The <see cref="Kd" /> property's name.
+        /// </summary>
+        public const string KdPropertyName = "Kd";
+        [DataMember]
+        private float kd = 1;
+
+        /// <summary>
+        /// Sets and gets the Kp property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public float Kd
+        {
+            get
+            {
+                return kd;
+            }
+
+            set
+            {
+                if (Motor.Kd == value)
+                {
+                    return;
+                }
+                if (value < 0)
+                    kd = 0;
+                else
+                    kd = value;
+                Motor.Kd = value;
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(KdPropertyName));
+            }
+        }
+
+        /// <summary>
         /// Sets and gets the JointItem property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
@@ -690,7 +723,7 @@ namespace RobotApp.ViewModel
                     currentMax = 0;
                 else
                     currentMax = value;
-                double bitCurrent = Math.Round(currentMax * Math.Pow(2, 16) / 3.3 * 0.25 / 1000);
+                double bitCurrent = Math.Round(currentMax * Math.Pow(2, 12) / 3.3 * 4 / 1000);
                 if (bitCurrent > 65535) bitCurrent = 65535;
                 Motor.CurrentMax = Convert.ToUInt16(bitCurrent);
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(CurrentMaxPropertyName));
