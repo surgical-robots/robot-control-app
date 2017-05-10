@@ -35,7 +35,7 @@ namespace TelSurge
             this.dataPort = DataPort;
             this.IsListeningForData = false;
         }
-        public void MasterSendData()
+        public void MasterSendData(int index)
         {
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             try
@@ -43,7 +43,7 @@ namespace TelSurge
                 foreach (User user in Main.Surgery.ConnectedClients)
                 {
                     if (!user.MyIPAddress.Equals(Main.User.MyIPAddress))
-                        s.SendTo(CreateMessageToSend(), new IPEndPoint(IPAddress.Parse(user.MyIPAddress), dataPort));
+                        s.SendTo(CreateMessageToSend(index), new IPEndPoint(IPAddress.Parse(user.MyIPAddress), dataPort));
                 }
             }
             catch (Exception ex)
@@ -75,12 +75,13 @@ namespace TelSurge
                 Main.ShowError(ex.Message, ex.ToString());
             }
         }
-        public byte[] CreateMessageToSend() 
+        public byte[] CreateMessageToSend(int index) 
         {
             SocketMessage sm = new SocketMessage(Main.Surgery, Main.User);
             byte[] arry = { };
             try
             {
+                sm.MessageIndex = index;
                 sm.ClearMarkingsReq = Main.Markup.ClearMarkingsReq;
                 Main.Markup.ClearMarkingsReq = false;
                 sm.sendToggleFrozen = sendToggleFrozen;
@@ -104,8 +105,17 @@ namespace TelSurge
         }
         public static T DeserializeObject<T>(byte[] Arry)
         {
+            T obj = default(T);
             string json = Encoding.ASCII.GetString(Arry);
-            return JsonConvert.DeserializeObject<T>(json);
+            try
+            {
+                obj = JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message, ex.ToString());
+            }
+            return obj;
         }
         public void ListenForData()
         {
@@ -139,33 +149,38 @@ namespace TelSurge
 
 
                 SocketMessage dataMsg = DeserializeObject<SocketMessage>(arry);
-                Main.Surgery.Merge(dataMsg.Surgery, Main.User.IsInControl, Main.User.IsMaster);
-                if (dataMsg.sendToggleFrozen)
+                if(dataMsg != null)
                 {
-                    if (Main.User.IsFrozen)
-                        Main.UnFreeze();
-                    else
-                        Main.Freeze();
-                }
-                if (Main.User.IsInControl && dataMsg.Forces != null)
-                {
-                    Main.SetForceX(dataMsg.Forces.LeftX, true);
-                    Main.SetForceY(dataMsg.Forces.LeftY, true);
-                    Main.SetForceZ(dataMsg.Forces.LeftZ, true);
-                    Main.SetForceX(dataMsg.Forces.RightX, false);
-                    Main.SetForceY(dataMsg.Forces.RightY, false);
-                    Main.SetForceZ(dataMsg.Forces.RightZ, false);
-                }
-                //dataBuffer.Enqueue(dataMsg);
-                //dataAvailable = true;
-                //if (networkDataDelayChanged && Main.User.NetworkDelay > 0 && !dataWatch.IsRunning)
-                //{
-                //    networkDataDelayChanged = false;
-                //    dataWatch.Start();
-                //}
-                if (dataMsg.ClearMarkingsReq)
-                {
-                    Main.ClearMarkup();
+                    Main.Surgery.Merge(dataMsg.Surgery, Main.User.IsInControl, Main.User.IsMaster);
+                    if (Main.User.IsMaster)
+                        Main.messageCount++;
+                    if (dataMsg.sendToggleFrozen)
+                    {
+                        if (Main.User.IsFrozen)
+                            Main.UnFreeze();
+                        else
+                            Main.Freeze();
+                    }
+                    if (Main.User.IsInControl && dataMsg.Forces != null)
+                    {
+                        Main.SetForceX(dataMsg.Forces.LeftX, true);
+                        Main.SetForceY(dataMsg.Forces.LeftY, true);
+                        Main.SetForceZ(dataMsg.Forces.LeftZ, true);
+                        Main.SetForceX(dataMsg.Forces.RightX, false);
+                        Main.SetForceY(dataMsg.Forces.RightY, false);
+                        Main.SetForceZ(dataMsg.Forces.RightZ, false);
+                    }
+                    //dataBuffer.Enqueue(dataMsg);
+                    //dataAvailable = true;
+                    //if (networkDataDelayChanged && Main.User.NetworkDelay > 0 && !dataWatch.IsRunning)
+                    //{
+                    //    networkDataDelayChanged = false;
+                    //    dataWatch.Start();
+                    //}
+                    if (dataMsg.ClearMarkingsReq)
+                    {
+                        Main.ClearMarkup();
+                    }
                 }
             }
             catch (Exception ex)

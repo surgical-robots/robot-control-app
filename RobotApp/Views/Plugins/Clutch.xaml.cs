@@ -63,6 +63,12 @@ namespace RobotApp.Views.Plugins
                 ClutchIsEnabled = message.Value > 0.5 ? true : false;
             });
 
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["ClutchToggle"].UniqueID, (message) =>
+            {
+                if (message.Value > 0.5)
+                    ClutchIsEnabled = !ClutchIsEnabled;
+            });
+
             base.PostLoadSetup();
         }
 
@@ -145,6 +151,7 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("Yaw", new ViewModel.InputSignalViewModel("Yaw", this.InstanceName));
             Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
             Inputs.Add("Clutch", new ViewModel.InputSignalViewModel("Clutch", this.InstanceName));
+            Inputs.Add("ClutchToggle", new ViewModel.InputSignalViewModel("Clutch Toggle", this.InstanceName));
 
             PostLoadSetup();
         }
