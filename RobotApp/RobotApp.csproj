@@ -380,6 +380,9 @@
     <Compile Include="Views\Plugins\DynamixelControl.xaml.cs">
       <DependentUpon>DynamixelControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\TrainerInterface.xaml.cs">
+      <DependentUpon>TrainerInterface.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\TwoArmKinematics.xaml.cs">
       <DependentUpon>TwoArmKinematics.xaml</DependentUpon>
     </Compile>
@@ -622,6 +625,10 @@
     <Page Include="Views\Plugins\DynamixelControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\TrainerInterface.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\TwoArmKinematics.xaml">
       <Generator>MSBuild:Compile</Generator>

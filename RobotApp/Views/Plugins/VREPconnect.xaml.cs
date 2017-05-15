@@ -125,7 +125,52 @@ namespace RobotApp.Views.Plugins
             {
                 Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint10"].UniqueID, (message) =>
                 {
-                    angles[6] = message.Value;
+                    angles[9] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 10)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint11"].UniqueID, (message) =>
+                {
+                    angles[10] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 11)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint12"].UniqueID, (message) =>
+                {
+                    angles[11] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 12)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint13"].UniqueID, (message) =>
+                {
+                    angles[12] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 13)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint14"].UniqueID, (message) =>
+                {
+                    angles[13] = message.Value;
+                    if (connected)
+                        UpdateSimulation();
+                });
+            }
+            if (jointCount > 14)
+            {
+                Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint15"].UniqueID, (message) =>
+                {
+                    angles[14] = message.Value;
                     if (connected)
                         UpdateSimulation();
                 });
