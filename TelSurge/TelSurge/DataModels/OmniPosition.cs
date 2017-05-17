@@ -15,11 +15,17 @@ namespace TelSurge.DataModels
         public double Gimbal1Left { get; set; }
         public double Gimbal2Left { get; set; }
         public double Gimbal3Left { get; set; }
+        public double R00Left { get; set; }
+        public double R01Left { get; set; }
+        public double R02Left { get; set; }
         public double ButtonsLeft { get; set; }
         public double InkwellLeft { get; set; }
         public double RightX { get; set; }
         public double RightY { get; set; }
         public double RightZ { get; set; }
+        public double R00Right { get; set; }
+        public double R01Right { get; set; }
+        public double R02Right { get; set; }
         public double Gimbal1Right { get; set; }
         public double Gimbal2Right { get; set; }
         public double Gimbal3Right { get; set; }
@@ -37,6 +43,9 @@ namespace TelSurge.DataModels
             Gimbal3Left = 0;
             ButtonsLeft = 0;
             InkwellLeft = 0;
+            R00Left = 0;
+            R01Left = 0;
+            R02Left = 0;
 
             RightX = 0;
             RightY = 0;
@@ -44,6 +53,9 @@ namespace TelSurge.DataModels
             Gimbal1Right = 0;
             Gimbal2Right = 0;
             Gimbal3Right = 0;
+            R00Right = 0;
+            R01Right = 0;
+            R02Right = 0;
             ButtonsRight = 0;
             InkwellRight = 0;
 
@@ -68,6 +80,9 @@ namespace TelSurge.DataModels
             Gimbal1Left = gimbal1Left;
             Gimbal2Left = gimbal2Left;
             Gimbal3Left = gimbal3Left;
+            //R00Left = r00Left;
+            //R01Left = r01Left;
+            //R02Left = r02Left;
             ButtonsLeft = buttonsLeft;
             InkwellLeft = inkwellLeft;
 
@@ -77,6 +92,9 @@ namespace TelSurge.DataModels
             Gimbal1Right = gimbal1Right;
             Gimbal2Right = gimbal2Right;
             Gimbal3Right = gimbal3Right;
+            //R00Right = r00Right;
+            //R01Right = r01Right;
+            //R02Right = r02Right;
             ButtonsRight = buttonsRight;
             InkwellRight = inkwellRight;
             ExtraButtons = extraButtons;
@@ -109,9 +127,12 @@ namespace TelSurge.DataModels
             LeftX = Left.X;
             LeftY = Left.Y;
             LeftZ = Left.Z;
-            Gimbal1Left = Left.Theta1 * (180 / Math.PI);
-            Gimbal2Left = Left.Theta2 * (180 / Math.PI);
-            Gimbal3Left = Left.Theta3 * (180 / Math.PI);
+            Gimbal1Left = Left.Theta1;// *(180 / Math.PI);
+            Gimbal2Left = Left.Theta2;// * (180 / Math.PI);
+            Gimbal3Left = Left.Theta3;// * (180 / Math.PI);
+            R00Left = Left.R22;
+            R01Left = Left.R02;
+            R02Left = Left.R12;
             ButtonsLeft = 0;
             if (Left.Button1)
                 ButtonsLeft = 1;
@@ -122,9 +143,12 @@ namespace TelSurge.DataModels
             RightX = Right.X;
             RightY = Right.Y;
             RightZ = Right.Z;
-            Gimbal1Right = Right.Theta1 * (180 / Math.PI);
-            Gimbal2Right = Right.Theta2 * (180 / Math.PI);
-            Gimbal3Right = Right.Theta3 * (180 / Math.PI);
+            Gimbal1Right = Right.Theta1;// * (180 / Math.PI);
+            Gimbal2Right = Right.Theta2;// * (180 / Math.PI);
+            Gimbal3Right = Right.Theta3;// * (180 / Math.PI);
+            R00Right = Right.R22;
+            R01Right = Right.R02;
+            R02Right = Right.R12;
             ButtonsRight = 0;
             if (Right.Button1)
                 ButtonsRight = 1;

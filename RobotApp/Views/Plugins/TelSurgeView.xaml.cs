@@ -151,6 +151,9 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("LTheta1", new OutputSignalViewModel("Left Gimbal Theta 1"));
             Outputs.Add("LTheta2", new OutputSignalViewModel("Left Gimbal Theta 2"));
             Outputs.Add("LTheta3", new OutputSignalViewModel("Left Gimbal Theta 3"));
+            Outputs.Add("LR00", new OutputSignalViewModel("Left R00"));
+            Outputs.Add("LR01", new OutputSignalViewModel("Left R01"));
+            Outputs.Add("LR02", new OutputSignalViewModel("Left R02"));
             Outputs.Add("LInkwell", new OutputSignalViewModel("Left Inkwell Switch"));
             Outputs.Add("LButton1", new OutputSignalViewModel("Left Button 1"));
             Outputs.Add("LButton2", new OutputSignalViewModel("Left Button 2"));
@@ -161,6 +164,9 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("RTheta1", new OutputSignalViewModel("Right Gimbal Theta 1"));
             Outputs.Add("RTheta2", new OutputSignalViewModel("Right Gimbal Theta 2"));
             Outputs.Add("RTheta3", new OutputSignalViewModel("Right Gimbal Theta 3"));
+            Outputs.Add("RR00", new OutputSignalViewModel("Right R00"));
+            Outputs.Add("RR01", new OutputSignalViewModel("Right R01"));
+            Outputs.Add("RR02", new OutputSignalViewModel("Right R02"));
             Outputs.Add("RInkwell", new OutputSignalViewModel("Right Inkwell Switch"));
             Outputs.Add("RButton1", new OutputSignalViewModel("Right Button 1"));
             Outputs.Add("RButton2", new OutputSignalViewModel("Right Button 2"));
@@ -213,6 +219,9 @@ namespace RobotApp.Views.Plugins
                 Outputs["LTheta1"].Value = telSurge.OutputPosition.Gimbal1Left;
                 Outputs["LTheta2"].Value = telSurge.OutputPosition.Gimbal2Left;
                 Outputs["LTheta3"].Value = telSurge.OutputPosition.Gimbal3Left;
+                Outputs["LR00"].Value = telSurge.OutputPosition.R00Left;
+                Outputs["LR01"].Value = telSurge.OutputPosition.R01Left;
+                Outputs["LR02"].Value = telSurge.OutputPosition.R02Left;
                 Outputs["LInkwell"].Value = telSurge.OutputPosition.InkwellLeft;
                 Outputs["LButton1"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsLeft.Equals(1));
                 Outputs["LButton2"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsLeft.Equals(2));
@@ -224,6 +233,9 @@ namespace RobotApp.Views.Plugins
                 Outputs["RTheta1"].Value = telSurge.OutputPosition.Gimbal1Right;
                 Outputs["RTheta2"].Value = telSurge.OutputPosition.Gimbal2Right;
                 Outputs["RTheta3"].Value = telSurge.OutputPosition.Gimbal3Right;
+                Outputs["RR00"].Value = telSurge.OutputPosition.R00Right;
+                Outputs["RR01"].Value = telSurge.OutputPosition.R01Right;
+                Outputs["RR02"].Value = telSurge.OutputPosition.R02Right;
                 Outputs["RInkwell"].Value = telSurge.OutputPosition.InkwellRight;
                 Outputs["RButton1"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsRight.Equals(1));
                 Outputs["RButton2"].Value = Convert.ToDouble(telSurge.OutputPosition.ButtonsRight.Equals(2));

@@ -128,11 +128,12 @@ namespace TelSurge
         }
         public OmniPosition GetOmniPositions()
         {
-            LeftOmni.Update();
-            RightOmni.Update();
+            LeftOmni.UpdateTransform();
+            RightOmni.UpdateTransform();
 
             OmniPosition currentPosition = new OmniPosition(LeftOmni, RightOmni);
             currentPosition.LeftZ *= -1;
+            currentPosition.R01Left *= -1;
             currentPosition.RightZ *= -1;
             currentPosition.RightX *= -1;
             //add any external buttons

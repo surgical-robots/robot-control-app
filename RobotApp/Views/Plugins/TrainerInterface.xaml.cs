@@ -185,37 +185,37 @@ namespace RobotApp.Views.Plugins
 
                     if (EndByte == 0)
                     {
-                        Outputs["Roll"].Value = -((double)ReadByte[1] / 256) * 360 + 270;
-                        Outputs["Pitch"].Value = ((double)ReadByte[3] / 256) * (70) - 35;
+                        Outputs["Roll"].Value = -((double)ReadByte[1] / 256) * 360 + 90;
+                        Outputs["Pitch"].Value = ((double)ReadByte[3] / 256) * (70) - 30;
                         Outputs["Yaw"].Value = -(((double)ReadByte[2] / 256) * (70) - 35);
                         Outputs["Depth"].Value = -((double)ReadByte[4] / 171) * 8 + 4;
                     }
                     else if (EndByte == 1)
                     {
-                        Outputs["Roll"].Value = -((double)ReadByte[2] / 256) * 360 + 270;
-                        Outputs["Pitch"].Value = ((double)ReadByte[4] / 256) * (70) - 35;
+                        Outputs["Roll"].Value = -((double)ReadByte[2] / 256) * 360 + 90;
+                        Outputs["Pitch"].Value = ((double)ReadByte[4] / 256) * (70) - 30;
                         Outputs["Yaw"].Value = -(((double)ReadByte[3] / 256) * (70) - 35);
                         Outputs["Depth"].Value = -((double)ReadByte[0] / 172) * 8 + 4;
 
                     }
                     else if (EndByte == 2)
                     {
-                        Outputs["Roll"].Value = -((double)ReadByte[3] / 256) * 360 + 270;
-                        Outputs["Pitch"].Value = ((double)ReadByte[0] / 256) * (70) - 35;
+                        Outputs["Roll"].Value = -((double)ReadByte[3] / 256) * 360 + 90;
+                        Outputs["Pitch"].Value = ((double)ReadByte[0] / 256) * (70) - 30;
                         Outputs["Yaw"].Value = -(((double)ReadByte[4] / 256) * (70) - 35);
                         Outputs["Depth"].Value = -((double)ReadByte[1] / 172) * 8 + 4;
                     }
                     else if (EndByte == 3)
                     {
-                        Outputs["Roll"].Value = -((double)ReadByte[4] / 256) * 360 + 270;
-                        Outputs["Pitch"].Value = ((double)ReadByte[1] / 256) * (70) - 35;
+                        Outputs["Roll"].Value = -((double)ReadByte[4] / 256) * 360 + 90;
+                        Outputs["Pitch"].Value = ((double)ReadByte[1] / 256) * (70) - 30;
                         Outputs["Yaw"].Value = -(((double)ReadByte[0] / 256) * (70) - 35);
                         Outputs["Depth"].Value = -((double)ReadByte[2] / 172) * 8 + 4;
                     }
                     else if (EndByte == 4)
                     {
-                        Outputs["Roll"].Value = -((double)ReadByte[0] / 256) * 360 + 270;
-                        Outputs["Pitch"].Value = ((double)ReadByte[2] / 256) * (70) - 35;
+                        Outputs["Roll"].Value = -((double)ReadByte[0] / 256) * 360 + 90;
+                        Outputs["Pitch"].Value = ((double)ReadByte[2] / 256) * (70) - 30;
                         Outputs["Yaw"].Value = -(((double)ReadByte[1] / 256) * (70) - 35);
                         Outputs["Depth"].Value = -((double)ReadByte[3] / 172) * 8 + 4;
                     }

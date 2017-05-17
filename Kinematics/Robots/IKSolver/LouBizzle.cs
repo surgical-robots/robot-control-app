@@ -27,7 +27,7 @@
             this.OutputStrings = new string[4] { "Joint1", "Joint2", "Joint3", "Joint4" };
             this.eps = 0.0001;
             this.BETA = 10;
-            this.Lmin = 70;
+            this.Lmin = 75;
             this.Lmax = 179.57;
         }
     }

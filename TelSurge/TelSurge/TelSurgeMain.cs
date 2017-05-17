@@ -859,7 +859,7 @@ namespace TelSurge
                     //Check for "stay alive" from clients
                     foreach (User u in Surgery.ConnectedClients)
                     {
-                        if (DateTime.Now.Subtract(u.LastHeardFrom).Seconds > 30)
+                        if (DateTime.Now.Subtract(u.LastHeardFrom).Seconds > 45)
                         {
                             disconnectClient(u);
                             break;
@@ -1233,8 +1233,8 @@ namespace TelSurge
                     //normal switch procedure
                     if (User.IsInControl)
                     {
-                        //DialogResult res = MessageBox.Show("Grant control?", remoteEP.Address.ToString() + " has requested control.", MessageBoxButtons.YesNo);
-                        DialogResult res = System.Windows.Forms.DialogResult.Yes;
+                        DialogResult res = MessageBox.Show("Grant control?", remoteEP.Address.ToString() + " has requested control.", MessageBoxButtons.YesNo);
+                        //DialogResult res = System.Windows.Forms.DialogResult.Yes;
                         if (res == System.Windows.Forms.DialogResult.Yes)
                         {
                             //send grant
