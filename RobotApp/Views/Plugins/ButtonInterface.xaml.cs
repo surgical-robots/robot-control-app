@@ -33,6 +33,7 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("Button3", new OutputSignalViewModel("Button 3"));
 
             workerThread = new BackgroundWorker();
+            workerThread.WorkerSupportsCancellation = true;
             workerThread.DoWork += workerThread_DoWork;
 
             FindPorts();

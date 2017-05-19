@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Collections.ObjectModel;
 using RobotControl;
+
 namespace RobotApp.ViewModel
 {
     public class SerialTransportViewModel : TransportViewModelBase
