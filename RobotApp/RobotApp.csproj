@@ -778,7 +778,7 @@
       <Name>path-generation</Name>
     </ProjectReference>
     <ProjectReference Include="..\SerialPortPacketTransport\SerialPortPacketTransport.csproj">
-      <Project>{46b44f14-1136-4729-b8bb-43de0104180c}</Project>
+      <Project>{e6ee96cc-f44a-40f4-8bfb-2fd02d450a92}</Project>
       <Name>SerialPortPacketTransport</Name>
     </ProjectReference>
   </ItemGroup>
