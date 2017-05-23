@@ -10,53 +10,6 @@ using RobotControl;
 
 namespace RobotControl
 {
-    public class Crc16
-    {
-        const ushort polynomial = 0xA001;
-        ushort[] table = new ushort[256];
-
-        public ushort ComputeChecksum(byte[] bytes)
-        {
-            ushort crc = 0;
-            for (int i = 0; i < bytes.Length; ++i)
-            {
-                byte index = (byte)(crc ^ bytes[i]);
-                crc = (ushort)((crc >> 8) ^ table[index]);
-            }
-            return crc;
-        }
-
-        public byte[] ComputeChecksumBytes(byte[] bytes)
-        {
-            ushort crc = ComputeChecksum(bytes);
-            return BitConverter.GetBytes(crc);
-        }
-
-        public Crc16()
-        {
-            ushort value;
-            ushort temp;
-            for (ushort i = 0; i < table.Length; ++i)
-            {
-                value = 0;
-                temp = i;
-                for (byte j = 0; j < 8; ++j)
-                {
-                    if (((value ^ temp) & 0x0001) != 0)
-                    {
-                        value = (ushort)((value >> 1) ^ polynomial);
-                    }
-                    else
-                    {
-                        value >>= 1;
-                    }
-                    temp >>= 1;
-                }
-                table[i] = value;
-            }
-        }
-    }
-
     public class SerialPortPacketTransport : IPacketTransport
     {
         private byte[] TxBuffer = new byte[32];
@@ -67,7 +20,6 @@ namespace RobotControl
         private bool requestData = false;
         private bool sendData = false;
         private bool waitingForResponse = false;
-        private Crc16 crc = new Crc16();
 
         public SerialPort Port = new SerialPort();
         public bool IsOpen { get { return Port.IsOpen; } set { if (value == true) Port.Open(); else Port.Close(); } }
@@ -106,7 +58,7 @@ namespace RobotControl
 	        }
 
 	        Port.PortName = comPort;
-            Port.BaudRate = 490196;
+	        Port.BaudRate = 230400;
 	        Port.Parity = Parity.None;
 	        Port.DataBits = 8;
 	        Port.StopBits = StopBits.One;
@@ -222,7 +174,7 @@ namespace RobotControl
 					        //setPoint = motor->EncoderClicksPerRevolution / (360) * (motor->Angle - motor->OffsetAngle);
 					        positionOne = (int)Math.Round(controller.Motor1Setpoint);
 					        positionTwo = (int)Math.Round(controller.Motor2Setpoint);
-					        sendMsg[4] = (Byte)16;
+					        sendMsg[4] = (Byte)14;
 					        for (int j = 0; j < 4; j++)
 					        {
 						        sendMsg[j + 5] = address[j];
@@ -233,10 +185,6 @@ namespace RobotControl
 						        sendMsg[9] = (Byte)JointCommands.DoubleMoveTo;
 					        Array.Copy(BitConverter.GetBytes(positionOne), 0, sendMsg, 10, 4);
 					        Array.Copy(BitConverter.GetBytes(positionTwo), 0, sendMsg, 14, 4);
-
-                            byte[] sendCrc = new byte[16];
-                            Array.Copy(sendMsg, sendCrc, 16);
-                            Array.Copy(crc.ComputeChecksumBytes(sendCrc), 0, sendMsg, 16, 2);
 
                             lock(lockObject)
                             {
@@ -255,11 +203,7 @@ namespace RobotControl
 							            {
 								            bytesToRead = Port.BytesToRead > (RxBuffer.Length - 1) ? (RxBuffer.Length - 1) : Port.BytesToRead;
 								            Port.Read(RxBuffer, 1, bytesToRead);
-                                            byte[] recieveCRC = new byte[bytesToRead + 1];
-                                            Array.Copy(RxBuffer, recieveCRC, recieveCRC.Length);
-                                            ushort res = crc.ComputeChecksum(recieveCRC);
-                                            if(res == 0)
-								                DataReceived(RxBuffer);
+								            DataReceived(RxBuffer);
 								            waitingForResponse = false;
 								            break;
 							            }

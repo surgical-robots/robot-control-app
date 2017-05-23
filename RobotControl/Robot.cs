@@ -121,17 +121,6 @@ namespace RobotControl
                         }
                     }
                     break;
-                case JointCommands.SetPosGetData:
-                    //Debug.WriteLine("Received response: " + new SoapHexBinary(ResponseBuffer).ToString());
-                    foreach (var joint in Controllers)
-                    {
-                        if (joint.Value.Id == address)
-                        {
-                            joint.Value.SetStatus(data);
-                            return;
-                        }
-                    }
-                    break;
                 case JointCommands.GetHallPos:
                     foreach (var joint in Controllers)
                     {
