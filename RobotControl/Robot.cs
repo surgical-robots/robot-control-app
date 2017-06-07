@@ -184,7 +184,7 @@ namespace RobotControl
             //{
                 if (Com == null)
                     return;
-                int numBytesToSend = 6; // number of bytes (1) + joint address (4) + command (1)
+                int numBytesToSend = 8; // number of bytes (1) + joint address (4) + command (1) + crc16 (2)
                 if (payload != null)
                     numBytesToSend += payload.Length;
 

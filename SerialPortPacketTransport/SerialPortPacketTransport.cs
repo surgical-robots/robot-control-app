@@ -106,7 +106,7 @@ namespace RobotControl
 	        }
 
 	        Port.PortName = comPort;
-            Port.BaudRate = 490196;
+            Port.BaudRate = 460800;
 	        Port.Parity = Parity.None;
 	        Port.DataBits = 8;
 	        Port.StopBits = StopBits.One;
@@ -141,11 +141,17 @@ namespace RobotControl
 		        }
 		        else
 		        {
-			        for (int i = 0; i < data.Length; i++)
+                    for (int i = 0; i < data.Length; i++)
 			        {
 				        TxBuffer[i + 4] = data[i];
 			        }
 		        }
+                
+                byte[] sendCrc = new byte[data[0] + 2];
+                Array.Copy(TxBuffer, sendCrc, data[0] + 2);
+                Array.Copy(crc.ComputeChecksumBytes(sendCrc), 0, TxBuffer, data[0] + 2, 2); 
+                    
+
 		        // aquire com lock
                 lock (lockObject)
                 {
@@ -234,9 +240,9 @@ namespace RobotControl
 					        Array.Copy(BitConverter.GetBytes(positionOne), 0, sendMsg, 10, 4);
 					        Array.Copy(BitConverter.GetBytes(positionTwo), 0, sendMsg, 14, 4);
 
-                            byte[] sendCrc = new byte[16];
-                            Array.Copy(sendMsg, sendCrc, 16);
-                            Array.Copy(crc.ComputeChecksumBytes(sendCrc), 0, sendMsg, 16, 2);
+                            byte[] sendCrc = new byte[18];
+                            Array.Copy(sendMsg, sendCrc, 18);
+                            Array.Copy(crc.ComputeChecksumBytes(sendCrc), 0, sendMsg, 18, 2);
 
                             lock(lockObject)
                             {
@@ -272,12 +278,17 @@ namespace RobotControl
 				        {
 					        address = BitConverter.GetBytes(controller.Id);
 					        // message length after DABADOOO
-					        sendMsg[4] = (Byte)14;
+					        sendMsg[4] = (Byte)8;
 					        for (int j = 0; j < 4; j++)
 					        {
 						        sendMsg[j + 5] = address[j];
 					        }
 					        sendMsg[9] = (Byte)JointCommands.GetStatus;
+
+                            byte[] sendCrc = new byte[10];
+                            Array.Copy(sendMsg, sendCrc, 10);
+                            Array.Copy(crc.ComputeChecksumBytes(sendCrc), 0, sendMsg, 10, 2);
+
 					        // Aquire com lock
                             lock(lockObject)
                             {
@@ -294,7 +305,11 @@ namespace RobotControl
 						            {
 							            bytesToRead = Port.BytesToRead > (RxBuffer.Length - 1) ? (RxBuffer.Length - 1) : Port.BytesToRead;
 							            Port.Read(RxBuffer, 1, bytesToRead);
-							            DataReceived(RxBuffer);
+                                        byte[] recieveCRC = new byte[bytesToRead + 1];
+                                        Array.Copy(RxBuffer, recieveCRC, recieveCRC.Length);
+                                        ushort res = crc.ComputeChecksum(recieveCRC);
+                                        if (res == 0)
+							                DataReceived(RxBuffer);
 							            waitingForResponse = false;
 							            break;
 						            }
@@ -314,7 +329,11 @@ namespace RobotControl
 				        {
 					        bytesToRead = Port.BytesToRead > (RxBuffer.Length - 1) ? (RxBuffer.Length - 1) : Port.BytesToRead;
 					        Port.Read(RxBuffer, 1, bytesToRead);
-					        DataReceived(RxBuffer);
+                            byte[] recieveCRC = new byte[bytesToRead + 1];
+                            Array.Copy(RxBuffer, recieveCRC, recieveCRC.Length);
+                            ushort res = crc.ComputeChecksum(recieveCRC);
+                            if (res == 0)
+					            DataReceived(RxBuffer);
 					        waitingForResponse = false;
 				        }
 			        }
