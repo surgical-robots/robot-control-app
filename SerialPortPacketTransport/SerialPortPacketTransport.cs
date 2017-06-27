@@ -106,7 +106,7 @@ namespace RobotControl
 	        }
 
 	        Port.PortName = comPort;
-            Port.BaudRate = 460800;
+            Port.BaudRate = 230400;
 	        Port.Parity = Parity.None;
 	        Port.DataBits = 8;
 	        Port.StopBits = StopBits.One;

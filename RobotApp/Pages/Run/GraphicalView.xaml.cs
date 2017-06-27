@@ -27,7 +27,7 @@ using Emgu.CV.UI;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 
-using AForge.Video.DirectShow;
+using Accord.Video.DirectShow;
 
 namespace RobotApp.Pages
 {
@@ -193,7 +193,7 @@ namespace RobotApp.Pages
             }
         }
 
-        private AForge.Video.DirectShow.VideoCaptureDevice CaptureDevice;
+        private Accord.Video.DirectShow.VideoCaptureDevice CaptureDevice;
         private FilterInfoCollection _deviceList;
         private VideoCapabilities[] _deviceCapabilites;
         private bool _wasRunning = false;

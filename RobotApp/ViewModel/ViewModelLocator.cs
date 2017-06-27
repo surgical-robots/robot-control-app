@@ -1,7 +1,7 @@
 /*
   In App.xaml:
   <Application.Resources>
-      <vm:ViewModelLocator xmlns:vm="clr-namespace:RobotConfigure"
+      <vm:ViewModelLocator xmlns:vm="clr-namespace:RobotApp"
                            x:Key="Locator" />
   </Application.Resources>
   

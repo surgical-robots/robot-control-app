@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using AForge.Video.DirectShow;
+using Accord.Video.DirectShow;
 
 
 namespace RobotApp.Views.Plugins
@@ -93,7 +93,7 @@ namespace RobotApp.Views.Plugins
             }
         }
 
-        void CaptureDevice_NewFrame(object sender, AForge.Video.NewFrameEventArgs eventArgs)
+        void CaptureDevice_NewFrame(object sender, Accord.Video.NewFrameEventArgs eventArgs)
         {
             Bitmap frame = eventArgs.Frame;
             this.Dispatcher.Invoke((Action)(() =>
