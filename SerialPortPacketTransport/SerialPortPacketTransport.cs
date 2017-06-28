@@ -251,7 +251,7 @@ namespace RobotControl
 					            if (requestData && (controller.GetHalls || controller.GetPots || controller.GetCurrent))
 					            {
 						            waitingForResponse = true;
-						            timeout = 100000;
+						            timeout = 10000;
 						            // wait for data
 						            while ((Port.BytesToRead < byteLimit) && (--timeout > 0));
 						            while (Port.BytesToRead >= byteLimit)
@@ -295,7 +295,7 @@ namespace RobotControl
                                 try { Port.Write(sendMsg, 0, (sendMsg[4] + 4)); }
 					            catch (TimeoutException) {}
 					            waitingForResponse = true;
-					            timeout = 100000;
+					            timeout = 10000;
 					            // wait for data
 					            while ((Port.BytesToRead < byteLimit) && (--timeout > 0));
 					            while (Port.BytesToRead >= byteLimit)

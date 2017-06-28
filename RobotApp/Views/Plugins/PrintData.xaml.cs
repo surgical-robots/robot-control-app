@@ -108,7 +108,7 @@ namespace RobotApp.Views.Plugins
             this.TypeName = "Print Data";
             InitializeComponent();
 
-            writeTimer.Interval = 50;
+            writeTimer.Interval = 15;
             writeTimer.Tick += writeTimer_Tick;
 
             PostLoadSetup();
