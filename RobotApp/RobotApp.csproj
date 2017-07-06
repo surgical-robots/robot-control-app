@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RobotApp</RootNamespace>
     <AssemblyName>RobotApp</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -34,6 +34,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -148,7 +149,7 @@
     </Reference>
     <Reference Include="System.Xml.Serialization" />
     <Reference Include="TelSurge">
-      <HintPath>..\TelSurge\TelSurge\bin\Debug\TelSurge.exe</HintPath>
+      <HintPath>..\TelSurge\TelSurge\obj\Debug\TelSurge.exe</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -377,11 +378,11 @@
     <Compile Include="Views\Plugins\SerialResponseTimer.xaml.cs">
       <DependentUpon>SerialResponseTimer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Plugins\TelSurgeView.xaml.cs">
-      <DependentUpon>TelSurgeView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Plugins\DynamixelControl.xaml.cs">
       <DependentUpon>DynamixelControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugins\TelSurgeView.xaml.cs">
+      <DependentUpon>TelSurgeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Plugins\TrainerInterface.xaml.cs">
       <DependentUpon>TrainerInterface.xaml</DependentUpon>
@@ -624,13 +625,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Plugins\TelSurgeView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\Plugins\DynamixelControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Plugins\TelSurgeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\TrainerInterface.xaml">
       <Generator>MSBuild:Compile</Generator>
