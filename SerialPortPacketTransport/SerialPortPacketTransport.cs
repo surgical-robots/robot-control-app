@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO.Ports;
-using System.Text;
 using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
-using RobotControl;
 
 namespace RobotControl
 {
@@ -67,6 +61,7 @@ namespace RobotControl
         private bool requestData = false;
         private bool sendData = false;
         private bool waitingForResponse = false;
+        private bool crcEnable = false;
         private Crc16 crc = new Crc16();
 
         public SerialPort Port = new SerialPort();
@@ -264,7 +259,9 @@ namespace RobotControl
                                             byte[] recieveCRC = new byte[bytesToRead + 1];
                                             Array.Copy(RxBuffer, recieveCRC, recieveCRC.Length);
                                             ushort res = crc.ComputeChecksum(recieveCRC);
-                                            if(res == 0)
+                                            if(!crcEnable)
+                                                DataReceived(RxBuffer);
+                                            else if (res == 0)
 								                DataReceived(RxBuffer);
 								            waitingForResponse = false;
 								            break;
@@ -308,8 +305,10 @@ namespace RobotControl
                                         byte[] recieveCRC = new byte[bytesToRead + 1];
                                         Array.Copy(RxBuffer, recieveCRC, recieveCRC.Length);
                                         ushort res = crc.ComputeChecksum(recieveCRC);
-                                        if (res == 0)
-							                DataReceived(RxBuffer);
+                                        if (!crcEnable)
+                                            DataReceived(RxBuffer);
+                                        else if (res == 0)
+                                            DataReceived(RxBuffer);
 							            waitingForResponse = false;
 							            break;
 						            }
@@ -332,8 +331,10 @@ namespace RobotControl
                             byte[] recieveCRC = new byte[bytesToRead + 1];
                             Array.Copy(RxBuffer, recieveCRC, recieveCRC.Length);
                             ushort res = crc.ComputeChecksum(recieveCRC);
-                            if (res == 0)
-					            DataReceived(RxBuffer);
+                            if (!crcEnable)
+                                DataReceived(RxBuffer);
+                            else if (res == 0)
+                                DataReceived(RxBuffer);
 					        waitingForResponse = false;
 				        }
 			        }

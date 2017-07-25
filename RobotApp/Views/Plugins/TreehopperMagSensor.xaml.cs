@@ -1,10 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
 using RobotApp.ViewModel;
 using Treehopper.Desktop;
-using System.Threading;
 using System.Numerics;
 
 namespace RobotApp.Views.Plugins
@@ -48,18 +46,18 @@ namespace RobotApp.Views.Plugins
             while(true)
             {
                 await sensor.Update();
-                var reading = sensor.MagneticFlux; // one I2c fetch
-                //avg += reading;
-                //i++;
+                Vector3 reading = sensor.MagneticFlux; // one I2c fetch
+                avg += reading;
+                i++;
 
-                //if(i > 9)
-                //{
-                    //avg = avg / 10;
-                    Process(reading.X, reading.Y, reading.Z);
+                if (i > 9)
+                {
+                    avg = avg / 10;
+                    Process(avg.X, avg.Y, avg.Z);
                     await Task.Delay(10);
-                //    i = 0;
-                //    avg = new Vector3(0,0,0);
-                //}
+                    i = 0;
+                    avg = new Vector3(0, 0, 0);
+                }
             }
         }
 

@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Serialization;
-using System.IO;
 using TelSurge.DataModels;
-using System.Net;
-using System.Net.Sockets;
 using DirectShowLib;
 
 namespace TelSurge

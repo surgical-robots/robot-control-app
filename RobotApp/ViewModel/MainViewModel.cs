@@ -1,29 +1,20 @@
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using RobotControl;
-using System;
 using System.Collections.ObjectModel;
-using System.IO.Ports;
 using System.Collections.Specialized;
-using System.Threading.Tasks;
 using RobotApp.Views.Plugins;
-using GalaSoft.MvvmLight.Command;
-using System.Xml.Serialization;
 using System.IO;
-using System.Runtime.Serialization;
 using System.ComponentModel;
 using RobotApp.Models;
-using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Collections.Concurrent;
 using GeomagicTouch;
 
 namespace RobotApp.ViewModel
 {
-/// <summary>
-/// This is the main logic for the app
-/// </summary>
+    /// <summary>
+    /// This is the main logic for the app
+    /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
         /// <summary>

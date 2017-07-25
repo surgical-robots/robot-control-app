@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TelSurge.DataModels;
 using System.IO;
@@ -13,17 +8,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Reflection;
 using System.Diagnostics;
 using Emgu.CV;
 using Emgu.CV.Structure;
-
-
-using Emgu.CV.UI;
-
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace TelSurge
 {
@@ -94,7 +81,7 @@ namespace TelSurge
             try
             {
                 this.User = new User(this, connectionPort);
-                this.AudioConference = new TelSurge.AudioConference(this, audioPort);
+                //this.AudioConference = new AudioConference(this, audioPort);
                 this.VideoCapture = new VideoCapture(this, videoPort);
                 this.Surgery = new Surgery();
                 this.Markup = new Markup(this, markingsPort);
