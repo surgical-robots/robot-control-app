@@ -25,7 +25,7 @@
             this.OutputWorkspace = false;
             this.InvertForces = new bool[3] { false, false, false };
             this.OutputStrings = new string[6] { "Joint1", "Joint2", "Joint3", "Joint4", "Joint5", "Joint6" };
-            this.IK_POS_THRESH = 0.01;
+            this.eps = 0.01;
             this.BETA = 0.5;
         }
     }

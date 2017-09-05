@@ -211,7 +211,7 @@ namespace Kinematics
                     wo = wo * wo;
                     rptCt++;
                 }
-                // repeat check 2 - normal repaeting, low error
+                // repeat check 2 - normal repeating, low error
                 else if (Math.Abs(Ec - Ep) < rptCheck)
                 {
                     wo = wo * wo;
@@ -390,7 +390,7 @@ namespace Kinematics
             {
                 double forceGain = 0.5;
                 // calculate workspace forces if our position error is greater than the threshold
-                Vector3D forces = Vector3D.Multiply(forceGain, Vector3D.Subtract(Pd, Position));
+                Vector3D forces = Vector3D.Multiply(forceGain, Vector3D.Subtract(Ph, Position));
                 // invert forces if desired
                 angles[outputNum - 3] = InvertForces[0] ? -forces.X : forces.X;
                 angles[outputNum - 2] = InvertForces[1] ? -forces.Y : forces.Y;

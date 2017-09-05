@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RobotControl;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
-using System.Windows.Media;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using System.ComponentModel;
-using RobotApp.Views;
 
 namespace RobotApp.ViewModel
 {
@@ -150,9 +144,17 @@ namespace RobotApp.ViewModel
             }
         }
 
-        public uint Id { get { return Controller.Id; } }
+        public uint Id
+        {   get => Controller.Id;
+            set
+            {
+                Controller.Id = value;
+                string dummy = IdString;
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs("IdString"));
+            }
+        }
 
-        public string IdString { get { return "Address: " + Controller.Id.ToString(); } }
+        public string IdString { get => "Address: " + Controller.Id.ToString(); }
 
         [DataMember]
         public bool LedIsEnabled

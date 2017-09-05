@@ -19,7 +19,7 @@
             this.OutputWorkspace = true;
             this.InvertForces = new bool[3] { false, false, true };
             this.OutputStrings = new string[6] { "Upper Bevel", "Lower Bevel", "Elbow", "Workspace FX", "Workspace FY", "Workspace FZ" };
-            this.IK_POS_THRESH = 0.01;
+            this.eps = 0.01;
             this.BETA = 1;
         }
     }

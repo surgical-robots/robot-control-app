@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
@@ -18,6 +19,12 @@ namespace Kinematics
             LouShoulder
         }
 
+        public enum JointType
+        {
+            Rotation,
+            Translation
+        }
+
         /// <summary>
         /// Gets a list of joint angles from a three-dimensional position
         /// </summary>
@@ -31,6 +38,11 @@ namespace Kinematics
         public double[] GetJointAngles(Point3D PositionL, Point3D PositionR)
         {
             return (getJointAngles(PositionL, PositionR));
+        }
+
+        public double[] GetJointAngles(Vector3 Position, Vector3 Orientation, float[,] RotM)
+        {
+            return (getJointAngles(Position, Orientation, RotM));
         }
 
         public double[] GetJointAngles(Vector3D Position, Vector3D Orientation, double[,] RotM)
@@ -51,6 +63,11 @@ namespace Kinematics
         }
 
         protected virtual double[] getJointAngles(Point3D PositionL, Point3D PositionR)
+        {
+            return new double[0];
+        }
+
+        protected virtual double[] getJointAngles(Vector3 Position, Vector3 Orientation, float[,] RotM)
         {
             return new double[0];
         }

@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
+using System.Numerics;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
 using RobotApp.ViewModel;
 using Treehopper.Desktop;
-using System.Numerics;
 
 namespace RobotApp.Views.Plugins
 {
@@ -46,8 +46,8 @@ namespace RobotApp.Views.Plugins
             while(true)
             {
                 await sensor.Update();
-                Vector3 reading = sensor.MagneticFlux; // one I2c fetch
-                avg += reading;
+                //Vector3 reading = sensor.MagneticFlux; // one I2c fetch
+                //avg += reading;
                 i++;
 
                 if (i > 9)

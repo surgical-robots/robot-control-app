@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Messaging;
@@ -394,14 +395,25 @@ namespace RobotApp.Views.Plugins
             if (model == null)
                 return;
             Vector3D point = new Vector3D();
-            point.X = InvertX ? -ix : ix;
-            point.Y = InvertY ? -iy : iy;
-            point.Z = InvertZ ? -iz : iz;
+            point.X = InvertX ? -(float)ix : (float)ix;
+            point.Y = InvertY ? -(float)iy : (float)iy;
+            point.Z = InvertZ ? -(float)iz : (float)iz;
             Vector3D orient = new Vector3D();
-            orient.X = iroll;
-            orient.Y = ipitch;
-            orient.Z = iyaw;
+            orient.X = (float)iroll;
+            orient.Y = (float)ipitch;
+            orient.Z = (float)iyaw;
+            float[,] frotm = new float[3, 3];
+            frotm[0, 0] = (float)irotm[0, 0];
+            frotm[0, 1] = (float)irotm[0, 1];
+            frotm[0, 2] = (float)irotm[0, 2];
+            frotm[1, 0] = (float)irotm[1, 0];
+            frotm[1, 1] = (float)irotm[1, 1];
+            frotm[1, 2] = (float)irotm[1, 2];
+            frotm[2, 0] = (float)irotm[2, 0];
+            frotm[2, 1] = (float)irotm[2, 1];
+            frotm[2, 2] = (float)irotm[2, 2];
             //double[] angles = model.GetJointAngles(point, orient);
+            //double[] angles = model.GetJointAngles(point, orient, frotm);
             double[] angles = model.GetJointAngles(point, orient, irotm);
             RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate() 
             {

@@ -1,8 +1,8 @@
 ﻿namespace Kinematics.Robots
 {
-    class LouBizzle : IKSolver
+    class LouBizzleOld : IKSolver5DOF
     {
-        public LouBizzle()
+        public LouBizzleOld()
         {
             // alpha(i-1)     a(i-i)     d(i)      theta(i)     joint-type
             DHparameters = new double[6, 5] { {   0,      0,      0,   0, (double)JointType.Rotation },
