@@ -230,7 +230,7 @@ namespace RobotApp.ViewModel
                                 {
                                     foreach(MotorViewModel motor in controller.Motors)
                                     {
-                                        motor.Motor.SpeedMax = 32;
+                                        motor.Motor.SpeedMin = 32;
                                         controller.Controller.Robot.SendCommand(JointCommands.ResetCounters, controller.Controller, new byte[] { (byte)motor.Id, (byte)0x01 });
                                     }
                                 }
@@ -245,7 +245,7 @@ namespace RobotApp.ViewModel
                             {
                                 foreach(MotorViewModel motor in controller.Motors)
                                 {
-                                    motor.Motor.SpeedMax = motor.SpeedMax;
+                                    motor.Motor.SpeedMin = motor.SpeedMin;
                                 }
                             }
                         }

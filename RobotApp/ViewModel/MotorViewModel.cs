@@ -57,7 +57,7 @@ namespace RobotApp.ViewModel
             SetupMessenger();
 
             Kp = kp;
-            SpeedMax = speedMax;
+            SpeedMin = speedMin;
             CurrentMax = currentMax;
             PotZero = potZero;
         }
@@ -633,32 +633,37 @@ namespace RobotApp.ViewModel
         }
 
         /// <summary>
-        /// The <see cref="SpeedMax" /> property's name.
+        /// The <see cref="SpeedMin" /> property's name.
         /// </summary>
-        public const string SpeedMaxPropertyName = "SpeedMax";
+        public const string SpeedMinPropertyName = "SpeedMax";
         [DataMember]
-        private byte speedMax = 255;
+        private byte speedMin = 0;
 
         /// <summary>
         /// Sets and gets the JogEnabled property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public byte SpeedMax
+        public byte SpeedMin
         {
             get
             {
-                return speedMax;
+                return speedMin;
             }
 
             set
             {
-                if (Motor.SpeedMax == value)
+                if (Motor.SpeedMin == value)
                 {
                     return;
                 }
-                speedMax = value;
-                Motor.SpeedMax = speedMax;
-                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(SpeedMaxPropertyName));
+                speedMin = value;
+                if (speedMin < 0)
+                    speedMin = 0;
+                else if (speedMin > 255)
+                    speedMin = 255;
+
+                Motor.SpeedMin = speedMin;
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(SpeedMinPropertyName));
             }
         }
 

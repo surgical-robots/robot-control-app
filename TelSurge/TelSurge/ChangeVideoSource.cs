@@ -21,10 +21,12 @@ namespace TelSurge
         private void btn_Done_Click(object sender, EventArgs e)
         {
             int choice = ddl_Devices.SelectedIndex;
+            string name = ddl_Devices.Name;
             if (ddl_Devices.Items[choice].Equals("Master Video Feed"))
             {
                 //Master Video Feed
                 _main.VideoCapture.CaptureDevice = "";
+                _main.VideoCapture.CaptureName = "";
                 _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.MasterFeed);
             }
             else if (choice >= IPCamerasIndex)
@@ -38,6 +40,7 @@ namespace TelSurge
             {
                 //Local device
                 _main.VideoCapture.CaptureDevice = choice.ToString();
+                _main.VideoCapture.CaptureName = name;
                 _main.VideoCapture.SwitchVideoFeed(VideoCapture.CaptureType.Local);
             }
             this.Close();

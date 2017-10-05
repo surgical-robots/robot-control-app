@@ -44,7 +44,7 @@ namespace RobotApp.Views.Plugins
                                 sw.Write("\t");
                                 sw.Write(motor.CurrentMax);
                                 sw.Write("\t");
-                                sw.Write(motor.SpeedMax);
+                                sw.Write(motor.SpeedMin);
                                 sw.Write("\t");
                                 sw.Write(motor.Kp);
                                 sw.Write("\t");

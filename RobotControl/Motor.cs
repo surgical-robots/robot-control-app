@@ -93,16 +93,16 @@ namespace RobotControl
             }
         }
 
-        private byte speedMax;
+        private byte speedMin;
 
-        public byte SpeedMax
+        public byte SpeedMin
         {
-            get { return speedMax; }
+            get { return speedMin; }
             set
             {
-                if (value != speedMax)
+                if (value != speedMin)
                 {
-                    speedMax = value;
+                    speedMin = value;
                     this.UpdateConfiguration();
                 }
             }
@@ -150,7 +150,7 @@ namespace RobotControl
                 configMsg[0] = (byte)index;
                 configMsg[1] = (byte)controlMode;
                 Array.Copy(BitConverter.GetBytes(sendKp), 0, configMsg, 2, 4);
-                configMsg[6] = speedMax;
+                configMsg[6] = speedMin;
                 Array.Copy(BitConverter.GetBytes(currentMax), 0, configMsg, 7, 2);
                 Array.Copy(BitConverter.GetBytes(potZero), 0, configMsg, 9, 2);
                 Array.Copy(BitConverter.GetBytes(clicksPerRev), 0, configMsg, 11, 2);
@@ -161,6 +161,11 @@ namespace RobotControl
                 controller.Robot.SendCommand(JointCommands.Configure, this.controller, configMsg);
                 //controller.Robot.SendCommand(JointCommands.Configure, this.controller, new byte[] { (byte)index, (byte)controlMode, kp });
             }
+        }
+
+        public void RequestConfiguration()
+        {
+            controller.Robot.SendCommand(JointCommands.GetConfiguration, this.controller, new byte[] {(byte)index});
         }
 
         public void Jog(int speed, bool direction)

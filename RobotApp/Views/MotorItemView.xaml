@@ -79,8 +79,8 @@
             <TextBlock Text="Angle Setpoint"/>
             <TextBox Text="{Binding AngleSetpoint}" />
 
-            <TextBlock Text="Max Speed"/>
-            <TextBox Text="{Binding SpeedMax}" />
+            <TextBlock Text="Min Speed"/>
+            <TextBox Text="{Binding SpeedMin}" />
             <TextBlock Text="Max Current"/>
             <TextBox Text="{Binding CurrentMax}" />
 

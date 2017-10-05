@@ -162,6 +162,16 @@ namespace RobotControl
                         }
                     }
                     break;
+                case JointCommands.GetConfiguration:
+                    foreach (var joint in Controllers)
+                    {
+                        if (joint.Value.Id == address)
+                        {
+                            joint.Value.SetCurrent(data);
+                            return;
+                        }
+                    }
+                    break;
             }
         }
 

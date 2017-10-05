@@ -27,13 +27,20 @@ namespace RobotControl
         SetPosGetData,
         GetHallPos,
         GetPots,
-        GetCurrent
+        GetCurrent,
+        GetConfiguration
     }
 
     public delegate void OnPingEventHandler(Controller sender);
     public delegate void OnMotorCurrentChanged(int newValue);
     public delegate void OnPotValueChanged(int newValue);
     public delegate void OnShaftCounterChanged(int newValue);
+
+    public delegate void OnControlModeChange(int newValue);
+    public delegate void OnKpChange(int newValue);
+    public delegate void OnSpeedMinChange(int newValue);
+    public delegate void OnCurrentMaxChange(int newValue);
+    public delegate void OnPotZeroChange(int newValue);
 
     [Serializable]
     public class Controller
@@ -47,6 +54,18 @@ namespace RobotControl
         public event OnPotValueChanged Motor2PotChanged;
         public event OnShaftCounterChanged Motor1CounterChanged;
         public event OnShaftCounterChanged Motor2CounterChanged;
+
+        public event OnControlModeChange Motor1ControlModeChanged;
+        public event OnControlModeChange Motor2ControlModeChanged;
+        public event OnKpChange Motor1KpChanged;
+        public event OnKpChange Motor2KpChanged;
+        public event OnSpeedMinChange Motor1SpeedMinChanged;
+        public event OnSpeedMinChange Motor2SpeedMinChanged;
+        public event OnCurrentMaxChange Motor1CurrentMaxChanged;
+        public event OnCurrentMaxChange Motor2CurrentMaxChanged;
+        public event OnPotZeroChange Motor1PotZeroChanged;
+        public event OnPotZeroChange Motor2PotZeroChanged;
+
 
         #endregion
 
@@ -295,7 +314,24 @@ namespace RobotControl
 
         public void SetData(byte[] response)
         {
+        }
 
+        public void SetConfig(byte[] response)
+        {
+            switch (response[6])
+            {
+                case 0:
+                    {
+                        ControlMode newMode = (ControlMode)response[7];
+
+                    }
+                    break;
+                case 1:
+                    {
+
+                    }
+                    break;
+            }
         }
         #endregion
 

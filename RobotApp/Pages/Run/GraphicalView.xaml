@@ -49,7 +49,7 @@
                 <StackPanel>
                     <UniformGrid Columns="2">
                         <TextBlock Text="Video Source: " HorizontalAlignment="Right"/>
-                        <ComboBox Name="DeviceNamesBox" ItemsSource="{Binding DeviceNames}" SelectedItem="{Binding SelectedDeviceName}" />
+                        <ComboBox Name="DeviceNamesBox" ItemsSource="{Binding DeviceNames}" SelectedIndex="{Binding SelectedDeviceName}" />
 
                         <TextBlock Text="Format: " HorizontalAlignment="Right"/>
                         <ComboBox Name="SettingNamesBox" ItemsSource="{Binding SettingNames}" SelectedIndex="{Binding SelectedSetting}"/>
