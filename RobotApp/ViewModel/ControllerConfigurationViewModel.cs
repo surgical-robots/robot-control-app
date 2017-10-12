@@ -245,7 +245,7 @@ namespace RobotApp.ViewModel
                             {
                                 foreach(MotorViewModel motor in controller.Motors)
                                 {
-                                    motor.Motor.SpeedMin = motor.SpeedMin;
+                                    motor.Motor.SpeedMin = Convert.ToByte(motor.SpeedMin);
                                 }
                             }
                         }

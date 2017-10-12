@@ -455,5 +455,13 @@ namespace Kinematics
                 return OutputStrings;
             }
         }
+
+        public override double[,] JointParms
+        {
+            get
+            {
+                return DHparameters;
+            }
+        }
     }
 }

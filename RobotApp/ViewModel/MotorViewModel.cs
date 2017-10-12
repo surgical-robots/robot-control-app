@@ -1,27 +1,27 @@
-﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Command;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RobotControl;
-using System.Diagnostics;
-using System.Xml.Serialization;
-using System.ComponentModel;
-using System.Runtime.Serialization;
-using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Markup;
-using System.Windows.Media;
-using RobotApp.Views;
-
-namespace RobotApp.ViewModel
+﻿namespace RobotApp.ViewModel
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Runtime.Serialization;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Data;
+    using System.Windows.Markup;
+    using System.Windows.Media;
+    using System.Xml.Serialization;
+    using GalaSoft.MvvmLight;
+    using GalaSoft.MvvmLight.Command;
+    using GalaSoft.MvvmLight.Messaging;
+    using RobotApp.Views;
+    using RobotControl;
+
     [DataContract]
     [Serializable]
     public class MotorViewModel : INotifyPropertyChanged, IDisposable
@@ -155,9 +155,109 @@ namespace RobotApp.ViewModel
                 controller.Motor2CounterChanged += controller_Motor2CounterChanged;
                 controller.Motor1PotChanged += controller_Motor1PotChanged;
                 controller.Motor2PotChanged += controller_Motor2PotChanged;
-                    this.Motor.Controller = controller;
+
+                controller.Motor1KpChanged += controller_Motor1KpChanged;
+                controller.Motor2KpChanged += controller_Motor2KpChanged;
+                controller.Motor1ClicksPerRevChanged += controller_Motor1ClicksPerRevChanged;
+                controller.Motor2ClicksPerRevChanged += controller_Motor2ClicksPerRevChanged;
+                controller.Motor1SpeedMinChanged += controller_Motor1SpeedMinChanged;
+                controller.Motor2SpeedMinChanged += controller_Motor2SpeedMinChanged;
+                controller.Motor1CurrentMaxChanged += controller_Motor1CurrentMaxChanged;
+                controller.Motor2CurrentMaxChanged += controller_Motor2CurrentMaxChanged;
+                controller.Motor1PotZeroChanged += controller_Motor1PotZeroChanged;
+                controller.Motor2PotZeroChanged += controller_Motor2PotZeroChanged;
+                controller.Motor1ControlModeChanged += controller_Motor1ControlModeChanged;
+                controller.Motor2ControlModeChanged += controller_Motor2ControlModeChanged;
+                controller.Motor1DeadbandChanged += controller_Motor1DeadbandChanged;
+                controller.Motor2DeadbandChanged += controller_Motor2DeadbandChanged;
+
+                this.Motor.Controller = controller;
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(JointItemPropertyName));
             }
+        }
+
+        private void controller_Motor2DeadbandChanged(int newValue)
+        {
+            if (Id != 1) return;
+            Deadband = newValue;
+        }
+
+        private void controller_Motor1DeadbandChanged(int newValue)
+        {
+            if (Id != 0) return;
+            Deadband = newValue;
+        }
+
+        private void controller_Motor2ControlModeChanged(ControlMode newValue)
+        {
+            if (Id != 1) return;
+            ControlModeIndex = (int)newValue;
+        }
+
+        private void controller_Motor1ControlModeChanged(ControlMode newValue)
+        {
+            if (Id != 0) return;
+            ControlModeIndex = (int)newValue;
+        }
+
+        private void controller_Motor2PotZeroChanged(int newValue)
+        {
+            if (Id != 1) return;
+            PotZero = Convert.ToUInt16(newValue);
+        }
+
+        private void controller_Motor1PotZeroChanged(int newValue)
+        {
+            if (Id != 0) return;
+            PotZero = Convert.ToUInt16(newValue);
+        }
+
+        private void controller_Motor2CurrentMaxChanged(int newValue)
+        {
+            if (Id != 1) return;
+            CurrentMax = Math.Round(newValue * 3.3 * 4000 / Math.Pow(2, 16));
+        }
+
+        private void controller_Motor1CurrentMaxChanged(int newValue)
+        {
+            if (Id != 0) return;
+            CurrentMax = Math.Round(newValue * 3.3 * 4000 / Math.Pow(2, 16));
+        }
+
+        private void controller_Motor2SpeedMinChanged(int newValue)
+        {
+            if (Id != 1) return;
+            SpeedMin = newValue;
+        }
+
+        private void controller_Motor1SpeedMinChanged(int newValue)
+        {
+            if (Id != 0) return;
+            SpeedMin = newValue;
+        }
+
+        private void controller_Motor2ClicksPerRevChanged(int newValue)
+        {
+            if (Id != 1) return;
+            GearRatio = (double)newValue / 2;
+        }
+
+        private void controller_Motor1ClicksPerRevChanged(int newValue)
+        {
+            if (Id != 0) return;
+            GearRatio = (double)newValue / 2;
+        }
+
+        private void controller_Motor2KpChanged(int newValue)
+        {
+            if (Id != 1) return;
+            Kp = (float)newValue / 10000;
+        }
+
+        private void controller_Motor1KpChanged(int newValue)
+        {
+            if (Id != 0) return;
+            Kp = (float)newValue / 10000;
         }
 
         void controller_Motor2CounterChanged(int newValue)
@@ -390,7 +490,6 @@ namespace RobotApp.ViewModel
                 AngleSetpoint = msg.Value;
             });
 
-            
             Messenger.Default.Register<Messages.Signal>(this, Sinks["JogForward"].UniqueID, (msg) =>
             {
                 if (msg.Value > 0.5)
@@ -403,7 +502,6 @@ namespace RobotApp.ViewModel
                     JogEnabled = false;
             });
 
-            
             Messenger.Default.Register<Messages.Signal>(this, Sinks["JogReverse"].UniqueID, (msg) =>
             {
 
@@ -418,7 +516,6 @@ namespace RobotApp.ViewModel
 
             });
 
-            
             Messenger.Default.Register<Messages.Signal>(this, Sinks["JogSpeed"].UniqueID, (msg) =>
             {
                 int speed = 0;
@@ -496,12 +593,14 @@ namespace RobotApp.ViewModel
 
         [DataMember]
         private int jogSpeed;
+
         public int JogSpeed 
         { 
             get
             {
-             return jogSpeed;   
+             return jogSpeed;
             }
+
             set
             {
                 if (value == jogSpeed)
@@ -635,15 +734,15 @@ namespace RobotApp.ViewModel
         /// <summary>
         /// The <see cref="SpeedMin" /> property's name.
         /// </summary>
-        public const string SpeedMinPropertyName = "SpeedMax";
+        public const string SpeedMinPropertyName = "SpeedMin";
         [DataMember]
-        private byte speedMin = 0;
+        private int speedMin = 0;
 
         /// <summary>
         /// Sets and gets the JogEnabled property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public byte SpeedMin
+        public int SpeedMin
         {
             get
             {
@@ -662,7 +761,7 @@ namespace RobotApp.ViewModel
                 else if (speedMin > 255)
                     speedMin = 255;
 
-                Motor.SpeedMin = speedMin;
+                Motor.SpeedMin = (byte)speedMin;
                 if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(SpeedMinPropertyName));
             }
         }
@@ -732,6 +831,37 @@ namespace RobotApp.ViewModel
             }
         }
 
+        /// <summary>
+        /// The <see cref="Deadband" /> property's name.
+        /// </summary>
+        public const string DeadbandPropertyName = "Deadband";
+        [DataMember]
+        private int deadband = 1;
+
+        /// <summary>
+        /// Sets and gets the Deadband property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int Deadband
+        {
+            get
+            {
+                return deadband;
+            }
+
+            set
+            {
+                if (deadband == value)
+                {
+                    return;
+                }
+
+                deadband = value;
+                Motor.Deadband = (ushort)deadband;
+                if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(DeadbandPropertyName));
+            }
+        }
+
         [DataMember]
         private int id;
 
@@ -768,10 +898,31 @@ namespace RobotApp.ViewModel
             {
                 Messenger.Default.Send<Messages.UnregisterSignalSink>(new Messages.UnregisterSignalSink() { Sink = item.Value });
             }
-            
         }
+
         [field: NonSerializedAttribute()] 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        [NonSerialized]
+        private RelayCommand refreshConfig;
+
+        public RelayCommand RefreshConfig
+        {
+            get
+            {
+                return refreshConfig
+                    ?? (refreshConfig = new RelayCommand(
+                    () =>
+                    {
+                        if (!refreshConfig.CanExecute(null))
+                        {
+                            return;
+                        }
+                        this.Motor.RequestConfiguration();
+                    },
+                    () => true));
+            }
+        }
 
         [NonSerialized]
         private RelayCommand readPots;

@@ -52,6 +52,8 @@ namespace Kinematics
 
         public virtual string[] OutputNames { get { return new string[0]; } }
 
+        public virtual double[,] JointParms { get { return new double[1, 1]; } }
+
         /// <summary>
         /// Implement this function, which is specific to the robot.
         /// </summary>

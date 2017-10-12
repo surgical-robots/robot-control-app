@@ -7,8 +7,9 @@ using System.Diagnostics;
 
 namespace RobotControl
 {
-    public enum ControlMode { Reserved, Potentiometer, RelativeStep };
+    public enum ControlMode { Reserved, Jog, RelativeStep, Potentiometer };
     public enum HomingSource { NoLimitSwitch, MinLimitSwitch, MaxLimitSwitch }
+
     /// <summary>
     /// This is the main class for interacting with particular motors that are located inside a joint.
     /// </summary>
@@ -138,15 +139,30 @@ namespace RobotControl
             }
         }
 
+        private UInt16 deadband;
+
+        public UInt16 Deadband
+        {
+            get { return deadband; }
+            set
+            {
+                if (value != deadband)
+                {
+                    deadband = value;
+                    this.UpdateConfiguration();
+                }
+            }
+        }
+
         public void UpdateConfiguration()
         {
             if (controller != null && controller.Robot != null)
             {
                 // convert variables for fixed-point math
-                Int32 sendKp = (Int32)(kp * 10000);
+                UInt32 sendKp = (UInt32)(kp * 10000);
                 Int16 clicksPerRev = (Int16)Math.Round(encoderClicksPerRevolution);
                 // setup configuration message
-                byte[] configMsg = new byte[16];
+                byte[] configMsg = new byte[15];
                 configMsg[0] = (byte)index;
                 configMsg[1] = (byte)controlMode;
                 Array.Copy(BitConverter.GetBytes(sendKp), 0, configMsg, 2, 4);
@@ -154,9 +170,7 @@ namespace RobotControl
                 Array.Copy(BitConverter.GetBytes(currentMax), 0, configMsg, 7, 2);
                 Array.Copy(BitConverter.GetBytes(potZero), 0, configMsg, 9, 2);
                 Array.Copy(BitConverter.GetBytes(clicksPerRev), 0, configMsg, 11, 2);
-                Array.Copy(BitConverter.GetBytes(controller.GetHalls), 0, configMsg, 13, 1);
-                Array.Copy(BitConverter.GetBytes(controller.GetPots), 0, configMsg, 14, 1);
-                Array.Copy(BitConverter.GetBytes(controller.GetCurrent), 0, configMsg, 15, 1);
+                Array.Copy(BitConverter.GetBytes(deadband), 0, configMsg, 13, 2);
                 // send message
                 controller.Robot.SendCommand(JointCommands.Configure, this.controller, configMsg);
                 //controller.Robot.SendCommand(JointCommands.Configure, this.controller, new byte[] { (byte)index, (byte)controlMode, kp });

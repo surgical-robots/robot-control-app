@@ -85,12 +85,12 @@
             <TextBox Text="{Binding CurrentMax}" />
 
             <TextBlock Text="Pot ZERO Value"/>
-            <TextBox Text="{Binding PotZero}" />
-            <TextBlock Text="Pot ADC Value"/>
-            <TextBlock Text="{Binding Pot}" />
+            <TextBox Text="{Binding PotZero, Mode=TwoWay}"/>
+            <TextBlock Text="Deadband"/>
+            <TextBox Text="{Binding Deadband}" />
 
-            <TextBlock Text="Refresh Pot" DockPanel.Dock="Right" />
-            <mui:ModernButton Margin="0, 0, 10, 0" DockPanel.Dock="Left" Command="{Binding ReadPots}" IconData="{StaticResource RefreshIconData}" />
+            <TextBlock Text="Refresh Config" DockPanel.Dock="Right" />
+            <mui:ModernButton Margin="0, 0, 10, 0" DockPanel.Dock="Left" Command="{Binding RefreshConfig}" IconData="{StaticResource RefreshIconData}" />
             <TextBlock Text="Home Joint" DockPanel.Dock="Right" />
             <mui:ModernButton Margin="0, 0, 10, 0" DockPanel.Dock="Left" Command="{Binding HomeJoint}" IconData="{StaticResource GarageArrowIconData}" />
 

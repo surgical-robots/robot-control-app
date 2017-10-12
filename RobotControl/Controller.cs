@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using System.Timers;
-using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace RobotControl
 {
@@ -36,11 +30,13 @@ namespace RobotControl
     public delegate void OnPotValueChanged(int newValue);
     public delegate void OnShaftCounterChanged(int newValue);
 
-    public delegate void OnControlModeChange(int newValue);
+    public delegate void OnControlModeChange(ControlMode newValue);
     public delegate void OnKpChange(int newValue);
+    public delegate void OnClicksPerRevChange(int newValue);
     public delegate void OnSpeedMinChange(int newValue);
     public delegate void OnCurrentMaxChange(int newValue);
     public delegate void OnPotZeroChange(int newValue);
+    public delegate void OnDeadbandChange(int newValue);
 
     [Serializable]
     public class Controller
@@ -59,13 +55,16 @@ namespace RobotControl
         public event OnControlModeChange Motor2ControlModeChanged;
         public event OnKpChange Motor1KpChanged;
         public event OnKpChange Motor2KpChanged;
+        public event OnClicksPerRevChange Motor1ClicksPerRevChanged;
+        public event OnClicksPerRevChange Motor2ClicksPerRevChanged;
         public event OnSpeedMinChange Motor1SpeedMinChanged;
         public event OnSpeedMinChange Motor2SpeedMinChanged;
         public event OnCurrentMaxChange Motor1CurrentMaxChanged;
         public event OnCurrentMaxChange Motor2CurrentMaxChanged;
         public event OnPotZeroChange Motor1PotZeroChanged;
         public event OnPotZeroChange Motor2PotZeroChanged;
-
+        public event OnDeadbandChange Motor1DeadbandChanged;
+        public event OnDeadbandChange Motor2DeadbandChanged;
 
         #endregion
 
@@ -190,6 +189,21 @@ namespace RobotControl
         ushort motor2_pot;
         int motor1_shaftCounter;
         int motor2_shaftCounter;
+
+        uint motor1_kp;
+        uint motor2_kp;
+        short motor1_clicksPerRev;
+        short motor2_clicksPerRev;
+        ushort motor1_speedMin;
+        ushort motor2_speedMin;
+        ushort motor1_currentMax;
+        ushort motor2_currentMax;
+        ushort motor1_potZero;
+        ushort motor2_potZero;
+        ushort motor1_deadband;
+        ushort motor2_deadband;
+        ControlMode motor1_controlMode;
+        ControlMode motor2_controlMode;
 
         public void SetStatus(byte[] response)
         {
@@ -318,17 +332,106 @@ namespace RobotControl
 
         public void SetConfig(byte[] response)
         {
+            uint newKp = BitConverter.ToUInt32(response, 7);
+            short newClicksPerRev = BitConverter.ToInt16(response, 11);
+            ushort newSpeedMin = BitConverter.ToUInt16(response, 13);
+            ushort newCurrentMax = BitConverter.ToUInt16(response, 15);
+            ushort newPotZero = BitConverter.ToUInt16(response, 17);
+            ControlMode newControlMode = (ControlMode)response[19];
+            ushort newDeadband = BitConverter.ToUInt16(response, 20);
+
             switch (response[6])
             {
                 case 0:
                     {
-                        ControlMode newMode = (ControlMode)response[7];
-
+                        if(newKp != motor1_kp)
+                        {
+                            motor1_kp = newKp;
+                            if (Motor1KpChanged != null)
+                                Motor1KpChanged(Convert.ToInt32(motor1_kp));
+                        }
+                        if (newClicksPerRev != motor1_clicksPerRev)
+                        {
+                            motor1_clicksPerRev = newClicksPerRev;
+                            if (Motor1ClicksPerRevChanged != null)
+                                Motor1ClicksPerRevChanged(Convert.ToInt32(motor1_clicksPerRev));
+                        }
+                        if (newSpeedMin != motor1_speedMin)
+                        {
+                            motor1_speedMin = newSpeedMin;
+                            if (Motor1SpeedMinChanged != null)
+                                Motor1SpeedMinChanged(Convert.ToInt32(motor1_speedMin));
+                        }
+                        if (newCurrentMax != motor1_currentMax)
+                        {
+                            motor1_currentMax = newCurrentMax;
+                            if (Motor1CurrentMaxChanged != null)
+                                Motor1CurrentMaxChanged(Convert.ToInt32(motor1_currentMax));
+                        }
+                        if (newPotZero != motor1_potZero)
+                        {
+                            motor1_potZero = newPotZero;
+                            if (Motor1PotZeroChanged != null)
+                                Motor1PotZeroChanged(Convert.ToInt32(motor1_potZero));
+                        }
+                        if (newControlMode != motor1_controlMode)
+                        {
+                            motor1_controlMode = newControlMode;
+                            if (Motor1ControlModeChanged != null)
+                                Motor1ControlModeChanged(motor1_controlMode);
+                        }
+                        if (newDeadband != motor1_deadband)
+                        {
+                            motor1_deadband = newDeadband;
+                            if (Motor1DeadbandChanged != null)
+                                Motor1DeadbandChanged(Convert.ToInt32(motor1_deadband));
+                        }
                     }
                     break;
                 case 1:
                     {
-
+                        if (newKp != motor2_kp)
+                        {
+                            motor2_kp = newKp;
+                            if (Motor2KpChanged != null)
+                                Motor2KpChanged(Convert.ToInt32(motor2_kp));
+                        }
+                        if (newClicksPerRev != motor2_clicksPerRev)
+                        {
+                            motor2_clicksPerRev = newClicksPerRev;
+                            if (Motor2ClicksPerRevChanged != null)
+                                Motor2ClicksPerRevChanged(Convert.ToInt32(motor2_clicksPerRev));
+                        }
+                        if (newSpeedMin != motor2_speedMin)
+                        {
+                            motor2_speedMin = newSpeedMin;
+                            if (Motor2SpeedMinChanged != null)
+                                Motor2SpeedMinChanged(Convert.ToInt32(motor2_speedMin));
+                        }
+                        if (newCurrentMax != motor2_currentMax)
+                        {
+                            motor2_currentMax = newCurrentMax;
+                            if (Motor2CurrentMaxChanged != null)
+                                Motor2CurrentMaxChanged(Convert.ToInt32(motor2_currentMax));
+                        }
+                        if (newPotZero != motor2_potZero)
+                        {
+                            motor2_potZero = newPotZero;
+                            if (Motor2PotZeroChanged != null)
+                                Motor2PotZeroChanged(Convert.ToInt32(motor2_potZero));
+                        }
+                        if (newControlMode != motor2_controlMode)
+                        {
+                            motor2_controlMode = newControlMode;
+                            if (Motor2ControlModeChanged != null)
+                                Motor2ControlModeChanged(motor2_controlMode);
+                        }
+                        if (newDeadband != motor2_deadband)
+                        {
+                            motor2_deadband = newDeadband;
+                            if (Motor2DeadbandChanged != null)
+                                Motor2DeadbandChanged(Convert.ToInt32(motor2_deadband));
+                        }
                     }
                     break;
             }
@@ -350,7 +453,6 @@ namespace RobotControl
             if (OnPing != null)
                 OnPing(this);
         }
-
         #endregion
     }
 }

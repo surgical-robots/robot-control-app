@@ -167,7 +167,7 @@ namespace RobotControl
                     {
                         if (joint.Value.Id == address)
                         {
-                            joint.Value.SetCurrent(data);
+                            joint.Value.SetConfig(data);
                             return;
                         }
                     }
