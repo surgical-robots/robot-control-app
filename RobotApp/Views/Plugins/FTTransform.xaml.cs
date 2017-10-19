@@ -14,8 +14,12 @@ namespace RobotApp.Views.Plugins
     /// <summary>
     /// Interaction logic for Kinematics.xaml
     /// </summary>
-    public partial class IKSolver : PluginBase
+    public partial class FTTransform : PluginBase
     {
+        private double[,] DHParameters;
+
+        private Matrix4x4[] Tranformations;
+
         public ObservableCollection<Type> KinematicTypes { get; set; }
         private Kinematic model;
 
@@ -304,9 +308,9 @@ namespace RobotApp.Views.Plugins
             base.PostLoadSetup();
         }
 
-        public IKSolver()
+        public FTTransform()
         {
-            TypeName = "IK Solver";
+            TypeName = "Force Torque Transform";
 
             var ListOfKinematicModels = (from lAssembly in AppDomain.CurrentDomain.GetAssemblies()
                                          from lType in lAssembly.GetTypes()
@@ -432,12 +436,15 @@ namespace RobotApp.Views.Plugins
         public void LoadModel()
         {
             model = (Kinematic)Activator.CreateInstance(selectedKinematic);
-            foreach (string output in model.OutputNames)
+            DHParameters = model.JointParams;
+
+            for(int i =0; i < DHParameters.GetLength(0); i++) //loop through rows
             {
-                if (!Outputs.ContainsKey(output))
-                    Outputs.Add(output, new ViewModel.OutputSignalViewModel(output));
+                for(int j = 0; j < DHParameters.GetLength(1); j++) //loop through columns
+                {
+
+                }
             }
         }
-
     }
 }

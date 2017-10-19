@@ -38,27 +38,27 @@ namespace RobotApp.Views.Plugins
             int i = 0;
             Vector3 avg = new Vector3();
 
-            var board = await ConnectionService.Instance.GetFirstDeviceAsync();
-            await board.ConnectAsync();
+            //var board = await ConnectionService.Instance.GetFirstDeviceAsync();
+            //await board.ConnectAsync();
 
-            var sensor = new Treehopper.Libraries.Sensors.Inertial.Tlv493d(board.I2c);
-            sensor.AutoUpdateWhenPropertyRead = false;
-            while(true)
-            {
-                await sensor.Update();
-                //Vector3 reading = sensor.MagneticFlux; // one I2c fetch
-                //avg += reading;
-                i++;
+            //var sensor = new Treehopper.Libraries.Sensors.Inertial.Tlv493d(board.I2c);
+            //sensor.AutoUpdateWhenPropertyRead = false;
+            //while(true)
+            //{
+            //    await sensor.Update();
+            //    //Vector3 reading = sensor.MagneticFlux; // one I2c fetch
+            //    //avg += reading;
+            //    i++;
 
-                if (i > 9)
-                {
-                    avg = avg / 10;
-                    Process(avg.X, avg.Y, avg.Z);
-                    await Task.Delay(10);
-                    i = 0;
-                    avg = new Vector3(0, 0, 0);
-                }
-            }
+            //    if (i > 9)
+            //    {
+            //        avg = avg / 10;
+            //        Process(avg.X, avg.Y, avg.Z);
+            //        await Task.Delay(10);
+            //        i = 0;
+            //        avg = new Vector3(0, 0, 0);
+            //    }
+            //}
         }
 
         void Process(float X, float Y, float Z)

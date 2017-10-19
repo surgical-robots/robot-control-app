@@ -301,6 +301,9 @@
     <Compile Include="Views\Plugins\FrankenShoulder.xaml.cs">
       <DependentUpon>FrankenShoulder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Plugins\FTTransform.xaml.cs">
+      <DependentUpon>FTTransform.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Plugins\GeomagicTouch.xaml.cs">
       <DependentUpon>GeomagicTouch.xaml</DependentUpon>
     </Compile>
@@ -528,6 +531,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\FrankenShoulder.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Plugins\FTTransform.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
