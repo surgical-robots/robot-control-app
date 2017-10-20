@@ -43,267 +43,46 @@ namespace RobotApp.Views.Plugins
         public bool InvertY { get; set; }
         public bool InvertZ { get; set; }
 
-        private double x, y, z, roll, pitch, yaw;
-        private double ix, iy, iz, iroll, ipitch, iyaw;
-        private double[,] rotm = new double[3, 3];
-        private double[,] irotm = new double[3, 3];
+        private double fx, fy, fz, tx, ty, tz;
+        
 
         public override void PostLoadSetup()
         {
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["X"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Fx"].UniqueID, (message) =>
             {
-                x = message.Value;
+                fx = message.Value;
 
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Y"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Fy"].UniqueID, (message) =>
             {
-                y = message.Value;
+                fy = message.Value;
 
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Z"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Fz"].UniqueID, (message) =>
             {
-                z = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
+                fz = message.Value;
+              
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Roll"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Tx"].UniqueID, (message) =>
             {
-                roll = message.Value;
+                tx = message.Value;
 
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Pitch"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Ty"].UniqueID, (message) =>
             {
-                pitch = message.Value;
+                ty = message.Value;
 
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
             });
 
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["Yaw"].UniqueID, (message) =>
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Tz"].UniqueID, (message) =>
             {
-                yaw = message.Value;
+                tz = message.Value;
 
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            }); 
-            
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R00"].UniqueID, (message) =>
-            {
-                rotm[0,0] = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R01"].UniqueID, (message) =>
-            {
-                rotm[0, 1] = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R02"].UniqueID, (message) =>
-            {
-                rotm[0, 2] = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R10"].UniqueID, (message) =>
-            {
-                rotm[1, 0] = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R11"].UniqueID, (message) =>
-            {
-                rotm[1, 1] = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R12"].UniqueID, (message) =>
-            {
-                rotm[1, 2] = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R20"].UniqueID, (message) =>
-            {
-                rotm[2, 0] = message.Value;
-                
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R21"].UniqueID, (message) =>
-            {
-                rotm[2, 1] = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
-
-            Messenger.Default.Register<Messages.Signal>(this, Inputs["R22"].UniqueID, (message) =>
-            {
-                rotm[2, 2] = message.Value;
-
-                if (!workerThread.IsBusy && model != null)
-                {
-                    ix = x;
-                    iy = y;
-                    iz = z;
-                    ipitch = pitch;
-                    iroll = roll;
-                    iyaw = yaw;
-                    irotm = rotm;
-                    workerThread.RunWorkerAsync();
-                }
-            });
+            });                 
 
             base.PostLoadSetup();
         }
@@ -365,21 +144,12 @@ namespace RobotApp.Views.Plugins
                 isRobot = false;
             }
             
-            Inputs.Add("X", new ViewModel.InputSignalViewModel("X", this.InstanceName));
-            Inputs.Add("Y", new ViewModel.InputSignalViewModel("Y", this.InstanceName));
-            Inputs.Add("Z", new ViewModel.InputSignalViewModel("Z", this.InstanceName));
-            Inputs.Add("Pitch", new ViewModel.InputSignalViewModel("Pitch", this.InstanceName));
-            Inputs.Add("Yaw", new ViewModel.InputSignalViewModel("Yaw", this.InstanceName));
-            Inputs.Add("Roll", new ViewModel.InputSignalViewModel("Roll", this.InstanceName));
-            Inputs.Add("R00", new ViewModel.InputSignalViewModel("R00", this.InstanceName));
-            Inputs.Add("R01", new ViewModel.InputSignalViewModel("R01", this.InstanceName));
-            Inputs.Add("R02", new ViewModel.InputSignalViewModel("R02", this.InstanceName));
-            Inputs.Add("R10", new ViewModel.InputSignalViewModel("R10", this.InstanceName));
-            Inputs.Add("R11", new ViewModel.InputSignalViewModel("R11", this.InstanceName));
-            Inputs.Add("R12", new ViewModel.InputSignalViewModel("R12", this.InstanceName));
-            Inputs.Add("R20", new ViewModel.InputSignalViewModel("R20", this.InstanceName));
-            Inputs.Add("R21", new ViewModel.InputSignalViewModel("R21", this.InstanceName));
-            Inputs.Add("R22", new ViewModel.InputSignalViewModel("R22", this.InstanceName));
+            Inputs.Add("Fx", new ViewModel.InputSignalViewModel("R10", this.InstanceName));
+            Inputs.Add("Fy", new ViewModel.InputSignalViewModel("R11", this.InstanceName));
+            Inputs.Add("Fz", new ViewModel.InputSignalViewModel("R12", this.InstanceName));
+            Inputs.Add("Tx", new ViewModel.InputSignalViewModel("R20", this.InstanceName));
+            Inputs.Add("Ty", new ViewModel.InputSignalViewModel("R21", this.InstanceName));
+            Inputs.Add("Tz", new ViewModel.InputSignalViewModel("R22", this.InstanceName));
 
             InitializeComponent();
             workerThread = new BackgroundWorker();
@@ -395,37 +165,7 @@ namespace RobotApp.Views.Plugins
 
         public void UpdateOutput()
         {
-            // Only update the output if we've set our kinematic model
-            if (model == null)
-                return;
-            Vector3D point = new Vector3D();
-            point.X = InvertX ? -(float)ix : (float)ix;
-            point.Y = InvertY ? -(float)iy : (float)iy;
-            point.Z = InvertZ ? -(float)iz : (float)iz;
-            Vector3D orient = new Vector3D();
-            orient.X = (float)iroll;
-            orient.Y = (float)ipitch;
-            orient.Z = (float)iyaw;
-            float[,] frotm = new float[3, 3];
-            frotm[0, 0] = (float)irotm[0, 0];
-            frotm[0, 1] = (float)irotm[0, 1];
-            frotm[0, 2] = (float)irotm[0, 2];
-            frotm[1, 0] = (float)irotm[1, 0];
-            frotm[1, 1] = (float)irotm[1, 1];
-            frotm[1, 2] = (float)irotm[1, 2];
-            frotm[2, 0] = (float)irotm[2, 0];
-            frotm[2, 1] = (float)irotm[2, 1];
-            frotm[2, 2] = (float)irotm[2, 2];
-            //double[] angles = model.GetJointAngles(point, orient);
-            //double[] angles = model.GetJointAngles(point, orient, frotm);
-            double[] angles = model.GetJointAngles(point, orient, irotm);
-            RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate() 
-            {
-                for (int i = 0; i < angles.Length; i++)
-                {
-                    Outputs[model.OutputNames[i]].Value = angles[i];
-                }
-            });
+            
         }
 
         public override void Dispose()
@@ -438,12 +178,24 @@ namespace RobotApp.Views.Plugins
             model = (Kinematic)Activator.CreateInstance(selectedKinematic);
             DHParameters = model.JointParams;
 
+            double alphai, ai, di, thetai;
+
             for(int i =0; i < DHParameters.GetLength(0); i++) //loop through rows
             {
                 for(int j = 0; j < DHParameters.GetLength(1); j++) //loop through columns
                 {
+                    alphai = DHParameters[i, 0];
+                    ai = DHParameters[i, 1];
+                    di = DHParameters[i, 2];
+                    thetai = DHParameters[i, 3];
+
                     //DH parameters alpha, a, d, theta, joint type
-                    Transformations[i] = new Matrix4x4(Math.Cos(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+                    Transformations[i] = new Matrix4x4((float)Math.Cos(thetai * Math.PI/180), (float)(-1 * Math.Sin(thetai * Math.PI / 180)* Math.Cos(alphai * Math.PI / 180)), //0.5
+                        (float)(Math.Sin(thetai * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Cos(thetai * Math.PI / 180)), //1
+                        (float)Math.Sin(thetai * Math.PI / 180), (float)(Math.Cos(thetai * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //1.5
+                        (float)(-1 * Math.Cos(thetai * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Sin(thetai * Math.PI / 180)), //2.0
+                        0, 0, 0, (float)di, //3
+                        0, 0, 0, 1); //4
                 }
             }
         }
