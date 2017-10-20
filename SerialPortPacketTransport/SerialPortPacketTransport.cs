@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO.Ports;
 using System.ComponentModel;
+using System.Threading;
 
 namespace RobotControl
 {
@@ -75,6 +76,8 @@ namespace RobotControl
 	    public BackgroundWorker serialOpsThread;
 	    public Robot robot;
 
+        public enum MCUBaudRates { _230K, _921K };
+
         public SerialPortPacketTransport(String comPort, Robot robotIn)
         {
 	        sppt = this;
@@ -102,7 +105,7 @@ namespace RobotControl
 
 	        Port.PortName = comPort;
             //Port.BaudRate = 230400;
-            Port.BaudRate = 460800;
+            Port.BaudRate = 921600;
             Port.Parity = Parity.None;
 	        Port.DataBits = 8;
 	        Port.StopBits = StopBits.One;
@@ -126,8 +129,8 @@ namespace RobotControl
 	        {
 		        sending = true;
 
-		        // Make sure that the message is the right length
-		        if (data.Length > 28)
+                // Make sure that the message is the right length
+                if (data.Length > 28)
 		        {
                     for (int i = 0; i < 28; i++)
                     {
@@ -142,11 +145,10 @@ namespace RobotControl
 				        TxBuffer[i + 4] = data[i];
 			        }
 		        }
-                
+
                 byte[] sendCrc = new byte[data[0] + 2];
                 Array.Copy(TxBuffer, sendCrc, data[0] + 2);
                 Array.Copy(crc.ComputeChecksumBytes(sendCrc), 0, TxBuffer, data[0] + 2, 2); 
-                    
 
 		        // aquire com lock
                 lock (lockObject)
@@ -154,8 +156,23 @@ namespace RobotControl
                     try { Port.Write(TxBuffer, 0, (data[0] + 4)); }
                     catch (TimeoutException) { }
                     sending = false;
+
+                    if ((JointCommands)data[5] == JointCommands.SetBaudRate)
+                    {
+                        Port.Close();
+                        switch ((MCUBaudRates)data[6])
+                        {
+                            case MCUBaudRates._230K:
+                                Port.BaudRate = 230400;
+                                break;
+                            case MCUBaudRates._921K:
+                                Port.BaudRate = 921600;
+                                break;
+                        }
+                        Port.Open();
+                    }
                 }
-	        }
+            }
         }
 
         public void AddAddress(uint address)
@@ -316,30 +333,34 @@ namespace RobotControl
 					            }
                             }
 				        }
-			        }
-			        SendData = true;
+                        Thread.Sleep(5);
+                    }
+                    SendData = true;
 			        UpdateSetpoints();
 		        }
-		        if (Port.BytesToRead > 10)
-		        {
-			        while (Port.BytesToRead > 0)
-			        {
-				        Port.Read(RxBuffer, 0, 1);
-				        if (RxBuffer[0] == 200)
-				        {
-					        bytesToRead = Port.BytesToRead > (RxBuffer.Length - 1) ? (RxBuffer.Length - 1) : Port.BytesToRead;
-					        Port.Read(RxBuffer, 1, bytesToRead);
-                            byte[] recieveCRC = new byte[bytesToRead + 1];
-                            Array.Copy(RxBuffer, recieveCRC, recieveCRC.Length);
-                            ushort res = crc.ComputeChecksum(recieveCRC);
-                            if (!crcEnable)
-                                DataReceived(RxBuffer);
-                            else if (res == 0)
-                                DataReceived(RxBuffer);
-					        waitingForResponse = false;
-				        }
-			        }
-		        }
+                lock (lockObject)
+                {
+                    if (Port.BytesToRead > 10)
+                    {
+                        while (Port.BytesToRead > 0)
+                        {
+                            Port.Read(RxBuffer, 0, 1);
+                            if (RxBuffer[0] == 200)
+                            {
+                                bytesToRead = Port.BytesToRead > (RxBuffer.Length - 1) ? (RxBuffer.Length - 1) : Port.BytesToRead;
+                                Port.Read(RxBuffer, 1, bytesToRead);
+                                byte[] recieveCRC = new byte[bytesToRead + 1];
+                                Array.Copy(RxBuffer, recieveCRC, recieveCRC.Length);
+                                ushort res = crc.ComputeChecksum(recieveCRC);
+                                if (!crcEnable)
+                                    DataReceived(RxBuffer);
+                                else if (res == 0)
+                                    DataReceived(RxBuffer);
+                                waitingForResponse = false;
+                            }
+                        }
+                    }
+                }
 	        }
         }
     }

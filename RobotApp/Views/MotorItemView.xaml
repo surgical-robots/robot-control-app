@@ -10,94 +10,103 @@
              xmlns:view="clr-namespace:RobotApp.Views"
              d:DesignHeight="300" d:DesignWidth="300">
     <!--<vm:MotorViewModel.MotorContent>-->
-        
-        <StackPanel>
-        <TextBlock DockPanel.Dock="Left" Text="{Binding Id, StringFormat={}Motor {0} Configuration}" FontSize="20" FontWeight="Normal" Margin="0, 0, 0, 10" />
-            <UniformGrid Columns="2">
-                <!--This is just to automatically pad all the elements in this grid-->
-                <UniformGrid.Resources>
-                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-                        <Setter Property="Margin" Value="5"/>
-                    </Style>
-                </UniformGrid.Resources>
 
-                <TextBlock Text="Motor Name"/>
-                <TextBox Text="{Binding FriendlyName}" />
+    <StackPanel>
+        <TextBlock DockPanel.Dock="Left" Text="{Binding Id, StringFormat={}Motor {0} Configuration}" FontSize="20" FontWeight="SemiBold" Margin="0, 0, 0, 10" />
+        <UniformGrid Columns="2">
+            <!--This is just to automatically pad all the elements in this grid-->
+            <UniformGrid.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+                <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+            </UniformGrid.Resources>
 
-                <TextBlock Text="Control Mode"/>
-                <!-- TODO: Move this list into the ViewModel -->
-                <ComboBox SelectedIndex="{Binding ControlModeIndex}"> 
-                    <ComboBoxItem>Reserved</ComboBoxItem>
-                    <ComboBoxItem>Potentiometer</ComboBoxItem>
-                    <ComboBoxItem>Relative Step</ComboBoxItem>
-                </ComboBox>
-            
-                <TextBlock Text="Jogging"/>
-                <StackPanel Orientation="Horizontal">
-                    <mui:ModernButton IconData="{StaticResource BackIconData}">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
-                                <i:InvokeCommandAction Command="{Binding Path=JogReverseDown}"/>
-                            </i:EventTrigger>
-                            <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
-                                <i:InvokeCommandAction Command="{Binding Path=JogReverseUp}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </mui:ModernButton>
-                    <mui:ModernButton Margin="0, 0, 10, 0" DockPanel.Dock="Left" IconData="{StaticResource ForwardIconData}">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
-                                <i:InvokeCommandAction Command="{Binding Path=JogForwardDown}"/>
-                            </i:EventTrigger>
-                            <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
-                                <i:InvokeCommandAction Command="{Binding Path=JogForwardUp}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </mui:ModernButton>
-                </StackPanel>
+            <TextBlock Text="Motor Name   " HorizontalAlignment="Right"/>
+            <TextBox Text="{Binding FriendlyName}" />
+
+            <TextBlock Text="Control Mode   " HorizontalAlignment="Right"/>
+            <!-- TODO: Move this list into the ViewModel -->
+            <ComboBox SelectedIndex="{Binding ControlModeIndex}">
+                <ComboBoxItem>Reserved</ComboBoxItem>
+                <ComboBoxItem>Jog</ComboBoxItem>
+                <ComboBoxItem>Relative Step</ComboBoxItem>
+            </ComboBox>
 
         </UniformGrid>
 
-        <UniformGrid Columns="4">
-            
-            <TextBlock Text="Jog Speed"/>
-            <TextBox Text="{Binding JogSpeed}"/>
-            <TextBlock Text="Gear Ratio"/>
-            <TextBox Text="{Binding GearRatio}" />
+        <UniformGrid Columns="6">
+            <TextBlock Text="Jogging   " VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            <StackPanel Orientation="Horizontal">
+                <mui:ModernButton IconData="{StaticResource BackIconData}" VerticalAlignment="Center">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                            <i:InvokeCommandAction Command="{Binding Path=JogReverseDown}"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                            <i:InvokeCommandAction Command="{Binding Path=JogReverseUp}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </mui:ModernButton>
+                <mui:ModernButton Margin="0, 0, 10, 0" DockPanel.Dock="Left" IconData="{StaticResource ForwardIconData}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                            <i:InvokeCommandAction Command="{Binding Path=JogForwardDown}"/>
+                        </i:EventTrigger>
+                        <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                            <i:InvokeCommandAction Command="{Binding Path=JogForwardUp}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </mui:ModernButton>
+            </StackPanel>
 
-            <TextBlock Text="Kp"/>
-            <TextBox Text="{Binding Kp}" />
-            <TextBlock Text="Angle Setpoint"/>
-            <TextBox Text="{Binding AngleSetpoint}" />
-
-            <TextBlock Text="Min Speed"/>
-            <TextBox Text="{Binding SpeedMin}" />
-            <TextBlock Text="Max Current"/>
-            <TextBox Text="{Binding CurrentMax}" />
-
-            <TextBlock Text="Pot ZERO Value"/>
-            <TextBox Text="{Binding PotZero, Mode=TwoWay}"/>
-            <TextBlock Text="Deadband"/>
-            <TextBox Text="{Binding Deadband}" />
-
-            <TextBlock Text="Refresh Config" DockPanel.Dock="Right" />
+            <TextBlock Text="Refresh Config   " DockPanel.Dock="Right" TextWrapping="Wrap" HorizontalAlignment="Right"/>
             <mui:ModernButton Margin="0, 0, 10, 0" DockPanel.Dock="Left" Command="{Binding RefreshConfig}" IconData="{StaticResource RefreshIconData}" />
-            <TextBlock Text="Home Joint" DockPanel.Dock="Right" />
+            <TextBlock Text="Home Joint   " DockPanel.Dock="Right" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Right"/>
             <mui:ModernButton Margin="0, 0, 10, 0" DockPanel.Dock="Left" Command="{Binding HomeJoint}" IconData="{StaticResource GarageArrowIconData}" />
-
         </UniformGrid>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Expander IsExpanded="False">
+                <UniformGrid Columns="4">
+
+                    <TextBlock Text="Jog Speed   " Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding JogSpeed}"/>
+                    <TextBlock Text="Gear Ratio   " Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding GearRatio}" />
+
+                    <TextBlock Text="Kp   " Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding Kp}" />
+                    <TextBlock Text="Angle Setpoint   " Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding AngleSetpoint}" />
+
+                    <TextBlock Text="Min Speed   " Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding SpeedMin}" />
+                    <TextBlock Text="Max Current   " Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding CurrentMax}" />
+
+                    <TextBlock Text="Pot ZERO Value   " Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding PotZero, Mode=TwoWay}"/>
+                    <TextBlock Text="Deadband   " Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding Deadband}" />
+
+                </UniformGrid>
+            </Expander>
+        </Grid>
 
         <!-- ItemControl for Motor Outputs -->
-        <TextBlock Text="{Binding Id, StringFormat={}Motor {0} Output Signal Mapping}" FontSize="20" FontWeight="Normal"/>
+        <TextBlock Text="{Binding Id, StringFormat={}Motor {0} Output Signal Mapping}" FontSize="18" FontWeight="Normal"/>
         <ItemsControl Name="OutputsListBox" ItemsSource="{Binding Outputs.Values}">
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type vm:OutputSignalViewModel}">
@@ -106,6 +115,6 @@
             </ItemsControl.Resources>
         </ItemsControl>
 
-    </StackPanel>        
-    <!--</vm:MotorViewModel.MotorContent>-->    
+    </StackPanel>
+    <!--</vm:MotorViewModel.MotorContent>-->
 </UserControl>

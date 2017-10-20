@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Diagnostics;
 
 namespace RobotControl
@@ -156,7 +153,7 @@ namespace RobotControl
 
         public void UpdateConfiguration()
         {
-            if (controller != null && controller.Robot != null)
+            if (controller != null && controller.Robot != null && !controller.UpdatingConfig)
             {
                 // convert variables for fixed-point math
                 UInt32 sendKp = (UInt32)(kp * 10000);
@@ -172,8 +169,9 @@ namespace RobotControl
                 Array.Copy(BitConverter.GetBytes(clicksPerRev), 0, configMsg, 11, 2);
                 Array.Copy(BitConverter.GetBytes(deadband), 0, configMsg, 13, 2);
                 // send message
+                controller.Robot.SendCommand(JointCommands.SetBaudRate, this.controller, new byte[] { 0 });
                 controller.Robot.SendCommand(JointCommands.Configure, this.controller, configMsg);
-                //controller.Robot.SendCommand(JointCommands.Configure, this.controller, new byte[] { (byte)index, (byte)controlMode, kp });
+                controller.Robot.SendCommand(JointCommands.SetBaudRate, this.controller, new byte[] { 1 });
             }
         }
 
@@ -232,10 +230,13 @@ namespace RobotControl
                 if(angle != value)
                 {
                     angle = value;
-                    if(this.Index == 0)
-                        controller.Motor1Setpoint = EncoderClicksPerRevolution / (360) * (angle - OffsetAngle);
-                    else
-                        controller.Motor2Setpoint = EncoderClicksPerRevolution / (360) * (angle - OffsetAngle);
+                    lock(this.Controller.Robot.SetpointLock)
+                    {
+                        if (this.Index == 0)
+                            controller.Motor1Setpoint = EncoderClicksPerRevolution / (360) * (angle - OffsetAngle);
+                        else
+                            controller.Motor2Setpoint = EncoderClicksPerRevolution / (360) * (angle - OffsetAngle);
+                    }
                     //UpdateSetpointFromAngle();
                 }
             }

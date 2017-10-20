@@ -1174,8 +1174,8 @@
                             _isRunning = true;
 
                             //Parallel.For(0, camNum, n => { while (_isRunning) _Capture_GrabFrame(n); });
-                            //for (int i = 0; i < camNum; i++)
-                            //{
+                            for (int i = 0; i < camNum; i++)
+                            {
                                 Task t1 = Task.Run(() =>
                                 {
                                     while (_isRunning)
@@ -1184,15 +1184,15 @@
                                     }
                                 });
 
-                            Task t2 = Task.Run(() =>
-                            {
-                                while (_isRunning)
-                                {
-                                    _Capture_GrabFrame(1);
-                                }
-                            });
+                                //Task t2 = Task.Run(() =>
+                                //{
+                                //    while (_isRunning)
+                                //    {
+                                //        _Capture_GrabFrame(1);
+                                //    }
+                                //});
 
-                            //}
+                            }
                         }
                     }));
             }

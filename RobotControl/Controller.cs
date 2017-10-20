@@ -22,7 +22,8 @@ namespace RobotControl
         GetHallPos,
         GetPots,
         GetCurrent,
-        GetConfiguration
+        GetConfiguration,
+        SetBaudRate
     }
 
     public delegate void OnPingEventHandler(Controller sender);
@@ -69,6 +70,8 @@ namespace RobotControl
         #endregion
 
         #region Properties
+
+        public bool UpdatingConfig = false;
 
         private bool identificationLedIsEnabled;
 
@@ -340,101 +343,62 @@ namespace RobotControl
             ControlMode newControlMode = (ControlMode)response[19];
             ushort newDeadband = BitConverter.ToUInt16(response, 20);
 
+            UpdatingConfig = true;
+
             switch (response[6])
             {
                 case 0:
                     {
-                        if(newKp != motor1_kp)
-                        {
-                            motor1_kp = newKp;
-                            if (Motor1KpChanged != null)
-                                Motor1KpChanged(Convert.ToInt32(motor1_kp));
-                        }
-                        if (newClicksPerRev != motor1_clicksPerRev)
-                        {
-                            motor1_clicksPerRev = newClicksPerRev;
-                            if (Motor1ClicksPerRevChanged != null)
-                                Motor1ClicksPerRevChanged(Convert.ToInt32(motor1_clicksPerRev));
-                        }
-                        if (newSpeedMin != motor1_speedMin)
-                        {
-                            motor1_speedMin = newSpeedMin;
-                            if (Motor1SpeedMinChanged != null)
-                                Motor1SpeedMinChanged(Convert.ToInt32(motor1_speedMin));
-                        }
-                        if (newCurrentMax != motor1_currentMax)
-                        {
-                            motor1_currentMax = newCurrentMax;
-                            if (Motor1CurrentMaxChanged != null)
-                                Motor1CurrentMaxChanged(Convert.ToInt32(motor1_currentMax));
-                        }
-                        if (newPotZero != motor1_potZero)
-                        {
-                            motor1_potZero = newPotZero;
-                            if (Motor1PotZeroChanged != null)
-                                Motor1PotZeroChanged(Convert.ToInt32(motor1_potZero));
-                        }
-                        if (newControlMode != motor1_controlMode)
-                        {
-                            motor1_controlMode = newControlMode;
-                            if (Motor1ControlModeChanged != null)
-                                Motor1ControlModeChanged(motor1_controlMode);
-                        }
-                        if (newDeadband != motor1_deadband)
-                        {
-                            motor1_deadband = newDeadband;
-                            if (Motor1DeadbandChanged != null)
-                                Motor1DeadbandChanged(Convert.ToInt32(motor1_deadband));
-                        }
+                        motor1_kp = newKp;
+                        if (Motor1KpChanged != null)
+                            Motor1KpChanged(Convert.ToInt32(motor1_kp));
+                        motor1_clicksPerRev = newClicksPerRev;
+                        if (Motor1ClicksPerRevChanged != null)
+                            Motor1ClicksPerRevChanged(Convert.ToInt32(motor1_clicksPerRev));
+                        motor1_speedMin = newSpeedMin;
+                        if (Motor1SpeedMinChanged != null)
+                            Motor1SpeedMinChanged(Convert.ToInt32(motor1_speedMin));
+                        motor1_currentMax = newCurrentMax;
+                        if (Motor1CurrentMaxChanged != null)
+                            Motor1CurrentMaxChanged(Convert.ToInt32(motor1_currentMax));
+                        motor1_potZero = newPotZero;
+                        if (Motor1PotZeroChanged != null)
+                            Motor1PotZeroChanged(Convert.ToInt32(motor1_potZero));
+                        motor1_controlMode = newControlMode;
+                        if (Motor1ControlModeChanged != null)
+                            Motor1ControlModeChanged(motor1_controlMode);
+                        motor1_deadband = newDeadband;
+                        if (Motor1DeadbandChanged != null)
+                            Motor1DeadbandChanged(Convert.ToInt32(motor1_deadband));
                     }
                     break;
                 case 1:
                     {
-                        if (newKp != motor2_kp)
-                        {
-                            motor2_kp = newKp;
-                            if (Motor2KpChanged != null)
-                                Motor2KpChanged(Convert.ToInt32(motor2_kp));
-                        }
-                        if (newClicksPerRev != motor2_clicksPerRev)
-                        {
-                            motor2_clicksPerRev = newClicksPerRev;
-                            if (Motor2ClicksPerRevChanged != null)
-                                Motor2ClicksPerRevChanged(Convert.ToInt32(motor2_clicksPerRev));
-                        }
-                        if (newSpeedMin != motor2_speedMin)
-                        {
-                            motor2_speedMin = newSpeedMin;
-                            if (Motor2SpeedMinChanged != null)
-                                Motor2SpeedMinChanged(Convert.ToInt32(motor2_speedMin));
-                        }
-                        if (newCurrentMax != motor2_currentMax)
-                        {
-                            motor2_currentMax = newCurrentMax;
-                            if (Motor2CurrentMaxChanged != null)
-                                Motor2CurrentMaxChanged(Convert.ToInt32(motor2_currentMax));
-                        }
-                        if (newPotZero != motor2_potZero)
-                        {
-                            motor2_potZero = newPotZero;
-                            if (Motor2PotZeroChanged != null)
-                                Motor2PotZeroChanged(Convert.ToInt32(motor2_potZero));
-                        }
-                        if (newControlMode != motor2_controlMode)
-                        {
-                            motor2_controlMode = newControlMode;
-                            if (Motor2ControlModeChanged != null)
-                                Motor2ControlModeChanged(motor2_controlMode);
-                        }
-                        if (newDeadband != motor2_deadband)
-                        {
-                            motor2_deadband = newDeadband;
-                            if (Motor2DeadbandChanged != null)
-                                Motor2DeadbandChanged(Convert.ToInt32(motor2_deadband));
-                        }
+                        motor2_kp = newKp;
+                        if (Motor2KpChanged != null)
+                            Motor2KpChanged(Convert.ToInt32(motor2_kp));
+                        motor2_clicksPerRev = newClicksPerRev;
+                        if (Motor2ClicksPerRevChanged != null)
+                            Motor2ClicksPerRevChanged(Convert.ToInt32(motor2_clicksPerRev));
+                        motor2_speedMin = newSpeedMin;
+                        if (Motor2SpeedMinChanged != null)
+                            Motor2SpeedMinChanged(Convert.ToInt32(motor2_speedMin));
+                        motor2_currentMax = newCurrentMax;
+                        if (Motor2CurrentMaxChanged != null)
+                            Motor2CurrentMaxChanged(Convert.ToInt32(motor2_currentMax));
+                        motor2_potZero = newPotZero;
+                        if (Motor2PotZeroChanged != null)
+                            Motor2PotZeroChanged(Convert.ToInt32(motor2_potZero));
+                        motor2_controlMode = newControlMode;
+                        if (Motor2ControlModeChanged != null)
+                            Motor2ControlModeChanged(motor2_controlMode);
+                        motor2_deadband = newDeadband;
+                        if (Motor2DeadbandChanged != null)
+                            Motor2DeadbandChanged(Convert.ToInt32(motor2_deadband));
                     }
                     break;
             }
+            UpdatingConfig = false;
         }
         #endregion
 

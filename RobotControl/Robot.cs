@@ -30,7 +30,7 @@ namespace RobotControl
         public ObservableCollection<Motor> Motors;
         public ObservableCollection<Motor> SerialMotors;
 
-        public System.Timers.Timer setpointTimer;
+        public Object SetpointLock = new Object();
 
         [IgnoreDataMember()]
         private IPacketTransport com;
@@ -60,10 +60,6 @@ namespace RobotControl
             Motors = new ObservableCollection<Motor>();
             SerialMotors = new ObservableCollection<Motor>();
             SerialControllers = new ObservableConcurrentDictionary<uint, Controller>();
-            setpointTimer = new System.Timers.Timer(19);
-            setpointTimer.Elapsed += setpointTimer_Elapsed;
-            //setpointTimer.Start();
-            //StartUpdates();
         }
 
         public void StartUpdates()
@@ -76,19 +72,6 @@ namespace RobotControl
         {
             if(Com != null)
                 Com.RequestData = false;
-        }
-
-        void setpointTimer_Elapsed(object sender, EventArgs e)
-        {
-            if(Com != null)
-            {
-                if (this.Com.SendData && (Controllers != null))
-                {
-                    //SerialMotors = Motors;
-                    SerialControllers = Controllers;
-                    this.Com.SendData = false;
-                }
-            }
         }
 
         void Com_DataReceived(byte[] data)
@@ -181,9 +164,11 @@ namespace RobotControl
             {
                 if (this.Com.SendData && (Controllers != null))
                 {
-                    //SerialMotors = Motors;
-                    SerialControllers = Controllers;
-                    this.Com.SendData = false;
+                    lock(SetpointLock)
+                    {
+                        SerialControllers = Controllers;
+                        this.Com.SendData = false;
+                    }
                 }
             }
         }

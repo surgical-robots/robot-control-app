@@ -47,7 +47,7 @@ namespace RobotControl
         bool RequestData { get; set; }
 
         bool SendData { get; set; }
-        
+
 //        long TimeoutCount { get; set; }
     }
 }

@@ -56,10 +56,10 @@
             CreateInputs();
             SetupMessenger();
 
-            Kp = kp;
-            SpeedMin = speedMin;
-            CurrentMax = currentMax;
-            PotZero = potZero;
+            //    Kp = kp;
+            //    SpeedMin = speedMin;
+            //    CurrentMax = currentMax;
+            //    PotZero = potZero;
         }
 
         /// <summary>

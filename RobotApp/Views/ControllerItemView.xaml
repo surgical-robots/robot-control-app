@@ -19,7 +19,7 @@
         <DockPanel>
             <mui:ModernButton DockPanel.Dock="Right" Command="{Binding DeleteMotorCommand}" IconData="{StaticResource TrashIconData}"/>
             <mui:ModernButton DockPanel.Dock="Right" Command="{Binding AddMotorCommand}" HorizontalAlignment="Right" IconData="{StaticResource AddIconData}"/>
-            <TextBlock DockPanel.Dock="Left" Text="Motors" FontSize="25" FontWeight="Light" Margin="0, 0, 0, 10" />
+            <TextBlock DockPanel.Dock="Left" Text="Motors   " FontSize="25" FontWeight="Light" Margin="0, 0, 0, 10" HorizontalAlignment="Right" />
         </DockPanel>
         <ItemsControl  Name="MotorsListBox" ItemsSource="{Binding Motors}">
             <ItemsControl.Resources>

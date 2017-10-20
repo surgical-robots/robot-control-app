@@ -104,8 +104,7 @@ namespace RobotApp.ViewModel
                         mvm.Id = counter++;
                         Motors.Add(mvm);
                         MainViewModel.Instance.Robot.Com_UpdateSetpoints();
-                        //MainViewModel.Instance.Robot.setpointTimer.Start();
-                        //MainViewModel.Instance.Robot.Motors.Add(mvm.Motor);
+                        mvm.Motor.RequestConfiguration();
                     },
                     () => true));
             }

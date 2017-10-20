@@ -173,7 +173,6 @@ namespace RobotApp.ViewModel
                             robot.StopUpdates();
                             UpdateText = "Start Updates";
                             updating = false;
-                            
                         }
                     }));
             }
