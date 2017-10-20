@@ -18,7 +18,7 @@ namespace RobotApp.Views.Plugins
     {
         private double[,] DHParameters;
 
-        private Matrix4x4[] Tranformations;
+        private Matrix4x4[] Transformations;
 
         public ObservableCollection<Type> KinematicTypes { get; set; }
         private Kinematic model;
@@ -442,7 +442,8 @@ namespace RobotApp.Views.Plugins
             {
                 for(int j = 0; j < DHParameters.GetLength(1); j++) //loop through columns
                 {
-
+                    //DH parameters alpha, a, d, theta, joint type
+                    Transformations[i] = new Matrix4x4(Math.Cos(0), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
                 }
             }
         }
