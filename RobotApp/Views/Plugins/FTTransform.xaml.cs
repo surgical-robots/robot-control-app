@@ -194,7 +194,7 @@ namespace RobotApp.Views.Plugins
                         (float)(Math.Sin(thetai * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Cos(thetai * Math.PI / 180)), //1
                         (float)Math.Sin(thetai * Math.PI / 180), (float)(Math.Cos(thetai * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //1.5
                         (float)(-1 * Math.Cos(thetai * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Sin(thetai * Math.PI / 180)), //2.0
-                        0, 0, 0, (float)di, //3
+                        0, (float)Math.Sin(alphai * Math.PI / 180), (float)Math.Cos(alphai * Math.PI / 180), (float)di, //3
                         0, 0, 0, 1); //4
                 }
             }
