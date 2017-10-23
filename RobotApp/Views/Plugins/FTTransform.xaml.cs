@@ -177,13 +177,12 @@ namespace RobotApp.Views.Plugins
         {
             model = (Kinematic)Activator.CreateInstance(selectedKinematic);
             DHParameters = model.JointParams;
+            Transformations = new Matrix4x4[DHParameters.GetLength(0)];
 
             double alphai, ai, di, thetai;
 
             for(int i =0; i < DHParameters.GetLength(0); i++) //loop through rows
             {
-                for(int j = 0; j < DHParameters.GetLength(1); j++) //loop through columns
-                {
                     alphai = DHParameters[i, 0];
                     ai = DHParameters[i, 1];
                     di = DHParameters[i, 2];
@@ -196,8 +195,9 @@ namespace RobotApp.Views.Plugins
                         (float)(-1 * Math.Cos(thetai * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Sin(thetai * Math.PI / 180)), //2.0
                         0, (float)Math.Sin(alphai * Math.PI / 180), (float)Math.Cos(alphai * Math.PI / 180), (float)di, //3
                         0, 0, 0, 1); //4
-                }
             }
+
+            Console.WriteLine(Transformations[3].ToString());
         }
     }
 }
