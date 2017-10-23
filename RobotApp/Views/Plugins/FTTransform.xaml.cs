@@ -198,6 +198,9 @@ namespace RobotApp.Views.Plugins
             }
 
             Console.WriteLine(Transformations[3].ToString());
+            Matrix4x4 test = Matrix4x4.Transpose(Transformations[3]);
+            Console.WriteLine(test.ToString());
+            Console.WriteLine(Matrix4x4.Multiply(Transformations[3], test));
         }
     }
 }
