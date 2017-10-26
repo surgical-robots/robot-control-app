@@ -43,8 +43,8 @@ namespace RobotApp.Views.Plugins
         public bool InvertY { get; set; }
         public bool InvertZ { get; set; }
 
-        private double fx, fy, fz, tx, ty, tz;
-        
+        private double fx, fy, fz, tx, ty, tz, ja1, ja2, ja3, ja4;
+        private double[] JointAnlges;
 
         public override void PostLoadSetup()
         {
@@ -82,7 +82,33 @@ namespace RobotApp.Views.Plugins
             {
                 tz = message.Value;
 
-            });                 
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint1"].UniqueID, (message) =>
+            {
+                ja1 = message.Value;
+
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint2"].UniqueID, (message) =>
+            {
+                ja2 = message.Value;
+
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint3"].UniqueID, (message) =>
+            {
+                ja3 = message.Value;
+
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint4"].UniqueID, (message) =>
+            {
+                ja4 = message.Value;
+
+            });
+
+            JointAnlges = new double[] { ja1, ja2, ja3, ja4 };
 
             base.PostLoadSetup();
         }
@@ -144,18 +170,49 @@ namespace RobotApp.Views.Plugins
                 isRobot = false;
             }
             
-            Inputs.Add("Fx", new ViewModel.InputSignalViewModel("R10", this.InstanceName));
-            Inputs.Add("Fy", new ViewModel.InputSignalViewModel("R11", this.InstanceName));
-            Inputs.Add("Fz", new ViewModel.InputSignalViewModel("R12", this.InstanceName));
-            Inputs.Add("Tx", new ViewModel.InputSignalViewModel("R20", this.InstanceName));
-            Inputs.Add("Ty", new ViewModel.InputSignalViewModel("R21", this.InstanceName));
-            Inputs.Add("Tz", new ViewModel.InputSignalViewModel("R22", this.InstanceName));
+            Inputs.Add("Fx", new ViewModel.InputSignalViewModel("Fx", this.InstanceName));
+            Inputs.Add("Fy", new ViewModel.InputSignalViewModel("Fy", this.InstanceName));
+            Inputs.Add("Fz", new ViewModel.InputSignalViewModel("Fz", this.InstanceName));
+            Inputs.Add("Tx", new ViewModel.InputSignalViewModel("Tx", this.InstanceName));
+            Inputs.Add("Ty", new ViewModel.InputSignalViewModel("Ty", this.InstanceName));
+            Inputs.Add("Tz", new ViewModel.InputSignalViewModel("Tz", this.InstanceName));
+            Inputs.Add("Joint1", new ViewModel.InputSignalViewModel("Joint1", this.InstanceName));
+            Inputs.Add("Joint2", new ViewModel.InputSignalViewModel("Joint2", this.InstanceName));
+            Inputs.Add("Joint3", new ViewModel.InputSignalViewModel("Joint3", this.InstanceName));
+            Inputs.Add("Joint4", new ViewModel.InputSignalViewModel("Joint4", this.InstanceName));
+
 
             InitializeComponent();
             workerThread = new BackgroundWorker();
             workerThread.DoWork += workerThread_DoWork;
 
             PostLoadSetup();
+        }
+
+        public void CalculateTransformations()
+        {
+            Transformations = new Matrix4x4[DHParameters.GetLength(0)];
+
+            double alphai, ai, di, thetai, jai;
+
+            for (int i = 0; i < DHParameters.GetLength(0); i++) //loop through rows
+            {
+                alphai = DHParameters[i, 0];
+                ai = DHParameters[i, 1];
+                di = DHParameters[i, 2];
+                thetai = DHParameters[i, 3];
+                jai = JointAnlges[i];
+
+                //DH parameters alpha, a, d, theta, joint type
+                Transformations[i] = new Matrix4x4((float)Math.Cos((thetai + jai) * Math.PI / 180), (float)(-1 * Math.Sin((thetai + jai) * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //0.5
+                    (float)(Math.Sin((thetai + jai) * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Cos((thetai + jai) * Math.PI / 180)), //1
+                    (float)Math.Sin((thetai + jai) * Math.PI / 180), (float)(Math.Cos((thetai + jai) * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //1.5
+                    (float)(-1 * Math.Cos((thetai + jai) * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Sin((thetai + jai) * Math.PI / 180)), //2.0
+                    0, (float)Math.Sin(alphai * Math.PI / 180), (float)Math.Cos(alphai * Math.PI / 180), (float)di, //3
+                    0, 0, 0, 1); //4
+            }
+
+
         }
 
         void workerThread_DoWork(object sender, DoWorkEventArgs e)
@@ -176,31 +233,21 @@ namespace RobotApp.Views.Plugins
         public void LoadModel()
         {
             model = (Kinematic)Activator.CreateInstance(selectedKinematic);
-            DHParameters = model.JointParams;
-            Transformations = new Matrix4x4[DHParameters.GetLength(0)];
 
-            double alphai, ai, di, thetai;
-
-            for(int i =0; i < DHParameters.GetLength(0); i++) //loop through rows
+            /*
+            foreach(var name in model.OutputNames)
             {
-                    alphai = DHParameters[i, 0];
-                    ai = DHParameters[i, 1];
-                    di = DHParameters[i, 2];
-                    thetai = DHParameters[i, 3];
-
-                    //DH parameters alpha, a, d, theta, joint type
-                    Transformations[i] = new Matrix4x4((float)Math.Cos(thetai * Math.PI/180), (float)(-1 * Math.Sin(thetai * Math.PI / 180)* Math.Cos(alphai * Math.PI / 180)), //0.5
-                        (float)(Math.Sin(thetai * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Cos(thetai * Math.PI / 180)), //1
-                        (float)Math.Sin(thetai * Math.PI / 180), (float)(Math.Cos(thetai * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //1.5
-                        (float)(-1 * Math.Cos(thetai * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Sin(thetai * Math.PI / 180)), //2.0
-                        0, (float)Math.Sin(alphai * Math.PI / 180), (float)Math.Cos(alphai * Math.PI / 180), (float)di, //3
-                        0, 0, 0, 1); //4
+                if(name.Contains("Joint"))
+                {
+                    Inputs.Add(name, new ViewModel.InputSignalViewModel(name, this.InstanceName));
+                }
             }
+            */
 
-            Console.WriteLine(Transformations[3].ToString());
-            Matrix4x4 test = Matrix4x4.Transpose(Transformations[3]);
-            Console.WriteLine(test.ToString());
-            Console.WriteLine(Matrix4x4.Multiply(Transformations[3], test));
+            DHParameters = model.JointParams;
+
+            CalculateTransformations();
+            
         }
     }
 }
