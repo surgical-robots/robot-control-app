@@ -19,6 +19,7 @@ namespace RobotApp.Views.Plugins
         private double[,] DHParameters;
 
         private Matrix4x4[] Transformations;
+        private Matrix4x4 BaseTransform;
 
         public ObservableCollection<Type> KinematicTypes { get; set; }
         private Kinematic model;
@@ -189,6 +190,7 @@ namespace RobotApp.Views.Plugins
             PostLoadSetup();
         }
 
+        //Calculates coordinate transform matrix to transform from endpoint frame to base frame
         public void CalculateTransformations()
         {
             Transformations = new Matrix4x4[DHParameters.GetLength(0)];
@@ -212,6 +214,11 @@ namespace RobotApp.Views.Plugins
                     0, 0, 0, 1); //4
             }
 
+            BaseTransform = Transformations[0];
+            for(int i = 1; i < Transformations.Length; i++)
+            {
+                BaseTransform = Matrix4x4.Multiply(BaseTransform, Transformations[i]);
+            }
 
         }
 
