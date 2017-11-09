@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
+using MathNet.Numerics.LinearAlgebra;
 using System.Threading;
 using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Messaging;
@@ -18,8 +19,11 @@ namespace RobotApp.Views.Plugins
     {
         private double[,] DHParameters;
 
-        private Matrix4x4[] Transformations;
-        private Matrix4x4 BaseTransform;
+        //private Matrix4x4[] Transformations;
+        private Matrix<float> [] Transformations;
+        
+        //private Matrix4x4 BaseTransform;
+        private Matrix<float> BaseForceTransform = Matrix<float>.Build.Dense(6, 6);
 
         public ObservableCollection<Type> KinematicTypes { get; set; }
         private Kinematic model;
@@ -193,7 +197,13 @@ namespace RobotApp.Views.Plugins
         //Calculates coordinate transform matrix to transform from endpoint frame to base frame
         public void CalculateTransformations()
         {
-            Transformations = new Matrix4x4[DHParameters.GetLength(0)];
+            Transformations = new Matrix<float>[DHParameters.GetLength(0)];
+            Matrix<float> BaseTransform = Matrix<float>.Build.Dense(4, 4);
+            Matrix<float> BaseRotation = Matrix<float>.Build.Dense(3, 3);
+            Vector<float> BasePosition = Vector<float>.Build.Dense(3);
+            Matrix<float> ToolSensorTransform = Matrix<float>.Build.Dense(4, 4);
+            Matrix<float> ToolSensorRotation = Matrix<float>.Build.Dense(3, 3);
+            Vector<float> ToolSensorPosition = Vector<float>.Build.Dense(3);
 
             double alphai, ai, di, thetai, jai;
 
@@ -206,19 +216,25 @@ namespace RobotApp.Views.Plugins
                 jai = JointAnlges[i];
 
                 //DH parameters alpha, a, d, theta, joint type
-                Transformations[i] = new Matrix4x4((float)Math.Cos((thetai + jai) * Math.PI / 180), (float)(-1 * Math.Sin((thetai + jai) * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //0.5
-                    (float)(Math.Sin((thetai + jai) * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Cos((thetai + jai) * Math.PI / 180)), //1
-                    (float)Math.Sin((thetai + jai) * Math.PI / 180), (float)(Math.Cos((thetai + jai) * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //1.5
-                    (float)(-1 * Math.Cos((thetai + jai) * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Sin((thetai + jai) * Math.PI / 180)), //2.0
-                    0, (float)Math.Sin(alphai * Math.PI / 180), (float)Math.Cos(alphai * Math.PI / 180), (float)di, //3
-                    0, 0, 0, 1); //4
+
+                float[,] t = { { (float)Math.Cos((thetai + jai) * Math.PI / 180), (float)(-1 * Math.Sin((thetai + jai) * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //0.5
+                    (float)(Math.Sin((thetai + jai) * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Cos((thetai + jai) * Math.PI / 180))}, //1
+                    { (float)Math.Sin((thetai + jai) * Math.PI / 180), (float)(Math.Cos((thetai + jai) * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //1.5
+                    (float)(-1 * Math.Cos((thetai + jai) * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Sin((thetai + jai) * Math.PI / 180))}, //2.0
+                    { 0, (float)Math.Sin(alphai * Math.PI / 180), (float)Math.Cos(alphai * Math.PI / 180), (float)di}, //3
+                    { 0, 0, 0, 1} }; //4
+
+                Transformations[i] = Matrix<float>.Build.DenseOfArray(t);
+
             }
 
             BaseTransform = Transformations[0];
-            for(int i = 1; i < Transformations.Length; i++)
+            for (int i = 1; i < Transformations.Length; i++)
             {
-                BaseTransform = Matrix4x4.Multiply(BaseTransform, Transformations[i]);
+                BaseTransform = BaseTransform.Multiply(Transformations[i]);
             }
+
+
 
         }
 

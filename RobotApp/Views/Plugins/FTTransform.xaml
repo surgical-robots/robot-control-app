@@ -16,14 +16,8 @@
             </UniformGrid>
             
             <UniformGrid Columns="2">
-                <TextBlock Text="Invert X Input" />
-                <CheckBox IsChecked="{Binding InvertX}" />
-                
-                <TextBlock Text="Invert Y Input" />
-                <CheckBox IsChecked="{Binding InvertY}" />
-
-                <TextBlock Text="Invert Z Input" />
-                <CheckBox IsChecked="{Binding InvertZ}" />
+                <TextBlock Text="Left Handed Coordinates" />
+                <CheckBox IsChecked="{Binding LHR}" />
             </UniformGrid>
 
         </StackPanel>
