@@ -206,6 +206,7 @@ namespace RobotApp.Views.Plugins
             Matrix<float> ToolSensorRotation = Matrix<float>.Build.Dense(3, 3);
             Matrix<float> ToolSensorTransform;
             Matrix<float> ToolSensorPosition;
+            Vector<float> ForceTorque;
 
             double alphai, ai, di, thetai, jai;
 
@@ -227,7 +228,7 @@ namespace RobotApp.Views.Plugins
                     { 0, 0, 0, 1} }; //4
 
                 Transformations[i] = Matrix<float>.Build.DenseOfArray(t);
-
+                Transformations[i].CoerceZero(1e-14);
             }
 
             BaseTransform = Transformations[0];
@@ -236,8 +237,26 @@ namespace RobotApp.Views.Plugins
                 BaseTransform = BaseTransform.Multiply(Transformations[i]);
             }
 
+            //Creation of transformation matrix to transform wrist torques into base frame
+            BaseRotation = BaseTransform.SubMatrix(0, 2, 0, 2);
+
             var bp = BaseTransform.RemoveRow(3).Column(3);
 
+            float[,] bst = {{0, -bp[2], bp[1] },
+                            { bp[2], 0, -bp[0] },
+                             {-bp[1], bp[0], 0 }};
+
+            BasePosition = Matrix<float>.Build.DenseOfArray(bst);
+            BasePosition = BasePosition.Multiply(BaseRotation);
+
+
+            /*[ R wrist to base         0]
+             *[ P wtb * R wtb       R wtb]
+             * */
+            BaseForceTransform = BaseRotation.Stack(BasePosition);
+            BaseForceTransform = BaseForceTransform.Append(Matrix<float>.Build.Dense(3, 3).Stack(BaseRotation));
+            
+            //Creation of transformation matrix to transform sensor forces into wrist frame
             //ToolSensorRotation = Transformations[3].SubMatrix(0, 2, 0, 2);  //Assume sensor and wrist axises are aligned
 
             var tsp = Transformations[3].RemoveRow(3).Column(3);
@@ -248,8 +267,18 @@ namespace RobotApp.Views.Plugins
 
             ToolSensorPosition = Matrix<float>.Build.DenseOfArray(tst);
 
+
+            /*[I        0]
+             *[ P stw   I]
+             * */
             ToolSensorTransform = Matrix<float>.Build.DenseIdentity(3).Stack(ToolSensorPosition);
             ToolSensorTransform = ToolSensorTransform.Append(Matrix<float>.Build.Dense(3, 3).Stack(Matrix<float>.Build.DenseIdentity(3)));
+
+            float[] f = { (float)fx, (float)fy, (float)fz, (float)tx, (float)ty, (float)tz };
+            ForceTorque = Vector<float>.Build.DenseOfArray(f);
+
+            //Final Force torque transformation to base frame
+            ForceTorque = BaseTransform.Multiply(ToolSensorTransform.Multiply(ForceTorque));
 
         }
 
