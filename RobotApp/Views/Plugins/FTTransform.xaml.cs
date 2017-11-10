@@ -277,7 +277,7 @@ namespace RobotApp.Views.Plugins
             float[] f = { (float)fx, (float)fy, (float)fz, (float)tx, (float)ty, (float)tz };
             ForceTorque = Vector<float>.Build.DenseOfArray(f);
 
-            //Final Force torque transformation to base frame
+            //Final Force torque transformation from sensor frame to base frame
             ForceTorque = BaseTransform.Multiply(ToolSensorTransform.Multiply(ForceTorque));
 
         }
