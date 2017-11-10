@@ -238,17 +238,18 @@ namespace RobotApp.Views.Plugins
 
             var bp = BaseTransform.RemoveRow(3).Column(3);
 
-            ToolSensorRotation = Transformations[3].SubMatrix(0, 2, 0, 2);
+            //ToolSensorRotation = Transformations[3].SubMatrix(0, 2, 0, 2);  //Assume sensor and wrist axises are aligned
 
             var tsp = Transformations[3].RemoveRow(3).Column(3);
 
-			float[,] tst = {{0, -tsp[2], tsp[1] },
-			                { tsp[2], 0, -tsp[0] },
-			                 {-tsp[1], tsp[0], 0 }};
+			float[,] tst = {{0, tsp[2], -tsp[1] },
+			                { -tsp[2], 0, tsp[0] },
+			                 {tsp[1], -tsp[0], 0 }};
 
             ToolSensorPosition = Matrix<float>.Build.DenseOfArray(tst);
 
-
+            ToolSensorTransform = Matrix<float>.Build.DenseIdentity(3).Stack(ToolSensorPosition);
+            ToolSensorTransform = ToolSensorTransform.Append(Matrix<float>.Build.Dense(3, 3).Stack(Matrix<float>.Build.DenseIdentity(3)));
 
         }
 
