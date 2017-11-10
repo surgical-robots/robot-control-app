@@ -46,9 +46,7 @@ namespace RobotApp.Views.Plugins
             }
         }
 
-        public bool InvertX { get; set; }
-        public bool InvertY { get; set; }
-        public bool InvertZ { get; set; }
+        public bool LHR { get; set; }
 
         private double fx, fy, fz, tx, ty, tz, ja1, ja2, ja3, ja4;
         private double[] JointAnlges;

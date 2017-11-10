@@ -11,56 +11,6 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace RobotApp.Views.Plugins
 {
-    public class Crc16
-    {
-        const ushort polynomial = 0xA001;
-        ushort[] table = new ushort[256];
-
-        public ushort ComputeChecksum(byte[] bytes)
-        {
-            ushort crc = 0;
-            for (int i = 0; i < bytes.Length; ++i)
-            {
-                byte index = (byte)(crc ^ bytes[i]);
-                crc = (ushort)((crc >> 8) ^ table[index]);
-            }
-
-            return crc;
-        }
-
-        public byte[] ComputeChecksumBytes(byte[] bytes)
-        {
-            ushort crc = ComputeChecksum(bytes);
-            return BitConverter.GetBytes(crc);
-        }
-
-        public Crc16()
-        {
-            ushort value;
-            ushort temp;
-            for (ushort i = 0; i < table.Length; ++i)
-            {
-                value = 0;
-                temp = i;
-                for (byte j = 0; j < 8; ++j)
-                {
-                    if (((value ^ temp) & 0x0001) != 0)
-                    {
-                        value = (ushort)((value >> 1) ^ polynomial);
-                    }
-                    else
-                    {
-                        value >>= 1;
-                    }
-
-                    temp >>= 1;
-                }
-
-                table[i] = value;
-            }
-        }
-    }
-
     public class Calibration
     {
         public byte[] CalibSerialNumber;
@@ -77,10 +27,31 @@ namespace RobotApp.Views.Plugins
         public ushort[] GageOffset;
     }
 
+    public enum ModCommand
+    {
+        ReadCoils = 0x01,
+        ReadDiscreteInputs,
+        ReadHoldingRegisters,
+        ReadInputRegisters,
+        WriteSingleCoil,
+        WriteSingleRegister,
+        ReadExceptionStatus,
+        Diagnostics,
+        WriteMultipleRegisters = 0x10,
+        ReportServerID,
+        ReadFileRecord = 0x14,
+        WriteFileRecord,
+        MaskWriteRegister,
+        ReadWriteMultipleRegisters,
+        ReadFIFOQueue,
+        UnlockStorage = 0x6A,
+        StartDataStream = 0x46
+    }
+
     /// <summary>
-    /// Interaction logic for ButtonInterface.xaml
+    /// Interaction logic for FTSensorATI.xaml
     /// </summary>
-    /// 
+    ///
     public partial class FTSensorATI : PluginBase
     {
         private BackgroundWorker workerThread;
@@ -95,7 +66,6 @@ namespace RobotApp.Views.Plugins
         private int outputNum;
         private float filterThreshold = 10;
         private int sampleSize = 32;
-        private Crc16 crc = new Crc16();
         private Calibration calib = new Calibration();
         private Matrix<float> basicMatrix = Matrix<float>.Build.Dense(6, 6);
         private Matrix<float> gaugeValues = Matrix<float>.Build.Dense(6, 1);
@@ -128,14 +98,12 @@ namespace RobotApp.Views.Plugins
             byte[] payload = new byte[5];
 
             payload[0] = slaveAddress;
-            payload[1] = 0x46;
+            payload[1] = (byte)ModCommand.StartDataStream;
             payload[2] = 0x55;
-            payload[3] = 0xa3;
-            payload[4] = 0x9d;
 
-            //byte[] sendCrc = new byte[payload.Length - 2];
-            //Array.Copy(payload, sendCrc, payload.Length - 2);
-            //Array.Copy(crc.ComputeChecksumBytes(sendCrc), 0, payload, payload.Length - 2, 2);
+            byte[] sendCrc = new byte[payload.Length - 2];
+            Array.Copy(payload, sendCrc, payload.Length - 2);
+            Array.Copy(Mod_CRC(sendCrc, sendCrc.Length), 0, payload, payload.Length - 2, 2);
 
             connectPort.DiscardInBuffer();
 
@@ -151,17 +119,15 @@ namespace RobotApp.Views.Plugins
             byte[] receiveBuffer = new byte[255];
             int byteCount = 0;
             payload[0] = slaveAddress;
-            payload[1] = 0x03;
+            payload[1] = (byte)ModCommand.ReadHoldingRegisters;  // read multiple registers
             payload[2] = 0x00;
             payload[3] = 0xe3;
             payload[4] = 0x00;
             payload[5] = 0x7d;
-            payload[6] = 0x75;
-            payload[7] = 0x66;
 
-            //byte[] sendCrc = new byte[payload.Length - 2];
-            //Array.Copy(payload, sendCrc, payload.Length - 2);
-            //Array.Copy(crc.ComputeChecksumBytes(sendCrc), 0, payload, payload.Length - 2, 2);
+            byte[] sendCrc = new byte[payload.Length - 2];
+            Array.Copy(payload, sendCrc, payload.Length - 2);
+            Array.Copy(Mod_CRC(sendCrc, sendCrc.Length), 0, payload, payload.Length - 2, 2);
 
             if (connectPort.IsOpen)
             {
@@ -182,8 +148,6 @@ namespace RobotApp.Views.Plugins
                 {
                     receiveBuffer[byteCount] = (byte)connectPort.ReadByte();
                     byteCount++;
-                    //byteCount = connectPort.BytesToRead;
-                    //connectPort.Read(receiveBuffer, 0, 255);
                 }
                 catch (TimeoutException ex)
                 {
@@ -220,7 +184,7 @@ namespace RobotApp.Views.Plugins
             byte[] payload = new byte[11];
 
             payload[0] = slaveAddress;
-            payload[1] = 0x10;
+            payload[1] = (byte)ModCommand.WriteMultipleRegisters;
             payload[2] = 0x00;
             payload[3] = 0x1e;
             payload[4] = 0x00;
@@ -228,8 +192,10 @@ namespace RobotApp.Views.Plugins
             payload[6] = 0x02;
             payload[7] = 0x00;
             payload[8] = 0x00;
-            payload[9] = 0xD6;
-            payload[10] = 0xDE;
+
+            byte[] sendCrc = new byte[payload.Length - 2];
+            Array.Copy(payload, sendCrc, payload.Length - 2);
+            Array.Copy(Mod_CRC(sendCrc, sendCrc.Length), 0, payload, payload.Length - 2, 2);
 
             if (connectPort.IsOpen)
             {
@@ -237,7 +203,7 @@ namespace RobotApp.Views.Plugins
             }
 
             payload[0] = slaveAddress;
-            payload[1] = 0x10;
+            payload[1] = (byte)ModCommand.WriteMultipleRegisters;
             payload[2] = 0x00;
             payload[3] = 0x1F;
             payload[4] = 0x00;
@@ -245,11 +211,12 @@ namespace RobotApp.Views.Plugins
             payload[6] = 0x02;
             payload[7] = 0x00;
             payload[8] = 0x02;
-            payload[9] = 0x56;
-            payload[10] = 0xCE;
+
+            Array.Copy(payload, sendCrc, payload.Length - 2);
+            Array.Copy(Mod_CRC(sendCrc, sendCrc.Length), 0, payload, payload.Length - 2, 2);
 
             //payload[0] = slaveAddress;
-            //payload[1] = 0x10;
+            //payload[1] = (byte)ModCommand.WriteMultipleRegisters;
             //payload[2] = 0x00;
             //payload[3] = 0x1f;
             //payload[4] = 0x00;
@@ -272,7 +239,7 @@ namespace RobotApp.Views.Plugins
             payload = new byte[13];
 
             payload[0] = slaveAddress;
-            payload[1] = 0x10;
+            payload[1] = (byte)ModCommand.WriteMultipleRegisters;
             payload[2] = 0x00;
             payload[3] = 0x20;
             payload[4] = 0x00;
@@ -282,8 +249,9 @@ namespace RobotApp.Views.Plugins
             payload[8] = 0x07;
             payload[9] = 0xC4;
             payload[10] = 0x6D;
-            payload[11] = 0xF6;
-            payload[12] = 0x7F;
+
+            Array.Copy(payload, sendCrc, payload.Length - 2);
+            Array.Copy(Mod_CRC(sendCrc, sendCrc.Length), 0, payload, payload.Length - 2, 2);
 
             if (connectPort.IsOpen)
             {
@@ -382,8 +350,6 @@ namespace RobotApp.Views.Plugins
             bool isGood;
             bool initialized = false;
 
-            double newtonForce = 4.44822;
-
             while(listen)
             {
                 while (connectPort.BytesToRead > 0)
@@ -408,7 +374,7 @@ namespace RobotApp.Views.Plugins
                             gaugeValues[4, 0] = sampleValues[2];
                             gaugeValues[5, 0] = sampleValues[5];
 
-                            outValues = basicMatrix.Multiply(gaugeValues).Multiply((float)0.000001).Multiply((float) newtonForce).Subtract(offset);
+                            outValues = basicMatrix.Multiply(gaugeValues).Multiply((float)0.000001).Subtract(offset);
 
                             avgFx = ((oldAvgFx * sampleSize) + (outValues[0, 0] - oldAvgFx)) / sampleSize;
                             avgFy = ((oldAvgFy * sampleSize) + (outValues[1, 0] - oldAvgFy)) / sampleSize;
@@ -457,6 +423,32 @@ namespace RobotApp.Views.Plugins
                 return true; /* checksum matches. */
             else
                 return false; /* checksum does not match. */
+        }
+
+        // Compute the MODBUS CRC
+        byte[] Mod_CRC(byte[] buf, int len)
+        {
+            ushort crc = 0xFFFF;
+
+            for (int pos = 0; pos < len; pos++)
+            {
+                crc ^= (ushort)buf[pos];        // XOR byte into least sig. byte of crc
+
+                for (int i = 8; i != 0; i--)
+                { // Loop over each bit
+                    if ((crc & 0x0001) != 0)
+                    { // If the LSB is set
+                        crc >>= 1;              // Shift right and XOR 0xA001
+                        crc ^= 0xA001;
+                    }
+                    else                        // Else LSB is not set
+                        crc >>= 1;              // Just shift right
+                }
+            }
+
+            byte[] crcBytes = new byte[2];
+            crcBytes = BitConverter.GetBytes(crc);
+            return crcBytes;
         }
 
         static short ToShort(byte[] input, int offset)

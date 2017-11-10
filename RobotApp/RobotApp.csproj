@@ -541,8 +541,8 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Plugins\FTSensorATI.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Views\Plugins\FTTransform.xaml">
       <Generator>MSBuild:Compile</Generator>
