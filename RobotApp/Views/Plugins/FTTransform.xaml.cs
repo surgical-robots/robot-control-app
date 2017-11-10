@@ -25,6 +25,8 @@ namespace RobotApp.Views.Plugins
         //private Matrix4x4 BaseTransform;
         private Matrix<float> BaseForceTransform = Matrix<float>.Build.Dense(6, 6);
 
+
+
         public ObservableCollection<Type> KinematicTypes { get; set; }
         private Kinematic model;
 
@@ -197,13 +199,15 @@ namespace RobotApp.Views.Plugins
         //Calculates coordinate transform matrix to transform from endpoint frame to base frame
         public void CalculateTransformations()
         {
+
             Transformations = new Matrix<float>[DHParameters.GetLength(0)];
             Matrix<float> BaseTransform = Matrix<float>.Build.Dense(4, 4);
+            Matrix<float> BaseForceTransform = Matrix<float>.Build.DenseIdentity(6);
             Matrix<float> BaseRotation = Matrix<float>.Build.Dense(3, 3);
-            Vector<float> BasePosition = Vector<float>.Build.Dense(3);
-            Matrix<float> ToolSensorTransform = Matrix<float>.Build.Dense(4, 4);
+            Matrix<float> BasePosition = Matrix<float>.Build.Dense(3,3);
             Matrix<float> ToolSensorRotation = Matrix<float>.Build.Dense(3, 3);
-            Vector<float> ToolSensorPosition = Vector<float>.Build.Dense(3);
+            Matrix<float> ToolSensorTransform;
+            Matrix<float> ToolSensorPosition;
 
             double alphai, ai, di, thetai, jai;
 
@@ -233,6 +237,18 @@ namespace RobotApp.Views.Plugins
             {
                 BaseTransform = BaseTransform.Multiply(Transformations[i]);
             }
+
+            var bp = BaseTransform.RemoveRow(3).Column(3);
+
+            ToolSensorRotation = Transformations[3].SubMatrix(0, 2, 0, 2);
+
+            var tsp = Transformations[3].RemoveRow(3).Column(3);
+
+			float[,] tst = {{0, -tsp[2], tsp[1] },
+			                { tsp[2], 0, -tsp[0] },
+			                 {-tsp[1], tsp[0], 0 }};
+
+            ToolSensorPosition = Matrix<float>.Build.DenseOfArray(tst);
 
 
 
