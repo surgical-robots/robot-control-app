@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using MathNet.Numerics.LinearAlgebra;
+using RobotApp.ViewModel;
 using System.Threading;
 using System.Windows.Media.Media3D;
 using GalaSoft.MvvmLight.Messaging;
@@ -174,7 +175,14 @@ namespace RobotApp.Views.Plugins
                     KinematicTypes.Remove(kineType);
                 isRobot = false;
             }
-            
+
+            Outputs.Add("Fx", new OutputSignalViewModel("Force X"));
+            Outputs.Add("Fy", new OutputSignalViewModel("Force Y"));
+            Outputs.Add("Fz", new OutputSignalViewModel("Force Z"));
+            Outputs.Add("Tx", new OutputSignalViewModel("Torque X"));
+            Outputs.Add("Ty", new OutputSignalViewModel("Torque Y"));
+            Outputs.Add("Tz", new OutputSignalViewModel("Torque Z"));
+
             Inputs.Add("Fx", new ViewModel.InputSignalViewModel("Fx", this.InstanceName));
             Inputs.Add("Fy", new ViewModel.InputSignalViewModel("Fy", this.InstanceName));
             Inputs.Add("Fz", new ViewModel.InputSignalViewModel("Fz", this.InstanceName));
@@ -279,6 +287,16 @@ namespace RobotApp.Views.Plugins
 
             //Final Force torque transformation from sensor frame to base frame
             ForceTorque = BaseTransform.Multiply(ToolSensorTransform.Multiply(ForceTorque));
+
+            RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate ()
+            {
+                Outputs["Fx"].Value = ForceTorque[0];
+                Outputs["Fy"].Value = ForceTorque[1];
+                Outputs["Fz"].Value = ForceTorque[2];
+                Outputs["Tx"].Value = ForceTorque[3];
+                Outputs["Ty"].Value = ForceTorque[4];
+                Outputs["Tz"].Value = ForceTorque[5];
+            });
 
         }
 
