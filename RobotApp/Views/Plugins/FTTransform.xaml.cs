@@ -57,64 +57,64 @@ namespace RobotApp.Views.Plugins
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Fx"].UniqueID, (message) =>
             {
                 fx = message.Value;
-
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Fy"].UniqueID, (message) =>
             {
                 fy = message.Value;
-
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Fz"].UniqueID, (message) =>
             {
                 fz = message.Value;
-              
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Tx"].UniqueID, (message) =>
             {
                 tx = message.Value;
-
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Ty"].UniqueID, (message) =>
             {
                 ty = message.Value;
-
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Tz"].UniqueID, (message) =>
             {
                 tz = message.Value;
-
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint1"].UniqueID, (message) =>
             {
                 ja1 = message.Value;
-
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint2"].UniqueID, (message) =>
             {
                 ja2 = message.Value;
-
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint3"].UniqueID, (message) =>
             {
                 ja3 = message.Value;
-
+                CalculateTransformations();
             });
 
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Joint4"].UniqueID, (message) =>
             {
                 ja4 = message.Value;
-
+                CalculateTransformations();
             });
 
-            JointAnlges = new double[] { ja1, ja2, ja3, ja4 };
+           
 
             base.PostLoadSetup();
         }
@@ -210,11 +210,13 @@ namespace RobotApp.Views.Plugins
             Matrix<float> BaseTransform = Matrix<float>.Build.Dense(4, 4);
             Matrix<float> BaseForceTransform = Matrix<float>.Build.DenseIdentity(6);
             Matrix<float> BaseRotation = Matrix<float>.Build.Dense(3, 3);
-            Matrix<float> BasePosition = Matrix<float>.Build.Dense(3,3);
+            Matrix<float> BasePosition = Matrix<float>.Build.Dense(3, 3);
             Matrix<float> ToolSensorRotation = Matrix<float>.Build.Dense(3, 3);
             Matrix<float> ToolSensorTransform;
             Matrix<float> ToolSensorPosition;
             Vector<float> ForceTorque;
+
+            JointAnlges = new double[] { ja1, ja2, ja3, ja4 };
 
             double alphai, ai, di, thetai, jai;
 
@@ -224,7 +226,14 @@ namespace RobotApp.Views.Plugins
                 ai = DHParameters[i, 1];
                 di = DHParameters[i, 2];
                 thetai = DHParameters[i, 3];
-                jai = JointAnlges[i];
+
+                if (i < 4)
+                {
+                    jai = JointAnlges[i];
+                } else
+                {
+                    jai = 0;
+                }
 
                 //DH parameters alpha, a, d, theta, joint type
 
@@ -246,7 +255,7 @@ namespace RobotApp.Views.Plugins
             }
 
             //Creation of transformation matrix to transform wrist torques into base frame
-            BaseRotation = BaseTransform.SubMatrix(0, 2, 0, 2);
+            BaseRotation = BaseTransform.SubMatrix(0, 3, 0, 3);
 
             var bp = BaseTransform.RemoveRow(3).Column(3);
 
@@ -263,18 +272,24 @@ namespace RobotApp.Views.Plugins
              * */
             BaseForceTransform = BaseRotation.Stack(BasePosition);
             BaseForceTransform = BaseForceTransform.Append(Matrix<float>.Build.Dense(3, 3).Stack(BaseRotation));
-            
+
             //Creation of transformation matrix to transform sensor forces into wrist frame
-            //ToolSensorRotation = Transformations[3].SubMatrix(0, 2, 0, 2);  //Assume sensor and wrist axises are aligned
+            ToolSensorRotation = Transformations[4].SubMatrix(0, 3, 0, 3);  //Assume sensor and wrist axises are aligned
 
-            var tsp = Transformations[3].RemoveRow(3).Column(3);
+            var tsp = Transformations[5].RemoveRow(3).Column(3);
 
-			float[,] tst = {{0, tsp[2], -tsp[1] },
+            float[,] tst = {{0, tsp[2], -tsp[1] },
 			                { -tsp[2], 0, tsp[0] },
 			                 {tsp[1], -tsp[0], 0 }};
-
+            
+             
+             /*
+            float[,] tst = {{0, tsp[1], -tsp[2] },
+                            { -tsp[1], 0, tsp[0] },
+                             {tsp[2], -tsp[0], 0 }};
+            */
             ToolSensorPosition = Matrix<float>.Build.DenseOfArray(tst);
-
+            ToolSensorPosition = ToolSensorPosition.Multiply(ToolSensorRotation);
 
             /*[I        0]
              *[ P stw   I]
@@ -286,7 +301,10 @@ namespace RobotApp.Views.Plugins
             ForceTorque = Vector<float>.Build.DenseOfArray(f);
 
             //Final Force torque transformation from sensor frame to base frame
-            ForceTorque = BaseTransform.Multiply(ToolSensorTransform.Multiply(ForceTorque));
+            var tmp = ToolSensorTransform.Multiply(ForceTorque);
+
+
+            ForceTorque = BaseForceTransform.Multiply(tmp);
 
             RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate ()
             {
