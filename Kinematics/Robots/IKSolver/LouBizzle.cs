@@ -5,10 +5,10 @@
         public LouBizzle()
         {
             // alpha(i-1)     a(i-i)     d(i)      theta(i)     joint-type
-            DHparameters = new double[6, 5] { {   0,      0,      0,   0, (double)JointType.Rotation },
+            DHparameters = new double[6, 5] { {   0,      0,      0,   0, (double)JointType.Rotation }, //theta 1
                                               {  90,      0,      0,   0, (double)JointType.Rotation },
-                                              {  90,      0,      0,  90, (double)JointType.Rotation }, 
-                                              {  90,      0,  87.57,  90, (double)JointType.Rotation },
+                                              {  90,      0,      0,  90, (double)JointType.Rotation }, //theta 2
+                                              {  90,      0,  87.57,  90, (double)JointType.Rotation }, //theta 3
                                               {  90,      0,      0, 180, (double)JointType.Rotation },
                                               {  90,      0,     92, 180, (double)JointType.Rotation } };
             N = 6;
