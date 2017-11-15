@@ -216,7 +216,7 @@ namespace RobotApp.Views.Plugins
             Matrix<float> ToolSensorPosition;
             Vector<float> ForceTorque;
 
-            JointAnlges = new double[] { ja1, ja2, ja3, ja4 };
+            JointAnlges = new double[] {0, ja1, ja2, ja3, ja4 };
 
             double alphai, ai, di, thetai, jai;
 
@@ -225,9 +225,9 @@ namespace RobotApp.Views.Plugins
                 alphai = DHParameters[i, 0];
                 ai = DHParameters[i, 1];
                 di = DHParameters[i, 2];
-                thetai = DHParameters[i, 3];
+                thetai = DHParameters[i, 3];                
 
-                if (i < 4)
+                if (i < 5)
                 {
                     jai = JointAnlges[i];
                 } else
