@@ -11,6 +11,7 @@ using System.Threading;
 using System.Diagnostics;
 using Emgu.CV;
 using Emgu.CV.Structure;
+using FFmpeg.AutoGen;
 
 namespace TelSurge
 {
@@ -685,6 +686,8 @@ namespace TelSurge
                 }
                 else
                 {
+                    VideoCapture.InitEncoder();
+                    VideoCapture.CameraInit();
                     VideoCapture.StartCapturing();
                     btn_Capture.Text = "Stop";
                 }

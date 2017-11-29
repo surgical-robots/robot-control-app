@@ -1,24 +1,25 @@
 ﻿namespace Kinematics.Robots
 {
-    class LouBizzle : IKSolver
+    class JoeBot : IKSolver
     {
-        public LouBizzle()
+        public JoeBot()
         {
             // alpha(i-1)     a(i-i)     d(i)      theta(i)     joint-type
             DHparameters = new double[6, 5] { {   0,      0,      0,   0, (double)JointType.Rotation },
                                               {  90,      0,      0,   0, (double)JointType.Rotation },
                                               {  90,      0,      0,  90, (double)JointType.Rotation }, 
-                                              {  90,      0,  87.57,  90, (double)JointType.Rotation },
+                                              {  90,      0,  66.46,  90, (double)JointType.Rotation },
                                               {  90,      0,      0, 180, (double)JointType.Rotation },
-                                              {  90,      0,     92, 180, (double)JointType.Rotation } };
-            N = 4;
-            EndEffector = 6;
+                                              {  90,      0,  88.89, 180, (double)JointType.Rotation } };
+            N = 6;
             Sigma = new bool[3] { false, true, false };
             MinMax = new System.Windows.Point[N];
             MinMax[0] = new System.Windows.Point(-90, 10);
             MinMax[1] = new System.Windows.Point(-90, 30);
             MinMax[2] = new System.Windows.Point(-180, 180);
             MinMax[3] = new System.Windows.Point(0, 155);
+            MinMax[4] = new System.Windows.Point(-180, 180);
+            MinMax[5] = new System.Windows.Point(-180, 180);
 
             Coupling = CouplingType.None;
             OutputWorkspace = true;

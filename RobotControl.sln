@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotControl", "RobotControl\RobotControl.csproj", "{D6319095-4A9F-409C-8D46-2E77A6C49D29}"
 EndProject
@@ -45,6 +45,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Added-Functionality", "Added-Functionality", "{71FBC25F-504D-45AD-BFA1-EA886385322C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFmpeg.AutoGen", "FFmpeg.AutoGen\FFmpeg.AutoGen.csproj", "{A536B02A-B0B1-4753-8328-17369EF09976}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaleaeSocketApi", "..\SaleaeSocketApi\SaleaeSocketApi\SaleaeSocketApi.csproj", "{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -481,6 +483,38 @@ Global
 		{A536B02A-B0B1-4753-8328-17369EF09976}.Release|Win32.Build.0 = Release|x86
 		{A536B02A-B0B1-4753-8328-17369EF09976}.Release|x64.ActiveCfg = Release|x64
 		{A536B02A-B0B1-4753-8328-17369EF09976}.Release|x64.Build.0 = Release|x64
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Debug|Win32.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Debug|x64.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugMono|Any CPU.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugMono|Any CPU.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugMono|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugMono|Mixed Platforms.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugMono|Win32.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugMono|Win32.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugMono|x64.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugMono|x64.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugWin32|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugWin32|Mixed Platforms.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugWin32|Win32.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugWin32|Win32.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugWin32|x64.ActiveCfg = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.DebugWin32|x64.Build.0 = Debug|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Release|Win32.ActiveCfg = Release|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Release|Win32.Build.0 = Release|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Release|x64.ActiveCfg = Release|Any CPU
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -495,5 +529,9 @@ Global
 		{8C1A6BB5-A978-4582-834C-16A37A3B5484} = {913BDB25-349D-4C7C-909B-FF315DDB562B}
 		{397B4612-9FF2-4288-A7D0-C2B2FC4F4816} = {913BDB25-349D-4C7C-909B-FF315DDB562B}
 		{A536B02A-B0B1-4753-8328-17369EF09976} = {71FBC25F-504D-45AD-BFA1-EA886385322C}
+		{82E967F2-27CE-41B1-AB98-3FA98B8FDF37} = {71FBC25F-504D-45AD-BFA1-EA886385322C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C565457-8ED6-489F-8888-2AF1FFE8BC85}
 	EndGlobalSection
 EndGlobal

@@ -16,12 +16,12 @@ namespace TelSurge
             InitializeComponent();
             _main = mainForm;
             fillDevices();
-        }
+        } 
 
         private void btn_Done_Click(object sender, EventArgs e)
         {
             int choice = ddl_Devices.SelectedIndex;
-            string name = ddl_Devices.Name;
+            string name = ddl_Devices.SelectedItem.ToString();
             if (ddl_Devices.Items[choice].Equals("Master Video Feed"))
             {
                 //Master Video Feed

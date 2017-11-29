@@ -873,7 +873,7 @@
             this.videoSourceToolStripMenuItem,
             this.iPCameraControlsToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // networkDelayToolStripMenuItem
@@ -1042,7 +1042,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox spRightOmni;
         private System.Windows.Forms.ComboBox spLeftOmni;
-        private System.Windows.Forms.GroupBox gb_Telestration;
+        public System.Windows.Forms.GroupBox gb_Telestration;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button btn_RedPen;
         private System.Windows.Forms.Button btn_BlackPen;

@@ -71,6 +71,8 @@
     <Compile Include="Robots\IKSolver\FourDOFsolver.cs" />
     <Compile Include="Robots\IKSolver\FiveDOFsolver.cs" />
     <Compile Include="Robots\IKSolver\ExtendingSixDOF.cs" />
+    <Compile Include="Robots\IKSolver\JoeBizzle.cs" />
+    <Compile Include="Robots\IKSolver\JoeBot.cs" />
     <Compile Include="Robots\IKSolver\LouBizzleOld.cs" />
     <Compile Include="Robots\IKSolver\LouBizzle.cs" />
     <Compile Include="Robots\SingleArm\LouBot.cs" />

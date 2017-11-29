@@ -50,6 +50,11 @@ namespace Kinematics
         public int N { get; set; }
 
         /// <summary>
+        /// This returns the frame index of the end effector
+        /// </summary>
+        public int EndEffector { get; set; }
+
+        /// <summary>
         /// This returns the weights (0 or 1) of each end effector orientations
         /// </summary>
         public bool[] Sigma { get; set; }
@@ -103,15 +108,15 @@ namespace Kinematics
         {
             if (!Initialized)
             {
-                radAngle = new double[N + 1];
-                offset = new double[N + 1];
-                minErrAngle = new double[N - 2];
+                radAngle = new double[EndEffector + 1];
+                offset = new double[EndEffector + 1];
+                minErrAngle = new double[N];
                 radAngle.Initialize();
                 offset.Initialize();
 
-                thetaOffset = new double[N + 1];
+                thetaOffset = new double[EndEffector + 1];
                 thetaOffset[0] = 0;
-                for (int i = 1; i <= N; i++)
+                for (int i = 1; i <= EndEffector; i++)
                 {
                     thetaOffset[i] = DHparameters[i - 1, 3] * Math.PI / 180;
                 }
@@ -156,7 +161,7 @@ namespace Kinematics
 
             Rh = new Vector3D[3];
             // declare 3D array for each joint frame axis (xi, yi, zi, Pi)
-            frame = new Vector3D[N + 1, 4];
+            frame = new Vector3D[EndEffector + 1, 4];
             frame.Initialize();
             // set base frame
             frame[0, 0].X = 1;
@@ -187,7 +192,7 @@ namespace Kinematics
                 if (Ec < minError)
                 {
                     minError = Ec;
-                    for (int i = 0; i < N - 2; i++)
+                    for (int i = 0; i < N; i++)
                     {
                         minErrAngle[i] = radAngle[i + 1];
                     }
@@ -228,7 +233,7 @@ namespace Kinematics
                     Ep = Ec;
 
                     // backward recurssion through joints for CCD
-                    for (int link = N - 2; link > 0; link--)
+                    for (int link = N; link > 0; link--)
                     {
                         ForwardKine();
                         // create target effector position vector
@@ -328,7 +333,7 @@ namespace Kinematics
 
             if (Ec > minError)
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < N; i++)
                 {
                     radAngle[i + 1] = minErrAngle[i];
                 }
@@ -339,12 +344,12 @@ namespace Kinematics
             double[] degAngle = new double[radAngle.Length];
 
             // convert angles to degrees
-            for (int i = 0; i < (N - 2); i++)
+            for (int i = 0; i < (N); i++)
             {
                 degAngle[i + 1] = RadToDeg(radAngle[i + 1]);
             }
             // set output based on joint type
-            for (int i = 0; i < (N - 2); i++)
+            for (int i = 0; i < (N); i++)
             {
                 if ((JointType)DHparameters[i, 4] == JointType.Rotation)
                     IKOutput[i] = degAngle[i + 1];
@@ -357,7 +362,7 @@ namespace Kinematics
             {
                 case CouplingType.None:
                     //convert angles to degrees
-                    for (int i = 0; i < (N - 2); i++)
+                    for (int i = 0; i < (N); i++)
                     {
                         IKOutput[i] = degAngle[i + 1];
                     }
@@ -399,18 +404,18 @@ namespace Kinematics
         // uses forward recurrsion formulas and DH paramenters to calculate positions and orientations for each kinematic frame
         void ForwardKine()
         {
-            Vector3D[] Pstar = new Vector3D[N];
+            Vector3D[] Pstar = new Vector3D[EndEffector];
             Pstar.Initialize();
 
             // initialize frame positions
-            for (int i = 0; i < N + 1; i++)
+            for (int i = 0; i < EndEffector + 1; i++)
             {
                 frame[i, 3].X = 0;
                 frame[i, 3].Y = 0;
                 frame[i, 3].Z = 0;
             }
             // forward recurrsion formulas for frame position and orientation
-            for (int i = 1; i <= N; i++)
+            for (int i = 1; i <= EndEffector; i++)
             {
                 // x(i) orientation vector
                 frame[i, 0] = Vector3D.Add((Vector3D.Multiply((Math.Cos(radAngle[i - 1] + thetaOffset[i])), frame[(i - 1), 0])), (Vector3D.Multiply((Math.Sin(radAngle[i - 1] + thetaOffset[i])), frame[(i - 1), 1])));
@@ -420,22 +425,22 @@ namespace Kinematics
                 frame[i, 1] = Vector3D.CrossProduct(frame[i, 2], frame[i, 0]);
             }
             // P* --> relative positions of next frame wrt present frame
-            for (int i = 0; i < N; i++)
+            for (int i = 0; i < EndEffector; i++)
             {
                 Pstar[i] = Vector3D.Add(Vector3D.Multiply(DHparameters[i, 2] + offset[i + 1], frame[i, 2]), Vector3D.Multiply(DHparameters[i, 1], frame[i + 1, 0]));
             }
             // P(i) --> frame positions wrt base frame
-            for (int i = 1; i < N + 1; i++)
+            for (int i = 1; i < EndEffector + 1; i++)
             {
                 frame[i, 3] = frame[i - 1, 3] + Pstar[i - 1];
             }
             // set position of end effector
-            Ph = frame[N, 3];
+            Ph = frame[EndEffector, 3];
 
             // set end effector orientation
-            Rh[0] = frame[N, 0];
-            Rh[1] = frame[N, 1];
-            Rh[2] = frame[N, 2];
+            Rh[0] = frame[EndEffector, 0];
+            Rh[1] = frame[EndEffector, 1];
+            Rh[2] = frame[EndEffector, 2];
         }
 
         double DegToRad(double deg)
