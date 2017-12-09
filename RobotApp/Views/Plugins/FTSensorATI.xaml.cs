@@ -352,6 +352,7 @@ namespace RobotApp.Views.Plugins
 
             while(listen)
             {
+                Thread.Sleep(15);
                 while (connectPort.BytesToRead > 0)
                 {
                     receiveQueue.Enqueue((byte)connectPort.ReadByte());

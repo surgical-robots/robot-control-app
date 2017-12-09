@@ -20,6 +20,7 @@
             MinMax[1] = new System.Windows.Point(-180, 45);
             MinMax[2] = new System.Windows.Point(-180, 180);
             MinMax[3] = new System.Windows.Point(0, 155);
+
             MinMax[4] = new System.Windows.Point(-180, 180);
             MinMax[5] = new System.Windows.Point(-120, 120);
 

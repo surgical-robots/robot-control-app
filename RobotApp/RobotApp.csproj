@@ -292,9 +292,6 @@
     <Compile Include="Views\Plugins\AlphaAngle.xaml.cs">
       <DependentUpon>AlphaAngle.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Plugins\FTSensorATI.xaml.cs">
-      <DependentUpon>FTSensorATI.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Plugins\AutoSuture.xaml.cs">
       <DependentUpon>AutoSuture.xaml</DependentUpon>
     </Compile>
@@ -330,6 +327,12 @@
     </Compile>
     <Compile Include="Views\Plugins\FrankenShoulder.xaml.cs">
       <DependentUpon>FrankenShoulder.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugins\FTSensorATI.xaml.cs">
+      <DependentUpon>FTSensorATI.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Plugins\FTTransform.xaml.cs">
+      <DependentUpon>FTTransform.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Plugins\GeomagicTouch.xaml.cs">
       <DependentUpon>GeomagicTouch.xaml</DependentUpon>
@@ -516,10 +519,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Plugins\FTSensorATI.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\Plugins\AutoSuture.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -567,6 +566,14 @@
     <Page Include="Views\Plugins\FrankenShoulder.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Plugins\FTSensorATI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="Views\Plugins\FTTransform.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Views\Plugins\GeomagicTouch.xaml">
       <SubType>Designer</SubType>
