@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
 using RobotApp.ViewModel;
 using MathNet.Numerics.LinearAlgebra;
+using System.IO;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace RobotApp.Views.Plugins
 {
@@ -74,10 +76,35 @@ namespace RobotApp.Views.Plugins
         private Matrix<float> offset = Matrix<float>.Build.Dense(6, 1);
         private Matrix<float> diff = Matrix<float>.Build.Dense(6, 1);
 
+        System.Windows.Forms.Timer writeTimer = new System.Windows.Forms.Timer();
+
+        public override void PostLoadSetup()
+        {
+            Inputs.Add("Printing", new ViewModel.InputSignalViewModel("Printing", this.InstanceName));
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Printing"].UniqueID, (message) =>
+            {
+                if (message.Value > 0.5)
+                {
+                    printing = true;
+                }
+                else
+                {
+                    printing = false;
+                    //ButtonText = "Start Capturing Data";
+                    dataTimer.Stop();
+                    dataTimer.Reset();
+                }
+            });
+
+            base.PostLoadSetup();
+        }
+
         public FTSensorATI()
         {
             this.TypeName = "ATI FT Sensor";
             InitializeComponent();
+
+
 
             Outputs.Add("Fx", new OutputSignalViewModel("Force X"));
             Outputs.Add("Fy", new OutputSignalViewModel("Force Y"));
@@ -86,11 +113,23 @@ namespace RobotApp.Views.Plugins
             Outputs.Add("Ty", new OutputSignalViewModel("Torque Y"));
             Outputs.Add("Tz", new OutputSignalViewModel("Torque Z"));
 
+
+
             workerThread = new BackgroundWorker();
             workerThread.WorkerSupportsCancellation = true;
             workerThread.DoWork += workerThread_DoWork;
 
             FindPorts();
+            writeTimer.Interval = 10;
+            writeTimer.Tick += WriteTimer_Tick;
+            writeTimer.Start();
+            PostLoadSetup();
+        }
+
+        private void WriteTimer_Tick(object sender, EventArgs e)
+        {
+            if (printing)
+                PrintFile();
         }
 
         void startStreaming()
@@ -309,6 +348,8 @@ namespace RobotApp.Views.Plugins
                 return connectCommand
                     ?? (connectCommand = new RelayCommand<string>(
                     p =>
+
+
                     {
                         if(!connected)
                         {
@@ -332,6 +373,17 @@ namespace RobotApp.Views.Plugins
             }
         }
 
+        private double input1 = 0;
+        private double input2 = 0;
+        private double input3 = 0;
+        private double input4 = 0;
+        private double input5 = 0;
+        private double input6 = 0;
+        private double input7 = 0;
+        private double input8 = 0;
+        private double input9 = 0;
+        private double input10 = 0;
+
         public void Listen()
         {
             Queue<byte> receiveQueue = new Queue<byte>();
@@ -349,6 +401,8 @@ namespace RobotApp.Views.Plugins
             double oldAvgTz = 0;
             bool isGood;
             bool initialized = false;
+
+
 
             while(listen)
             {
@@ -368,15 +422,22 @@ namespace RobotApp.Views.Plugins
                                  sampleValues[i] = ToShort(testArray, i * 2);
                             }
 
-                            gaugeValues[0, 0] = sampleValues[0];
-                            gaugeValues[1, 0] = sampleValues[3];
-                            gaugeValues[2, 0] = sampleValues[1];
-                            gaugeValues[3, 0] = sampleValues[4];
-                            gaugeValues[4, 0] = sampleValues[2];
-                            gaugeValues[5, 0] = sampleValues[5];
+                            //gaugeValues[0, 0] = sampleValues[0];
+                            //gaugeValues[1, 0] = sampleValues[3];
+                            //gaugeValues[2, 0] = sampleValues[1];
+                            //gaugeValues[3, 0] = sampleValues[4];
+                            //gaugeValues[4, 0] = sampleValues[2];
+                            //gaugeValues[5, 0] = sampleValues[5];
+                            input1 = sampleValues[0];
+                            input2 = sampleValues[3];
+                            input3 = sampleValues[1];
+                            input4 = sampleValues[4];
+                            input5 = sampleValues[2];
+                            input6 = sampleValues[5];
 
-                            outValues = basicMatrix.Multiply(gaugeValues).Multiply((float)0.000001).Subtract(offset);
+                            //outValues = basicMatrix.Multiply(gaugeValues).Multiply((float)0.000001).Subtract(offset);
 
+                            /*
                             avgFx = ((oldAvgFx * sampleSize) + (outValues[0, 0] - oldAvgFx)) / sampleSize;
                             avgFy = ((oldAvgFy * sampleSize) + (outValues[1, 0] - oldAvgFy)) / sampleSize;
                             avgFz = ((oldAvgFz * sampleSize) + (outValues[2, 0] - oldAvgFz)) / sampleSize;
@@ -390,16 +451,19 @@ namespace RobotApp.Views.Plugins
                             oldAvgTx = avgTx;
                             oldAvgTy = avgTy;
                             oldAvgTz = avgTz;
+                            */
 
-                            RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate ()
-                            {
-                                Outputs["Fx"].Value = avgFx;
-                                Outputs["Fy"].Value = avgFy;
-                                Outputs["Fz"].Value = avgFz;
-                                Outputs["Tx"].Value = avgTx;
-                                Outputs["Ty"].Value = avgTy;
-                                Outputs["Tz"].Value = avgTz;
-                            });
+                            //Changed to sample values instead of avgs
+                            // NOTE: COMMENTING THIS OUT BREAKS THE PLUGIN
+                            //RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate ()
+                            //{
+                            //    Outputs["Fx"].Value = sampleValues[0];
+                            //    Outputs["Fy"].Value = sampleValues[3];
+                            //    Outputs["Fz"].Value = sampleValues[1];
+                            //    Outputs["Tx"].Value = sampleValues[4];
+                            //    Outputs["Ty"].Value = sampleValues[2];
+                            //    Outputs["Tz"].Value = sampleValues[5];        
+                            //});
 
                             receiveQueue.Clear();
                         }
@@ -408,6 +472,46 @@ namespace RobotApp.Views.Plugins
                             receiveQueue.Dequeue();
                         }
                     }
+                }
+            }
+        }
+        bool printing = false;
+        Stopwatch dataTimer = new Stopwatch();
+        private double captureTime = 10;
+        public void PrintFile()
+        {
+            if (printing == true)
+            {
+                if (!File.Exists(OutputFileName))
+                {
+                    // Create a file to write to. 
+                    using (StreamWriter sw = File.CreateText(OutputFileName))
+                    {
+                        sw.Write(OutputFileName);
+                        sw.Write("\t");
+                        DateTime millisTime = DateTime.Now;
+                        sw.WriteLine(millisTime);
+                        dataTimer.Restart();
+                    }
+                }
+                using (StreamWriter sw = File.AppendText(OutputFileName))
+                {
+                    millisTime = dataTimer.ElapsedMilliseconds;
+                    sw.Write(millisTime);
+                    sw.Write("\t");
+                    sw.Write("\t");
+                    sw.Write(input1);
+                    sw.Write("\t");
+                    sw.Write(input2);
+                    sw.Write("\t");
+                    sw.Write(input3);
+                    sw.Write("\t");
+                    sw.Write(input4);
+                    sw.Write("\t");
+                    sw.Write(input5);
+                    sw.Write("\t");
+                    sw.Write(input6);
+                    sw.WriteLine(input10);
                 }
             }
         }
@@ -529,6 +633,31 @@ namespace RobotApp.Views.Plugins
             }
         }
 
+        private string outputFileName;
+
+        /// <summary>
+        /// Sets and gets the OutputFileName property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string OutputFileName
+        {
+            get
+            {
+                return outputFileName;
+            }
+
+            set
+            {
+                if (outputFileName == value)
+                {
+                    return;
+                }
+                outputFileName = value;
+                RaisePropertyChanged("OutputFileName");
+            }
+        }
+
+
         /// <summary>
         /// The <see cref="ConnectText" /> property's name.
         /// </summary>
@@ -560,6 +689,7 @@ namespace RobotApp.Views.Plugins
         }
 
         private RelayCommand<string> zeroCommand;
+        private long millisTime;
 
         /// <summary>
         /// Gets the ConnectCommand.

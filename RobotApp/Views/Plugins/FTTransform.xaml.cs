@@ -427,10 +427,9 @@ namespace RobotApp.Views.Plugins
             var tmp = ToolSensorTransform.Multiply(ForceTorque);
 
             ForceTorque = BaseForceTransform.Multiply(tmp);
-            float forceGain = 4;
             for(int i = 0; i < 6; i++)
             {
-                ForceTorque[i] = ForceTorque[i] * forceGain;
+                ForceTorque[i] = ForceTorque[i] * ForceGain;
                 if (ForceTorque[i] > 5)
                     ForceTorque[i] = 5;
             }
@@ -444,6 +443,36 @@ namespace RobotApp.Views.Plugins
                 Outputs["Tz"].Value = ForceTorque[5];
             });
 
+        }
+
+        /// <summary>
+        /// The <see cref="ForceGain" /> property's name.
+        /// </summary>
+        public const string ForceGainPropertyName = "ForceGain";
+
+        private float forceGain = 3;
+
+        /// <summary>
+        /// Sets and gets the ForceGain property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public float ForceGain
+        {
+            get
+            {
+                return forceGain;
+            }
+
+            set
+            {
+                if (forceGain == value)
+                {
+                    return;
+                }
+
+                forceGain = value;
+                RaisePropertyChanged(ForceGainPropertyName);
+            }
         }
 
         void workerThread_DoWork(object sender, DoWorkEventArgs e)

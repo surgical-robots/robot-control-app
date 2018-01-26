@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Command;
 using Saleae.SocketApi;
+using RobotApp.ViewModel;
 
 namespace RobotApp.Views.Plugins
 {
@@ -19,7 +20,7 @@ namespace RobotApp.Views.Plugins
         private SaleaeClient client;
         private List<ConnectedDevice> connectedDevices;
         private ConnectedDevice activeDevice;
-        private double captureTime = 3;
+        private double captureTime = 10;
         private bool connected = false;
 
         private double input1 = 0;
@@ -30,6 +31,8 @@ namespace RobotApp.Views.Plugins
         private double input6 = 0;
         private double input7 = 0;
         private double input8 = 0;
+        private double input9 = 0;
+        private double input10 = 0;
 
         private bool printing = false;
         private string path = System.IO.Directory.GetCurrentDirectory();
@@ -102,6 +105,24 @@ namespace RobotApp.Views.Plugins
                 }
             });
 
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input9"].UniqueID, (message) =>
+            {
+                if (input9 != message.Value)
+                {
+                    input9 = message.Value;
+                }
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input10"].UniqueID, (message) =>
+            {
+                if (input10 != message.Value)
+                {
+                    input10 = message.Value;
+                }
+            });
+
+            Outputs.Add("Printing", new OutputSignalViewModel("Printing"));
+
             base.PostLoadSetup();
         }
 
@@ -115,6 +136,10 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("Input6", new ViewModel.InputSignalViewModel("Input 6", this.InstanceName));
             Inputs.Add("Input7", new ViewModel.InputSignalViewModel("Input 7", this.InstanceName));
             Inputs.Add("Input8", new ViewModel.InputSignalViewModel("Input 8", this.InstanceName));
+            Inputs.Add("Input9", new ViewModel.InputSignalViewModel("Input 9", this.InstanceName));
+            Inputs.Add("Input10", new ViewModel.InputSignalViewModel("Input 10", this.InstanceName));
+
+
 
             this.TypeName = "Print Data";
             InitializeComponent();
@@ -141,7 +166,8 @@ namespace RobotApp.Views.Plugins
                     printing = false;
                     ButtonText = "Start Capturing Data";
                     dataTimer.Stop();
-                    writeTimer.Stop();
+                    //writeTimer.Stop();
+                    Outputs["Printing"].Value = 0.0;
                     return;
                 }
                 if (!File.Exists(fullPath))
@@ -175,7 +201,11 @@ namespace RobotApp.Views.Plugins
                     sw.Write("\t");
                     sw.Write(input7);
                     sw.Write("\t");
-                    sw.WriteLine(input8);
+                    sw.Write(input8);
+                    sw.Write("\t");
+                    sw.Write(input9);
+                    sw.Write("\t");
+                    sw.WriteLine(input10);
                 }
             }
         }
@@ -355,8 +385,17 @@ namespace RobotApp.Views.Plugins
                         if (printing == false)
                         {
                             printing = true;
+                            
+                            // wut da fuk
+                            if (!Outputs.ContainsKey("Printing"))
+                                Outputs.Add("Printing", new OutputSignalViewModel("Printing"));
+
+                            Outputs["Printing"].Value = 1.0;
                             string fullPath = path + OutputFileName + ".logicdata";
-                            Task t = Task.Run(() => { client.CaptureToFile(fullPath); });
+                            ThreadStart t = new ThreadStart(() => { client.CaptureToFile(fullPath); } );
+                            Thread th = new Thread(t);
+                            th.Start();
+                            //Thread.Run(() => { client.CaptureToFile(fullPath); });
                             Thread.Sleep(400);
                             ButtonText = "Capturing Data...";
                             dataTimer.Restart();
@@ -364,6 +403,8 @@ namespace RobotApp.Views.Plugins
                         }
                         else
                         {
+                            // TODO: this is dead code that never runs
+                            Outputs["Printing"].Value = 0.0;
                             printing = false;
                             ButtonText = "Start Capturing Data";
                             dataTimer.Stop();

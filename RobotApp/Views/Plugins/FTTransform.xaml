@@ -13,6 +13,9 @@
             <UniformGrid Columns="2">
                 <TextBlock Text="Available Models" />
                 <ComboBox ItemsSource="{Binding KinematicTypes}" SelectedItem="{Binding SelectedKinematic}" DisplayMemberPath="Name" />
+
+                <TextBlock Text="Force Gain" />
+                <TextBox Text="{Binding ForceGain}" />
             </UniformGrid>
             
             <UniformGrid Columns="2">

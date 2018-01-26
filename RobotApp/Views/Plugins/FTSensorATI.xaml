@@ -18,7 +18,7 @@
                 <mui:ModernButton IconData="{StaticResource SearchIconData}" 
                                   Content="Refresh COMs" Command="{Binding DetectCOMsCommand}" HorizontalAlignment="Left" />
             </UniformGrid>
-            
+            <TextBox Text="{Binding OutputFileName}" />
             <Button Content="{Binding ConnectText}" Command="{Binding ConnectCommand}" />
             <Button Content="Zero Sensor Readings" Command="{Binding ZeroCommand}" />
 

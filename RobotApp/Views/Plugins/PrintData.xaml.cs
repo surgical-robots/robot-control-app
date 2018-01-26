@@ -19,6 +19,8 @@ namespace RobotApp.Views.Plugins
         private double input6 = 0;
         private double input7 = 0;
         private double input8 = 0;
+        private double input9 = 0;
+        private double input10 = 0;
 
         private bool printing = false;
         private string path = System.IO.Directory.GetCurrentDirectory();
@@ -91,6 +93,22 @@ namespace RobotApp.Views.Plugins
                 }
             });
 
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input9"].UniqueID, (message) =>
+            {
+                if (input9 != message.Value)
+                {
+                    input9 = message.Value;
+                }
+            });
+
+            Messenger.Default.Register<Messages.Signal>(this, Inputs["Input10"].UniqueID, (message) =>
+            {
+                if (input10 != message.Value)
+                {
+                    input10 = message.Value;
+                }
+            });
+
             base.PostLoadSetup();
         }
 
@@ -104,6 +122,8 @@ namespace RobotApp.Views.Plugins
             Inputs.Add("Input6", new ViewModel.InputSignalViewModel("Input 6", this.InstanceName));
             Inputs.Add("Input7", new ViewModel.InputSignalViewModel("Input 7", this.InstanceName));
             Inputs.Add("Input8", new ViewModel.InputSignalViewModel("Input 8", this.InstanceName));
+            Inputs.Add("Input9", new ViewModel.InputSignalViewModel("Input 9", this.InstanceName));
+            Inputs.Add("Input10", new ViewModel.InputSignalViewModel("Input 10", this.InstanceName));
 
             this.TypeName = "Print Data";
             InitializeComponent();
@@ -156,7 +176,12 @@ namespace RobotApp.Views.Plugins
                     sw.Write("\t");
                     sw.Write(input7);
                     sw.Write("\t");
-                    sw.WriteLine(input8);
+                    sw.Write(input8);
+                    sw.Write("\t");
+                    sw.Write(input9);
+                    sw.Write("\t");
+                    sw.WriteLine(input10);
+
                 }
             }
         }
