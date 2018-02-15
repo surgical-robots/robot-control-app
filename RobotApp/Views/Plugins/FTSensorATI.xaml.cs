@@ -74,6 +74,7 @@ namespace RobotApp.Views.Plugins
         private Matrix<float> offset = Matrix<float>.Build.Dense(6, 1);
         private Matrix<float> diff = Matrix<float>.Build.Dense(6, 1);
 
+
         public FTSensorATI()
         {
             this.TypeName = "ATI FT Sensor";

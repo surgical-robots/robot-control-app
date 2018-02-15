@@ -51,6 +51,10 @@ namespace RobotApp.Views.Plugins
         private double ifx, ify, ifz, itx, ity, itz, ija1, ija2, ija3, ija4;
         private double[] JointAnlges;
 
+        private double forceConversionFactor = 4.4482;      // convert lbf to N
+        private double torqueConversionFactor = 112.98;     // convert lbf-in to N-mm
+        private double armWeight = .24516;                    // Newtons
+
         public override void PostLoadSetup()
         {
             Messenger.Default.Register<Messages.Signal>(this, Inputs["Fx"].UniqueID, (message) =>
@@ -334,6 +338,8 @@ namespace RobotApp.Views.Plugins
 
             Transformations = new Matrix<float>[DHParameters.GetLength(0)];
             Matrix<float> BaseTransform = Matrix<float>.Build.Dense(4, 4);
+            Matrix<float> BaseSensorTransform = Matrix<float>.Build.Dense(4, 4);
+            Matrix<float> BaseSensorRotation = Matrix<float>.Build.Dense(3, 3);
             Matrix<float> BaseForceTransform = Matrix<float>.Build.DenseIdentity(6);
             Matrix<float> BaseRotation = Matrix<float>.Build.Dense(3, 3);
             Matrix<float> BasePosition = Matrix<float>.Build.Dense(3, 3);
@@ -341,12 +347,16 @@ namespace RobotApp.Views.Plugins
             Matrix<float> ToolSensorTransform;
             Matrix<float> ToolSensorPosition;
             Vector<float> ForceTorque;
+            Vector<float> sensorArmForce;
+            Vector<float> armLength;
+            Vector<float> sensorArmTorque;
+
 
             JointAnlges = new double[] {0, ja1, ja2, ja3, ja4 };
 
             double alphai, ai, di, thetai, jai;
 
-            for (int i = 0; i < DHParameters.GetLength(0); i++) //loop through rows
+            for (int i = 0; i < DHParameters.GetLength(0); i++) // loop through rows
             {
                 alphai = DHParameters[i, 0];
                 ai = DHParameters[i, 1];
@@ -361,7 +371,7 @@ namespace RobotApp.Views.Plugins
                     jai = 0;
                 }
 
-                //DH parameters alpha, a, d, theta, joint type
+                // DH parameters alpha, a, d, theta, joint type
 
                 float[,] t = { { (float)Math.Cos((thetai + jai) * Math.PI / 180), (float)(-1 * Math.Sin((thetai + jai) * Math.PI / 180) * Math.Cos(alphai * Math.PI / 180)), //0.5
                     (float)(Math.Sin((thetai + jai) * Math.PI / 180) * Math.Sin(alphai * Math.PI / 180)), (float)(ai * Math.Cos((thetai + jai) * Math.PI / 180))}, //1
@@ -371,17 +381,23 @@ namespace RobotApp.Views.Plugins
                     { 0, 0, 0, 1} }; //4
 
                 Transformations[i] = Matrix<float>.Build.DenseOfArray(t);
-                //Transformations[i].CoerceZero(1e-14);
+                // Transformations[i].CoerceZero(1e-14);
             }
 
             BaseTransform = Transformations[0];
             for (int i = 1; i < Transformations.Length; i++)
             {
                 BaseTransform = BaseTransform.Multiply(Transformations[i]);
+
+                if (i == 4)
+                {
+                    BaseSensorTransform = BaseTransform;
+                }
             }
 
             //Creation of transformation matrix to transform tool torques into base frame
             BaseRotation = BaseTransform.SubMatrix(0, 3, 0, 3);
+            BaseSensorRotation = BaseSensorTransform.SubMatrix(0, 3, 0, 3);
 
             var bp = BaseTransform.RemoveRow(3).Column(3);
 
@@ -404,6 +420,7 @@ namespace RobotApp.Views.Plugins
 
             // Transform tool sensor position to tool frame
             var tsp = Transformations[5].RemoveRow(3).Column(3);
+            armLength = tsp / 2;
             tsp = ToolSensorRotation.Multiply(tsp);
 
             // Sign inverted cross product operator
@@ -420,13 +437,38 @@ namespace RobotApp.Views.Plugins
             ToolSensorTransform = ToolSensorRotation.Stack(ToolSensorPosition);
             ToolSensorTransform = ToolSensorTransform.Append(Matrix<float>.Build.Dense(3, 3).Stack(ToolSensorRotation));
 
-            float[] f = { (float)fx, (float)fy, (float)fz, (float)tx, (float)ty, (float)tz };
+            Vector<float> gForce = Vector<float>.Build.Dense(3);
+
+
+            float[] f = { (float)(fx * forceConversionFactor), (float)(fy * forceConversionFactor), (float)(fz * forceConversionFactor), (float)(tx * torqueConversionFactor)
+                    , (float)(ty * torqueConversionFactor), (float)(tz * torqueConversionFactor) };
             ForceTorque = Vector<float>.Build.DenseOfArray(f);
+
+            // Removal of the arm mass and torque from sensor readings
+            float[] am = { 0, 0, (float)armWeight };
+            sensorArmForce = Vector<float>.Build.DenseOfArray(am);
+            sensorArmForce = BaseSensorRotation.Transpose() * sensorArmForce;
+
+            sensorArmTorque = Vector<float>.Build.Dense(3);
+            sensorArmTorque[0] = armLength[1] * sensorArmForce[2] - armLength[2] * sensorArmForce[1];
+            sensorArmTorque[1] = -armLength[0] * sensorArmForce[2] + armLength[2] * sensorArmForce[0];
+            sensorArmTorque[2] = armLength[0] * sensorArmForce[1] - armLength[1] * sensorArmForce[0];
+
+            float[] ft = { sensorArmForce[0], sensorArmForce[1], sensorArmForce[2], sensorArmTorque[0], sensorArmTorque[1], sensorArmTorque[2] };
+
+            ForceTorque = ForceTorque + Vector<float>.Build.DenseOfArray(ft);
+
+
+            // sensorArmForce = BaseSensorRotation.Transpose() * 
+
+
 
             // Final Force torque transformation from sensor frame to base frame
             var tmp = ToolSensorTransform.Multiply(ForceTorque);
 
             ForceTorque = BaseForceTransform.Multiply(tmp);
+
+            /*
             float forceGain = 4;
             for(int i = 0; i < 6; i++)
             {
@@ -434,6 +476,8 @@ namespace RobotApp.Views.Plugins
                 if (ForceTorque[i] > 5)
                     ForceTorque[i] = 5;
             }
+            */
+
             RobotApp.App.Current.Dispatcher.BeginInvoke((Action)delegate ()
             {
                 Outputs["Fx"].Value = -ForceTorque[0];
